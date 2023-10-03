@@ -16,7 +16,7 @@ def map_with_progress(func, iterable, num_processes):
     pool.join()
     return results
 
-def main()
+def main():
 
     start = time.perf_counter()
     
