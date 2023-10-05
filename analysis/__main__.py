@@ -3,19 +3,11 @@ import sys
 import multiprocessing as mp
 from configparser import ConfigParser
 import time
-from tqdm import tqdm
 
 import logging
 log = logging.getLogger(__name__)
 
 from Agent import Agent
-
-def map_with_progress(func, iterable, num_processes):
-    with mp.Pool(num_processes) as pool:
-        results = list(tqdm(pool.imap(func, iterable), total=len(iterable)))
-    pool.close()
-    pool.join()
-    return results
 
 def main():
 
@@ -36,7 +28,10 @@ def main():
         results = agent.run(agent.target_EASE_idx[0])
     if run_mode == "parallel":
         nprocess = int(cfg["MULTIPROCESSING"]["nprocess"])
-        results = map_with_progress(agent.run, agent.target_EASE_idx, nprocess)
+        with mp.Pool(nprocess) as pool:
+             results = list(pool.imap(agent.run, agent.target_EASE_idx))
+        pool.close()
+        pool.join()
 
     print(f"--- Finished analysis ---")
     

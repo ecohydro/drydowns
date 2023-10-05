@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
+import os
 import warnings
 
 def get_filename(varname, EASE_row_index, EASE_column_index):
@@ -22,14 +23,12 @@ class Data():
 
         # Get the directory name
         self.data_dir = cfg["PATHS"]["data_dir"]
-
-        # Setup variable names 
-        self.p_varname = "SPL4SMGP"
-        self.pet_varname = "PET"
+        self.datarods_dir = cfg["PATHS"]["datarods_dir"]
 
         # Get the start and end time of the analysis
-        self.start_time = datetime(cfg["EXTENT"]["start_date"])
-        self.end_date = datetime(cfg["EXTENT"]["end_date"])
+        date_format = "%Y-%m-%d"
+        self.start_date = datetime.strptime(cfg["EXTENT"]["start_date"], date_format)
+        self.end_date = datetime.strptime(cfg["EXTENT"]["end_date"], date_format)
 
         # Read in datasets
         _df = self.get_concat_datasets()
@@ -40,9 +39,9 @@ class Data():
     def get_concat_datasets(self):
 
         # Read each datasets
-        sm = self.get_soil_moisture(self.cfg)
-        pet = self.get_pet(self.cfg)
-        p = self.get_precipitation(self.cfg)
+        sm = self.get_soil_moisture()
+        pet = self.get_pet()
+        p = self.get_precipitation()
 
         # Concat all the datasets
         _df = pd.merge(sm , pet, how='outer', left_index=True, right_index=True)
@@ -78,41 +77,45 @@ class Data():
         return df
 
 
-    def get_soil_moisture(self, varname = "SPL3SMP"):
+    def get_soil_moisture(self, varname="SPL3SMP"):
 
         # Read data
-        fn = get_filename(varname, self.EASE_row_index, self.EASE_column_index)
-        _df = pd.read_csv(fn)
+        fn = get_filename(varname, EASE_row_index=self.EASE_row_index, EASE_column_index=self.EASE_column_index)
+        _df = pd.read_csv(os.path.join(self.data_dir, self.datarods_dir, varname, fn))
+
+        # Set time index and crop 
         _df = set_time_index(_df, index_name='time')
+        _df = _df[self.start_date:self.end_date].copy()
 
         # Use retrieval flag to quality control the data
-        condition_bad_data_am = (_df['Soil_Moisture_Retrieval_Data_AM_retrieval_qual_flag'] != 0.0) & (df['Soil_Moisture_Retrieval_Data_AM_retrieval_qual_flag'] != 8.0)
-        condition_bad_data_pm = (_df['Soil_Moisture_Retrieval_Data_PM_retrieval_qual_flag_pm'] != 0.0) & (df['Soil_Moisture_Retrieval_Data_PM_retrieval_qual_flag_pm'] != 8.0)
+        condition_bad_data_am = (_df['Soil_Moisture_Retrieval_Data_AM_retrieval_qual_flag'] != 0.0) & (_df['Soil_Moisture_Retrieval_Data_AM_retrieval_qual_flag'] != 8.0)
+        condition_bad_data_pm = (_df['Soil_Moisture_Retrieval_Data_PM_retrieval_qual_flag_pm'] != 0.0) & (_df['Soil_Moisture_Retrieval_Data_PM_retrieval_qual_flag_pm'] != 8.0)
         _df.loc[condition_bad_data_am, 'Soil_Moisture_Retrieval_Data_AM_soil_moisture'] = np.nan
         _df.loc[condition_bad_data_pm, 'Soil_Moisture_Retrieval_Data_PM_soil_moisture_pm'] = np.nan
 
         # If there is two different versions of 2015-03-31 data --- remove this 
-        duplicate_labels = df.index.duplicated(keep=False)
-        df = df.loc[~df.index.duplicated(keep='first')]
+        df = _df.loc[~_df.index.duplicated(keep='first')]
 
         # Resample to regular time interval
         df = df.resample('D').asfreq()
-
-        # Check if the data is all nan or not
-
             
         # Merge the AM and PM soil moisture data into one daily timeseries of data
         df['soil_moisture_daily'] = df[['Soil_Moisture_Retrieval_Data_AM_soil_moisture','Soil_Moisture_Retrieval_Data_PM_soil_moisture_pm']].mean(axis=1, skipna=True)
-        df['normalized_S'] = (df.soil_moisture_daily - min_sm)/(max_sm - min_sm)
+
+        # Get max and min values
+        self.min_sm = df.soil_moisture_daily.min(skipna=True)
+        self.max_sm = df.soil_moisture_daily.max(skipna=True)
+        if not (np.isnan(self.min_sm) or np.isnan(self.max_sm)):
+            df['normalized_S'] = (df.soil_moisture_daily - self.min_sm)/(self.max_sm - self.min_sm)
 
         return df
 
 
     def get_pet(self, varname = "SPL4SMGP"):
-        
+        None
 
-        return df
+        # return df
 
     def get_precipitation(self, varname = "PET"):
-        
-        return df
+        None
+        # return df
