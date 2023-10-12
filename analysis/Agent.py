@@ -17,25 +17,30 @@ class Agent:
     def run(self, sample_EASE_index):
         """ Run the analysis for one pixel """
 
-        ### Get the sampling point attributes (EASE pixel) ###
+        #_______________________________________________________________________________________________
+        # Get the sampling point attributes (EASE pixel)
         if self.verbose:
             print(f"Currently processing pixel {sample_EASE_index}")
 
-        #### Read in the data ####
+        #_______________________________________________________________________________________________
+        # Read dataset for the pixel
         data = Data(self.cfg, sample_EASE_index)
         if data.sm['soil_moisture_daily'].isna().all():
             warnings.warn(f"No soil moisture data at the EASE pixel {sample_EASE_index}")
             return None
 
-        #### Run the event separation ####
+        #_______________________________________________________________________________________________
+        # Run the stormevent separation
         separator = EventSeparator(data)
         events = separator.separate_events(data)
         if events is None:
             return None
 
-        #### Run the main model --- fit the drydown models ####
+        #_______________________________________________________________________________________________
+        # Execute the main analysis --- fit drydown models
         drydown_model = DrydownModel(data, events)
         return drydown_model.fit_models(events)
+    
 
     def finalize(self, results):
         self.smapgrid.remap_results(results)

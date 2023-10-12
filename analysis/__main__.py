@@ -10,21 +10,27 @@ log = logging.getLogger(__name__)
 from Agent import Agent
 
 def main():
-    """_summary_
+    """Main execution script ot run the drydown analysis
     """
     start = time.perf_counter()
     
     print("--- Initializing the model ---")
 
+    #_______________________________________________________________________________________________
+    # Read config 
     cfg = ConfigParser()
     cfg.read("config.ini")
     
+    # Initiate agent
     agent = Agent(cfg=cfg)
     agent.initialize()
     
+    #_______________________________________________________________________________________________
+    # Define serial/parallel mode
     run_mode = cfg['MODEL']['run_mode']
     print(f"--- Analysis started with {cfg['MODEL']['model_type']} model, {run_mode} mode ---")
 
+    # Run the model
     if run_mode == "serial":
         results = agent.run(agent.target_EASE_idx[0])
     if run_mode == "parallel":
@@ -34,6 +40,8 @@ def main():
         pool.close()
         pool.join()
 
+    #_______________________________________________________________________________________________
+    # Finalize the model
     print(f"--- Finished analysis ---")
     
     try:
