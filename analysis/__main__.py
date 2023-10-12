@@ -10,7 +10,8 @@ log = logging.getLogger(__name__)
 from Agent import Agent
 
 def main():
-
+    """_summary_
+    """
     start = time.perf_counter()
     
     print("--- Initializing the model ---")
