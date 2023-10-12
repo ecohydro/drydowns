@@ -6,14 +6,18 @@ import os
 import warnings
 
 def get_filename(varname, EASE_row_index, EASE_column_index):
+    """Get the filename of the datarod"""
     filename = f"{varname}_{EASE_row_index:03d}_{EASE_column_index:03d}.csv"
     return filename
 
 def set_time_index(df, index_name = 'time'):
+    """Set the datetime index to the pandas dataframe"""
     df[index_name] = pd.to_datetime(df[index_name])
     return df.set_index('time')
 
 class Data():
+    """Class that handles datarods (Precipitation, SM, PET data) for a EASE pixel"""
+
     def __init__(self, cfg, EASEindex) -> None:
 
         # Read inputs
@@ -30,13 +34,13 @@ class Data():
         self.start_date = datetime.strptime(cfg["EXTENT"]["start_date"], date_format)
         self.end_date = datetime.strptime(cfg["EXTENT"]["end_date"], date_format)
 
+        #_______________________________________________________________________________
         # Read in datasets
         _df = self.get_concat_datasets()
         self.df = self.calc_dSdt(_df)
 
-
-
     def get_concat_datasets(self):
+        """Get datarods for each data variable, and concatinate them together to create a pandas dataframe"""
 
         # Read each datasets
         sm = self.get_soil_moisture()
@@ -49,35 +53,8 @@ class Data():
 
         return df
 
-    def calc_dSdt(self, df):
-        # TODO: put this precip mask back once I've got precip data
-        # precip_mask = ds_synced['precip'].where(ds_synced['precip'] < precip_thresh)
-        # no_sm_record_but_precip_present = ds_synced['precip'].where((precip_mask.isnull()) & (ds_synced['soil_moisture_daily'].isnull()))
-
-        # Allow detecting soil moisture increment even if there is no SM data in between before/after rainfall event
-        df['sm_for_dS_calc'] = df['soil_moisture_daily'].ffill() 
-
-        # Calculate dS
-        df['dS'] = df['sm_for_dS_calc'].bfill(limit=5).diff().where(df['sm_for_dS_calc'].notnull().shift(periods=+1))
-
-        # Drop the dS where  (precipitation is present) && (soil moisture record does not exist)
-        df['dS'] = df['dS'].where((df['dS'] > -1) & (df['dS'] < 1))
-
-        # Calculate dt
-        non_nulls = df['sm_for_dS_calc'].isnull().cumsum()
-        nan_length = non_nulls.where(df['sm_for_dS_calc'].notnull()).bfill()+1 - non_nulls +1
-        df['dt'] = nan_length.where(df['sm_for_dS_calc'].isnull()).fillna(1)
-
-        # Calculate dS/dt
-        df['dSdt'] = df['dS']/df['dt']
-        df['dSdt'] = df['dSdt'].shift(periods=-1)
-
-        df.loc[df['soil_moisture_daily'].shift(-1).isna(), 'dSdt'] = np.nan
-
-        return df
-
-
     def get_soil_moisture(self, varname="SPL3SMP"):
+        """Get a datarod of soil moisture data for a pixel"""
 
         # Read data
         fn = get_filename(varname, EASE_row_index=self.EASE_row_index, EASE_column_index=self.EASE_column_index)
@@ -111,11 +88,42 @@ class Data():
         return df
 
 
-    def get_pet(self, varname = "SPL4SMGP"):
+    def get_pet(self, varname = "PET"):
+        """Get a datarod of PET data for a pixel"""
         None
 
         # return df
 
-    def get_precipitation(self, varname = "PET"):
+    def get_precipitation(self, varname = "SPL4SMGP"):
+        """Get a datarod of precipitation data for a pixel"""
         None
         # return df
+
+    def calc_dSdt(self, df):
+        """Calculate d(Soil Moisture)/dt"""
+
+        # TODO: put this precip mask back once I've got precip data
+        # precip_mask = ds_synced['precip'].where(ds_synced['precip'] < precip_thresh)
+        # no_sm_record_but_precip_present = ds_synced['precip'].where((precip_mask.isnull()) & (ds_synced['soil_moisture_daily'].isnull()))
+
+        # Allow detecting soil moisture increment even if there is no SM data in between before/after rainfall event
+        df['sm_for_dS_calc'] = df['soil_moisture_daily'].ffill() 
+
+        # Calculate dS
+        df['dS'] = df['sm_for_dS_calc'].bfill(limit=5).diff().where(df['sm_for_dS_calc'].notnull().shift(periods=+1))
+
+        # Drop the dS where  (precipitation is present) && (soil moisture record does not exist)
+        df['dS'] = df['dS'].where((df['dS'] > -1) & (df['dS'] < 1))
+
+        # Calculate dt
+        non_nulls = df['sm_for_dS_calc'].isnull().cumsum()
+        nan_length = non_nulls.where(df['sm_for_dS_calc'].notnull()).bfill()+1 - non_nulls +1
+        df['dt'] = nan_length.where(df['sm_for_dS_calc'].isnull()).fillna(1)
+
+        # Calculate dS/dt
+        df['dSdt'] = df['dS']/df['dt']
+        df['dSdt'] = df['dSdt'].shift(periods=-1)
+
+        df.loc[df['soil_moisture_daily'].shift(-1).isna(), 'dSdt'] = np.nan
+
+        return df
