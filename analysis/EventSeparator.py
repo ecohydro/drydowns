@@ -1,8 +1,9 @@
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from Event import Event
+
 
 class EventSeparator:
     def __init__(self, data, output_dir, plot=False):
@@ -10,6 +11,10 @@ class EventSeparator:
         self.output_dir = output_dir
         self.plot = plot
         self.event_df = None
+        self.events = self.get_event_instances()
+
+    def get_event_instances():
+        """Create a list of event instances"""
 
     # def calculate_thresholds(self):
     #     max_sm = self.ds_synced.soil_moisture_daily.max()
@@ -39,9 +44,9 @@ class EventSeparator:
     # def create_event_dataframe(self):
     #     start_indices = self.ds_synced[self.ds_synced['event_start']].index
     #     end_indices = self.ds_synced[self.ds_synced['event_end']].index
-    #     event_data = [{'event_start': start_index, 
-    #                 # ... other data 
-    #                 } 
+    #     event_data = [{'event_start': start_index,
+    #                 # ... other data
+    #                 }
     #                 for start_index, end_index in zip(start_indices, end_indices)]
     #     self.event_df = pd.DataFrame(event_data)
 
@@ -58,7 +63,7 @@ class EventSeparator:
     #     self.filter_events()
 
     # def separate_events():
-    #     # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded if it would otherwise truncate a drydown. 
+    #     # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded if it would otherwise truncate a drydown.
     #     max_sm = ds_synced.soil_moisture_daily.max()
     #     min_sm = ds_synced.soil_moisture_daily.min()
     #     sm_range = max_sm - min_sm
@@ -90,12 +95,11 @@ class EventSeparator:
     #                     None
     #                 # TODO: putthis threshold back once Ive got precip data
     #                 #or ds_synced['precip'][j] > precip_thresh:
-    #                 if ds_synced['dS'][j] >= dSdt_thresh: 
-    #                     # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded (if there is not precipitation) if it would otherwise truncate a drydown. 
+    #                 if ds_synced['dS'][j] >= dSdt_thresh:
+    #                     # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded (if there is not precipitation) if it would otherwise truncate a drydown.
     #                     event_end[j] = True
     #                     break
 
-        
     #     # create a new column for event_end
     #     ds_synced['event_end'] = event_end
     #     ds_synced['event_end'] = ds_synced['event_end'].shift(-1)
@@ -115,8 +119,8 @@ class EventSeparator:
     # ``  end_indices = ds_synced[ds_synced['event_end']].index
 
     #     # Create a new DataFrame with each row containing a list of soil moisture values between each pair of event_start and event_end
-    #     event_data = [{'event_start': start_index, 
-    #                 'event_end': end_index, 
+    #     event_data = [{'event_start': start_index,
+    #                 'event_end': end_index,
     #                 'soil_moisture_daily': list(ds_synced.loc[start_index:end_index, 'soil_moisture_daily'].values),
     #                 'normalized_S': list(ds_synced.loc[start_index:end_index, 'normalized_S'].values),
     #                 # 'precip': list(ds_synced.loc[start_index:end_index, 'precip'].values),
@@ -127,7 +131,7 @@ class EventSeparator:
     #                     #'bulk_density': ds_synced.loc[start_index, 'bulk_density'],
     #                     #'sand_fraction': ds_synced.loc[start_index, 'sand_fraction'],
     #                     #'clay_fraction': ds_synced.loc[start_index, 'clay_fraction']
-    #                 } 
+    #                 }
     #                 for start_index, end_index in zip(start_indices, end_indices)]
     #     event_df = pd.DataFrame(event_data)``
 
@@ -136,18 +140,14 @@ class EventSeparator:
     #     event_df_long = event_df_long.reset_index(drop=True)
     #     event_df_long
 
-
-
-
-
     # def separate_events(self, data, EASEindex):
     #     """ Separate soil moisture timeseries into events """
-        
+
     #     events = data.separate_events()
 
     #     # Check if there is SM data
     #     if events.isna().all():
     #         warnings.warn(f"No event drydown was detected at {EASE_index}")
-    #         return None 
+    #         return None
 
     #     print(f"Event delineation success at {EASE_index}")

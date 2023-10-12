@@ -1,16 +1,16 @@
-
 import pandas as pd
 import warnings
 import xarray as xr
 import os
 import numpy as np
 
+
 class SMAPgrid:
     """A template of the 36km resolution EASEgrid that can be use to map SMAPL3 data for the desired spatial extent"""
 
     def __init__(self, cfg=None):
         self.cfg = cfg
-        self.verbose = cfg["MODEL"]["verbose"].lower() in ['true', 'yes', '1']
+        self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
 
         self.data_dir = cfg["PATHS"]["data_dir"]
         self.datarods_dir = cfg["PATHS"]["datarods_dir"]
@@ -20,10 +20,10 @@ class SMAPgrid:
         self.coord_info_subset = self.get_subset()
 
         self.template_xarray = self.get_template_xarray()
-    
+
     def get_attributes(self):
         """Get attributes of the 36km resolution EASEgrid used for SMAPL3 data"""
-        self.epsg = '4326' 
+        self.epsg = "4326"
         self.min_lon = self.cfg.getfloat("EXTENT", "min_lon")
         self.min_lat = self.cfg.getfloat("EXTENT", "min_lat")
         self.max_lon = self.cfg.getfloat("EXTENT", "max_lon")
@@ -39,16 +39,18 @@ class SMAPgrid:
         """Get the subset of the extent specified in the config file"""
         # Get the subset of the extent
         _subset = self.crop_by_extent()
-        # Mask with openwater 
+        # Mask with openwater
         subset = self.mask_by_openwater(_subset)
         return subset
 
     def crop_by_extent(self):
         """Crop the coordinate into subset of the extent specified in the config file"""
-        subset = self.coord_info[(self.coord_info['latitude'] >= self.min_lat) &
-                        (self.coord_info['latitude'] <= self.max_lat) &
-                        (self.coord_info['longitude'] >= self.min_lon) &
-                        (self.coord_info['longitude'] <= self.max_lon)].copy()
+        subset = self.coord_info[
+            (self.coord_info["latitude"] >= self.min_lat)
+            & (self.coord_info["latitude"] <= self.max_lat)
+            & (self.coord_info["longitude"] >= self.min_lon)
+            & (self.coord_info["longitude"] <= self.max_lon)
+        ].copy()
         if self.verbose:
             print(f"Number of subset pixels: {len(subset)}")
 
@@ -57,9 +59,21 @@ class SMAPgrid:
 
     def mask_by_openwater(self, _subset):
         """Mask the coordinate if they are on the openwater"""
-        file_path = os.path.join(self.data_dir, self.datarods_dir, "coord_open_water.csv")
+        file_path = os.path.join(
+            self.data_dir, self.datarods_dir, "coord_open_water.csv"
+        )
         coord_open_water = pd.read_csv(file_path)
-        subset = pd.merge(_subset, coord_open_water, on=['EASE_row_index', 'EASE_column_index'], how='left', indicator=True).query('_merge == "left_only"').drop(columns='_merge')
+        subset = (
+            pd.merge(
+                _subset,
+                coord_open_water,
+                on=["EASE_row_index", "EASE_column_index"],
+                how="left",
+                indicator=True,
+            )
+            .query('_merge == "left_only"')
+            .drop(columns="_merge")
+        )
         if self.verbose:
             print(f"Number of subset pixels without openwater: {len(subset)}")
         return subset
@@ -71,7 +85,7 @@ class SMAPgrid:
     def get_EASE_coordinate_subset(self):
         """Get the list of EASE coordinates of the extent"""
         return self.coord_info_subset[["latitude", "longitude"]].to_list()
-    
+
     def get_template_xarray(self):
         """Get the template xaray with nan data with EASE coordinates of the extent"""
         # Create a 2D numpy array filled with NaNs
@@ -81,10 +95,6 @@ class SMAPgrid:
         _data[:] = np.nan
 
         # Create an xarray DataArray with the empty data and the coordinates
-        da = xr.DataArray(
-            _data,
-            coords=[('y', y_coords), ('x', x_coords)],
-            name='data'
-        )
+        da = xr.DataArray(_data, coords=[("y", y_coords), ("x", x_coords)], name="data")
 
         return da
