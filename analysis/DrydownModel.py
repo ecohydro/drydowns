@@ -48,7 +48,7 @@ class DrydownModel:
         self.plot_results = cfg["MODEL"]["plot_results"].lower() in ["true", "yes", "1"]
 
     def fit_drydown_models(self, output_dir):
-        """Fit the drydown models"""
+        """Loop through the list of events, fit the drydown models, and update the Event intances' attributes"""
         self.output_dir = output_dir
 
         updated_events = []
@@ -66,6 +66,14 @@ class DrydownModel:
         self.events.events = updated_events
 
     def fit_one_event(self, event):
+        """Fit multiple drydown models for one event
+
+        Args:
+            event (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         # _____________________________________________
         # Fit exponential model
         popt, r_squared, y_opt = self.fit_exponential(event)
@@ -84,6 +92,18 @@ class DrydownModel:
         return event
 
     def fit_model(self, event, model, bounds, p0, norm=False):
+        """Base function for fitting models
+
+        Args:
+            event (_type_): _description_
+            model (_type_): _description_
+            bounds (_type_): _description_
+            p0 (_type_): _description_
+            norm (bool, optional): _description_. Defaults to False.
+
+        Returns:
+            _type_: _description_
+        """
         try:
             if norm:
                 y_fit = event.norm_y
