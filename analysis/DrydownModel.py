@@ -229,7 +229,7 @@ class DrydownModel:
 
         # Merge results
         df = pd.merge(
-            self.events.event_df,
+            self.events.events_df,
             df_results,
             on=["event_start", "event_end"],
             how="outer",
@@ -280,12 +280,12 @@ class DrydownModel:
         # ___________________________________________________________________________________
         # Save results
         filename = f"{self.data.EASE_row_index:03d}_{self.data.EASE_column_index:03d}_event_{self.index}.png"
-        output_subdir = os.path.join(self.output_dir, "plots")
-        if ~os.path.exists(output_subdir):
-            os.makedirs(output_subdir)
+        output_dir2 = os.path.join(self.output_dir, "plots")
+        if ~os.path.exists(output_dir2):
+            os.makedirs(output_dir2)
 
         plt.savefig(
-            os.path.join(output_subdir, filename),
+            os.path.join(output_dir2, filename),
             dpi=600,
             bbox_inches="tight",
         )

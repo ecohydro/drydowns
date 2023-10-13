@@ -54,12 +54,20 @@ class Agent:
 
         # _______________________________________________________________________________________________
         # Run the stormevent separation
-        separator = EventSeparator(data)
-        events = separator.separate_events(data)
+        separator = EventSeparator(self.cfg, data)
+        events = separator.separate_events(output_dir=self.output_dir)
 
         # If there is no drydown event detected for the pixel, skip the analysis
-        if events is None:
+        # Check if there is SM data
+        if events.isempty():
+            warnings.warn(
+                f"No event drydown was detected at {self.data.EASE_row_index, self.data.EASE_column_index}"
+            )
             return None
+
+        print(
+            f"Event separation success at {self.data.EASE_row_index, self.data.EASE_column_index}"
+        )
 
         # _______________________________________________________________________________________________
         # Execute the main analysis --- fit drydown models
