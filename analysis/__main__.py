@@ -1,44 +1,58 @@
 import os
 import sys
 import multiprocessing as mp
-import configparser
+from configparser import ConfigParser
 import time
-from tqdm import tqdm
 
-import Model
+import logging
 
-import configParser
+log = logging.getLogger(__name__)
 
-def map_with_progress(func, iterable, num_processes):
-    with mp.Pool(num_processes) as pool:
-        results = list(tqdm(pool.imap(func, iterable), total=len(iterable)))
-    pool.close()
-    pool.join()
-    return results
+from Agent import Agent
 
-def main()
 
+def main():
+    """Main execution script ot run the drydown analysis"""
     start = time.perf_counter()
-    
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-    
-    model = Model(config=config)
-    model.initialize()
-    
-    print("--- Analysis started ---")
-    results = pool.map(model.run, smapgrid.EASEindex)
+
+    print("--- Initializing the model ---")
+
+    # _______________________________________________________________________________________________
+    # Read config
+    cfg = ConfigParser()
+    cfg.read("config.ini")
+
+    # Initiate agent
+    agent = Agent(cfg=cfg)
+    agent.initialize()
+
+    # _______________________________________________________________________________________________
+    # Define serial/parallel mode
+    run_mode = cfg["MODEL"]["run_mode"]
+    print(f"--- Analysis started with {run_mode} mode ---")
+
+    # Run the model
+    if run_mode == "serial":
+        results = agent.run(agent.target_EASE_idx[500])
+    if run_mode == "parallel":
+        nprocess = int(cfg["MULTIPROCESSING"]["nprocess"])
+        with mp.Pool(nprocess) as pool:
+            results = list(pool.imap(agent.run, agent.target_EASE_idx))
+        pool.close()
+        pool.join()
+
+    # _______________________________________________________________________________________________
+    # Finalize the model
     print(f"--- Finished analysis ---")
-       
-    model.finalize(results)
-    
+
+    try:
+        agent.finalize(results)
+    except NameError:
+        print("No results are returned")
+
     end = time.perf_counter()
-    print(f"Run took : {(end - start):.6f} seconds")
-    
-    
+    log.debug(f"Run took : {(end - start):.6f} seconds")
+
+
 if __name__ == "__main__":
     main()
-
-        
-        
-        
