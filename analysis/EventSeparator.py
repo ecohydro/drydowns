@@ -13,13 +13,13 @@ class EventSeparator:
         self.init_params()
 
     def init_params(self):
-        self.precip_thresh = float(self.cfg["EVENT_SEPARATION"]["precip_thresh"])
-        self.dSdt_thresh = (self.data.max_sm - self.data.min_sm) * float(
-            self.cfg["EVENT_SEPARATION"]["increment_thresh_fraction"]
+        self.precip_thresh = self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh")
+        self.dSdt_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
+            "EVENT_SEPARATION", "increment_thresh_fraction"
         )
-        self.target_rmsd = float(self.cfg["EVENT_SEPARATION"]["target_rmsd"])
-        self.minimium_consective_days = int(
-            self.cfg["EVENT_SEPARATION"]["minimium_consective_days"]
+        self.target_rmsd = self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd")
+        self.minimium_consective_days = self.cfg.getint(
+            "EVENT_SEPARATION", "minimium_consective_days"
         )
         self.plot = self.cfg["MODEL"]["plot_results"].lower() in ["true", "yes", "1"]
 

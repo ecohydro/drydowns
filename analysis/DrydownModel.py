@@ -105,13 +105,15 @@ class DrydownModel:
                 y_fit = event.y
 
             # Fit the model
-            popt, _ = curve_fit(model, event.x, y_fit, p0, bounds)
+            popt, _ = curve_fit(
+                f=model, xdata=event.x, ydata=y_fit, p0=p0, bounds=bounds
+            )
 
             # Get the optimal fit
             y_opt = model(event.x, *popt)
 
             if norm:
-                y_opt *= self.data.soil_moisture_range
+                y_opt *= self.data.range_sm
 
             # Calculate the residuals
             residuals = event.y - y_opt
@@ -144,7 +146,7 @@ class DrydownModel:
         ### Theta_w ###
         min_theta_w = self.data.min_sm
         max_theta_w = event.subset_min_sm
-        ini_delta_theta = (min_theta_w + max_theta_w) / 2
+        ini_theta_w = (min_theta_w + max_theta_w) / 2
 
         ### Tau ###
         min_tau = 0
@@ -155,7 +157,7 @@ class DrydownModel:
             (min_delta_theta, min_theta_w, min_tau),
             (max_delta_theta, max_theta_w, max_tau),
         ]
-        p0 = [ini_delta_theta, ini_delta_theta, ini_tau]
+        p0 = [ini_delta_theta, ini_theta_w, ini_tau]
 
         # ______________________________________________________________________________________
         # Execute the event fit
@@ -192,13 +194,19 @@ class DrydownModel:
         max_delta_theta = 1.0
         ini_delta_theta = 0.1
 
-        bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
-        p0 = [ini_k, ini_q, ini_delta_theta]
+        # bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
+        # p0 = [ini_k, ini_q, ini_delta_theta]
+        bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
+        p0 = [ini_q, ini_delta_theta]
 
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
         return self.fit_model(
-            event=event, model=q_model, bounds=bounds, p0=p0, norm=True
+            event=event,
+            model=lambda t, q, delta_theta: q_model(t, event.pet, q, delta_theta),
+            bounds=bounds,
+            p0=p0,
+            norm=True,
         )
 
     def return_result_df(self):
@@ -244,16 +252,20 @@ class DrydownModel:
             return df
 
     def plot_drydown_models(self, event):
-        ax = plt.plot()
+        # Plot exponential model
+        date_range = pd.date_range(start=event.start_date, end=event.end_date, freq="D")
+        x = date_range[event.x]
+        # Create a figure and axes
+        fig, ax = plt.subplots()
 
         # ______________________________________
         # Plot observed data
-        ax.scatter(event.x, event.y)
+        ax.scatter(x, event.y)
 
         # ______________________________________
-        # Plot exponential model
+
         ax.plot(
-            event.x[~np.isnan(event.y)],
+            x,
             event.exponential["y_opt"],
             alpha=0.7,
             label=f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}",
@@ -262,32 +274,26 @@ class DrydownModel:
         # ______________________________________
         # Plot q model
         ax.plot(
-            event.x[~np.isnan(event.y)],
+            x,
             event.q["y_opt"],
             alpha=0.7,
-            label=f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.5f})",
+            label=f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.5f}); PET={event.pet:.1f}",
         )
 
         # ______________________________________
-        # Plot PET
-        ax2 = ax.twinx()
-        ax2.scatter(event.x, event.pet, color="orange", alpha=0.5)
-        ax.set_title(f"Event {self.index}")
+        ax.set_title(f"Event {event.index}")
         ax.set_xlabel("Date")
         ax.set_ylabel("Soil Moisture")
         ax.set_xlim([event.start_date, event.end_date])
         ax.legend()
-        ax2.set_ylim([0, 8])
-        ax2.set_ylabel("PET")
-
         # Rotate the x tick labels
         ax.tick_params(axis="x", rotation=45)
 
         # ___________________________________________________________________________________
         # Save results
-        filename = f"{self.data.EASE_row_index:03d}_{self.data.EASE_column_index:03d}_event_{self.index}.png"
+        filename = f"{self.data.EASE_row_index:03d}_{self.data.EASE_column_index:03d}_event_{event.index}.png"
         output_dir2 = os.path.join(self.output_dir, "plots")
-        if ~os.path.exists(output_dir2):
+        if not os.path.exists(output_dir2):
             os.makedirs(output_dir2)
 
         plt.savefig(

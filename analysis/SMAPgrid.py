@@ -52,7 +52,7 @@ class SMAPgrid:
             & (self.coord_info["longitude"] <= self.max_lon)
         ].copy()
         if self.verbose:
-            print(f"Number of subset pixels: {len(subset)}")
+            print(f"Number of pixels in the spatial extent: {len(subset)}")
 
         ### Mask with openwater pixels
         return subset
@@ -75,7 +75,7 @@ class SMAPgrid:
             .drop(columns="_merge")
         )
         if self.verbose:
-            print(f"Number of subset pixels without openwater: {len(subset)}")
+            print(f"Number of pixels without openwater: {len(subset)}")
         return subset
 
     def get_EASE_index_subset(self):

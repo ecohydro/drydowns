@@ -118,10 +118,9 @@ class Data:
         # Get max and min values
         self.min_sm = df.soil_moisture_daily.min(skipna=True)
         self.max_sm = df.soil_moisture_daily.max(skipna=True)
+        self.range_sm = self.max_sm - self.min_sm
         if not (np.isnan(self.min_sm) or np.isnan(self.max_sm)):
-            df["normalized_sm"] = (df.soil_moisture_daily - self.min_sm) / (
-                self.max_sm - self.min_sm
-            )
+            df["normalized_sm"] = (df.soil_moisture_daily - self.min_sm) / self.range_sm
 
         return df
 

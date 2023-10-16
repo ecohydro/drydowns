@@ -38,9 +38,8 @@ class Event:
 
         if model_type == "q":
             self.q = {
-                "k": popt[0],
-                "q": popt[1],
-                "delta_theta": popt[2],
+                "q": popt[0],
+                "delta_theta": popt[1],
                 "r_squared": r_squared,
                 "y_opt": y_opt.tolist(),
             }
