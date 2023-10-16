@@ -157,10 +157,6 @@ class Data:
     def calc_dSdt(self, df):
         """Calculate d(Soil Moisture)/dt"""
 
-        # TODO: put this precip mask back once I've got precip data
-        # precip_mask = ds_synced['precip'].where(ds_synced['precip'] < precip_thresh)
-        # no_sm_record_but_precip_present = ds_synced['precip'].where((precip_mask.isnull()) & (ds_synced['soil_moisture_daily'].isnull()))
-
         # Allow detecting soil moisture increment even if there is no SM data in between before/after rainfall event
         df["sm_for_dS_calc"] = df["soil_moisture_daily"].ffill()
 

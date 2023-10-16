@@ -47,17 +47,19 @@ class EventSeparator:
         )
 
     def identify_event_ends(self):
+        """Detect the end of a storm event"""
+
+        # Initialize
         event_end = np.zeros(self.data.shape[0], dtype=bool)
 
         for i in range(1, self.data.shape[0]):
             if self.data["event_start"][i]:
                 for j in range(i + 1, self.data.shape[0]):
-                    if np.isnan(self.data["dS"][j]):
-                        None
-                    # TODO: putthis threshold back once Ive got precip data
-                    # or data['precip'][j] > precip_thresh:
-                    if self.data["dS"][j] >= self.dSdt_thresh:
-                        # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded (if there is not precipitation) if it would otherwise truncate a drydown.
+                    # If there is positive increments more than a threshold value, truncate a drydown
+                    # Or, if there is a rainfall event during the drydown, truncate a drydown.
+                    if (self.data["dS"][j] >= self.dSdt_thresh) or (
+                        self.data["precip"][j] > self.precip_thresh
+                    ):
                         event_end[j] = True
                         break
 
