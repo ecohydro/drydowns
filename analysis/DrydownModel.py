@@ -51,19 +51,13 @@ class DrydownModel:
         """Loop through the list of events, fit the drydown models, and update the Event intances' attributes"""
         self.output_dir = output_dir
 
-        updated_events = []
-
         for i, event in enumerate(self.events):
             try:
                 updated_event = self.fit_one_event(event)
-                updated_events.append(updated_event)
-
+                # Replace the old Event instance with updated one
+                self.events[i] = updated_event
             except Exception as e:
                 print(e)
-                return None
-
-        # Replace the old Event instance with updated one
-        self.events = updated_events
 
     def fit_one_event(self, event):
         """Fit multiple drydown models for one event
@@ -128,7 +122,6 @@ class DrydownModel:
 
         except Exception as e:
             print("An error occurred:", e)
-            return np.nan, np.nan, np.nan
 
     def fit_exponential_model(self, event):
         """Fits an exponential model to the given event data and returns the fitted parameters.
@@ -213,36 +206,42 @@ class DrydownModel:
 
         results = []
         for event in self.events:
-            _results = {
-                "EASE_row_index": self.data.EASE_row_index,
-                "EASE_column_index": self.data.EASE_column_index,
-                "event_start": event.start_date,
-                "event_end": event.end_date,
-                "exp_delta_theta": event.exponential["delta_theta"],
-                "exp_theta_w": event.exponential["theta_w"],
-                "exp_tau": event.exponential["tau"],
-                "exp_r_squared": event.exponential["r_squared"],
-                "exp_y_opt": event.exponential["y_opt"],
-                "q_k": event.q["k"],
-                "q_q": event.q["q"],
-                "q_delta_theta": event.q["delta_theta"],
-                "q_r_squared": event.q["r_squared"],
-                "q_y_opt": event.q["y_opt"],
-            }
-            results.append(_results)
+            try:
+                _results = {
+                    "EASE_row_index": self.data.EASE_row_index,
+                    "EASE_column_index": self.data.EASE_column_index,
+                    "event_start": event.start_date,
+                    "event_end": event.end_date,
+                    "exp_delta_theta": event.exponential["delta_theta"],
+                    "exp_theta_w": event.exponential["theta_w"],
+                    "exp_tau": event.exponential["tau"],
+                    "exp_r_squared": event.exponential["r_squared"],
+                    "exp_y_opt": event.exponential["y_opt"],
+                    "q_k": event.q["k"],
+                    "q_q": event.q["q"],
+                    "q_delta_theta": event.q["delta_theta"],
+                    "q_r_squared": event.q["r_squared"],
+                    "q_y_opt": event.q["y_opt"],
+                }
+                results.append(_results)
+            except:
+                continue
 
         # Convert results into dataframe
         df_results = pd.DataFrame(results)
 
-        # Merge results
-        df = pd.merge(
-            self.events.events_df,
-            df_results,
-            on=["event_start", "event_end"],
-            how="outer",
-        )
-
-        return df
+        # If the result is empty, return nothing
+        if not results:
+            return pd.DataFrame()
+        else:
+            # Merge results
+            df = pd.merge(
+                self.events.events_df,
+                df_results,
+                on=["event_start", "event_end"],
+                how="outer",
+            )
+            return df
 
     def plot_drydown_models(self, event):
         ax = plt.plot()
