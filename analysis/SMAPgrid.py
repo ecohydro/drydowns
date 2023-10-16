@@ -98,3 +98,13 @@ class SMAPgrid:
         da = xr.DataArray(_data, coords=[("y", y_coords), ("x", x_coords)], name="data")
 
         return da
+
+    def remap_results(self, results):
+        df_results = pd.DataFrame(results)
+        da = self.template_xarray.copy()
+        for index, row in df_results.iterrows():
+            i = row["EASE_row_index"]
+            j = row["EASE_column_index"]
+            avg_q = row["q"].mean()
+            da.isel(y=i, x=j).values = avg_q
+        return da

@@ -40,9 +40,9 @@ class EventSeparator:
 
     def identify_event_starts(self):
         # The event starts where negative increament of soil mositure follows the positive increment of soil moisture
-        negative_increments = self.data.dSdt < 0
-        positive_increments = self.data.dSdt > self.target_rmsd
-        self.data["event_start"] = negative_increments.values & np.concatenate(
+        negative_increments = self.data.df.dSdt < 0
+        positive_increments = self.data.df.dSdt > self.target_rmsd
+        self.data.df["event_start"] = negative_increments.values & np.concatenate(
             ([False], positive_increments[:-1])
         )
 
@@ -50,29 +50,30 @@ class EventSeparator:
         """Detect the end of a storm event"""
 
         # Initialize
-        event_end = np.zeros(self.data.shape[0], dtype=bool)
+        num_events = self.data.df.shape[0]
+        event_end = np.zeros(num_events, dtype=bool)
 
-        for i in range(1, self.data.shape[0]):
-            if self.data["event_start"][i]:
-                for j in range(i + 1, self.data.shape[0]):
+        for i in range(1, num_events):
+            if self.data.df["event_start"][i]:
+                for j in range(i + 1, num_events):
                     # If there is positive increments more than a threshold value, truncate a drydown
                     # Or, if there is a rainfall event during the drydown, truncate a drydown.
-                    if (self.data["dS"][j] >= self.dSdt_thresh) or (
-                        self.data["precip"][j] > self.precip_thresh
+                    if (self.data.df.dS[j] >= self.dSdt_thresh) or (
+                        self.data.df.precip[j] > self.precip_thresh
                     ):
                         event_end[j] = True
                         break
 
         # create a new column for event_end
-        self.data["event_end"] = event_end
-        self.data["event_end"] = self.data["event_end"].shift(-1)
-        self.data = self.data[:-1]
-        self.data["event_start"][self.data["event_end"]].index
-        self.data["dSdt(t-1)"] = self.data.dSdt.shift(+1)
+        self.data.df["event_end"] = event_end
+        self.data.df["event_end"] = self.data.df["event_end"].shift(-1)
+        self.data.df = self.data.df[:-1]
+        self.data.df["event_start"][self.data.df["event_end"]].index
+        self.data.df["dSdt(t-1)"] = self.data.df.dSdt.shift(+1)
 
     def create_event_dataframe(self):
-        start_indices = self.data[self.data["event_start"]].index
-        end_indices = self.data[self.data["event_end"]].index
+        start_indices = self.data.df[self.data.df["event_start"]].index
+        end_indices = self.data.df[self.data.df["event_end"]].index
 
         # Create a new DataFrame with each row containing a list of soil moisture values between each pair of event_start and event_end
         event_data = [
@@ -80,14 +81,18 @@ class EventSeparator:
                 "event_start": start_index,
                 "event_end": end_index,
                 "soil_moisture_daily": list(
-                    self.data.loc[start_index:end_index, "soil_moisture_daily"].values
+                    self.data.df.loc[
+                        start_index:end_index, "soil_moisture_daily"
+                    ].values
                 ),
-                "normalized_S": list(
-                    self.data.loc[start_index:end_index, "normalized_S"].values
+                "normalized_sm": list(
+                    self.data.df.loc[start_index:end_index, "normalized_sm"].values
                 ),
-                "precip": list(self.data.loc[start_index:end_index, "precip"].values),
-                "PET": list(self.data.loc[start_index:end_index, "pet"].values),
-                "delta_theta": self.data.loc[start_index, "dSdt(t-1)"],
+                "precip": list(
+                    self.data.df.loc[start_index:end_index, "precip"].values
+                ),
+                "PET": list(self.data.df.loc[start_index:end_index, "pet"].values),
+                "delta_theta": self.data.df.loc[start_index, "dSdt(t-1)"],
             }
             for start_index, end_index in zip(start_indices, end_indices)
         ]
@@ -102,32 +107,34 @@ class EventSeparator:
 
     def create_event_instances(self, events_df):
         """Create a list of Event instances for easier handling of data for DrydownModel class"""
-        event_instances = [Event(row._asdict()) for index, row in events_df.iterrows()]
+        event_instances = [
+            Event(index, row.to_dict()) for index, row in events_df.iterrows()
+        ]
         return event_instances
 
     def plot_events(self):
         fig, (ax11, ax12) = plt.subplots(2, 1, figsize=(20, 5))
 
-        self.data.soil_moisture_daily.plot(ax=ax11, alpha=0.5)
+        self.data.df.soil_moisture_daily.plot(ax=ax11, alpha=0.5)
         ax11.scatter(
-            self.data.soil_moisture_daily[self.data["event_start"]].index,
-            self.data.soil_moisture_daily[self.data["event_start"]].values,
+            self.data.df.soil_moisture_daily[self.data.df["event_start"]].index,
+            self.data.df.soil_moisture_daily[self.data.df["event_start"]].values,
             color="orange",
             alpha=0.5,
         )
         ax11.scatter(
-            self.data.soil_moisture_daily[self.data["event_end"]].index,
-            self.data.soil_moisture_daily[self.data["event_end"]].values,
+            self.data.df.soil_moisture_daily[self.data.df["event_end"]].index,
+            self.data.df.soil_moisture_daily[self.data.df["event_end"]].values,
             color="orange",
             marker="x",
             alpha=0.5,
         )
-        # data.precip.plot(ax=ax12, alpha=0.5)
+        self.data.df.precip.plot(ax=ax12, alpha=0.5)
 
         # Save results
         filename = f"{self.data.EASE_row_index:03d}_{self.data.EASE_column_index:03d}_eventseparation.png"
         output_dir2 = os.path.join(self.output_dir, "plots")
-        if ~os.path.exists(output_dir2):
+        if not os.path.exists(output_dir2):
             os.makedirs(output_dir2)
 
         fig.savefig(os.path.join(output_dir2, filename))

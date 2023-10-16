@@ -47,13 +47,13 @@ class DrydownModel:
         self.events = Events
         self.plot_results = cfg["MODEL"]["plot_results"].lower() in ["true", "yes", "1"]
 
-    def fit_drydown_models(self, output_dir):
+    def fit_models(self, output_dir):
         """Loop through the list of events, fit the drydown models, and update the Event intances' attributes"""
         self.output_dir = output_dir
 
         updated_events = []
 
-        for i, event in enumerate(self.events.events()):
+        for i, event in enumerate(self.events):
             try:
                 updated_event = self.fit_one_event(event)
                 updated_events.append(updated_event)
@@ -63,7 +63,7 @@ class DrydownModel:
                 return None
 
         # Replace the old Event instance with updated one
-        self.events.events = updated_events
+        self.events = updated_events
 
     def fit_one_event(self, event):
         """Fit multiple drydown models for one event
@@ -76,12 +76,12 @@ class DrydownModel:
         """
         # _____________________________________________
         # Fit exponential model
-        popt, r_squared, y_opt = self.fit_exponential(event)
+        popt, r_squared, y_opt = self.fit_exponential_model(event)
         event.add_attributes("exponential", popt, r_squared, y_opt)
 
         # _____________________________________________
         # Fit q model
-        popt, r_squared, y_opt = self.fit_q(event)
+        popt, r_squared, y_opt = self.fit_q_model(event)
         event.add_attributes("q", popt, r_squared, y_opt)
 
         # _____________________________________________
@@ -128,6 +128,7 @@ class DrydownModel:
 
         except Exception as e:
             print("An error occurred:", e)
+            return np.nan, np.nan, np.nan
 
     def fit_exponential_model(self, event):
         """Fits an exponential model to the given event data and returns the fitted parameters.
@@ -165,7 +166,9 @@ class DrydownModel:
 
         # ______________________________________________________________________________________
         # Execute the event fit
-        return self.fit_model(self, event, exponential_model, bounds, p0, norm=False)
+        return self.fit_model(
+            event=event, model=exponential_model, bounds=bounds, p0=p0, norm=False
+        )
 
     def fit_q_model(self, event):
         """Fits a q model to the given event data and returns the fitted parameters.
@@ -201,14 +204,18 @@ class DrydownModel:
 
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
-        return self.fit_model(self, event, q_model, bounds, p0, norm=True)
+        return self.fit_model(
+            event=event, model=q_model, bounds=bounds, p0=p0, norm=True
+        )
 
     def return_result_df(self):
         """Return results in the pandas dataframe format for easier concatination"""
 
         results = []
-        for event in self.events.events():
+        for event in self.events:
             _results = {
+                "EASE_row_index": self.data.EASE_row_index,
+                "EASE_column_index": self.data.EASE_column_index,
                 "event_start": event.start_date,
                 "event_end": event.end_date,
                 "exp_delta_theta": event.exponential["delta_theta"],

@@ -11,7 +11,7 @@ import getpass
 def create_output_dir():
     username = getpass.getuser()
     formatted_now = datetime.now().strftime("%Y-%m-%d")
-    output_dir = rf"/home/waves/projects/smap-drydown/output/fit_models_nb_{username}_{formatted_now}"
+    output_dir = rf"/home/waves/projects/smap-drydown/output/fit_models_py_{username}_{formatted_now}"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         print(f"Directory '{output_dir}' created.")
@@ -46,7 +46,7 @@ class Agent:
         data = Data(self.cfg, sample_EASE_index)
 
         # If there is no soil moisture data available for the pixel, skip the analysis
-        if data.sm["soil_moisture_daily"].isna().all():
+        if data.df["soil_moisture_daily"].isna().all():
             warnings.warn(
                 f"No soil moisture data at the EASE pixel {sample_EASE_index}"
             )
@@ -59,14 +59,14 @@ class Agent:
 
         # If there is no drydown event detected for the pixel, skip the analysis
         # Check if there is SM data
-        if events.isempty():
+        if not events:
             warnings.warn(
-                f"No event drydown was detected at {self.data.EASE_row_index, self.data.EASE_column_index}"
+                f"No event drydown was detected at {data.EASE_row_index, data.EASE_column_index}"
             )
             return None
 
         print(
-            f"Event separation success at {self.data.EASE_row_index, self.data.EASE_column_index}"
+            f"Event separation success at {data.EASE_row_index, data.EASE_column_index}: {len(events)} events detected"
         )
 
         # _______________________________________________________________________________________________

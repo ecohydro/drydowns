@@ -5,13 +5,13 @@ import os
 
 
 class Event:
-    def __init__(self, event_dict):
+    def __init__(self, index, event_dict):
         # Read the data
-        self.index = event_dict.index
+        self.index = index
         self.start_date = event_dict["event_start"]
         self.end_date = event_dict["event_end"]
         soil_moisture_subset = np.asarray(event_dict["soil_moisture_daily"])
-        norm_soil_moisture_subset = np.asarray(event_dict["normalized_S"])
+        norm_soil_moisture_subset = np.asarray(event_dict["normalized_sm"])
         self.pet = np.average(event_dict["PET"])
 
         # Prepare the attributes

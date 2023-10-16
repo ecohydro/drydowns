@@ -29,13 +29,11 @@ def main():
     # _______________________________________________________________________________________________
     # Define serial/parallel mode
     run_mode = cfg["MODEL"]["run_mode"]
-    print(
-        f"--- Analysis started with {cfg['MODEL']['model_type']} model, {run_mode} mode ---"
-    )
+    print(f"--- Analysis started with {run_mode} mode ---")
 
     # Run the model
     if run_mode == "serial":
-        results = agent.run(agent.target_EASE_idx[0])
+        results = agent.run(agent.target_EASE_idx[500])
     if run_mode == "parallel":
         nprocess = int(cfg["MULTIPROCESSING"]["nprocess"])
         with mp.Pool(nprocess) as pool:
