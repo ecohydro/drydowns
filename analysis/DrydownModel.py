@@ -20,19 +20,7 @@ def neg_log_likelihood(params, t, y):
     return -ll
 
 
-def q_model(t, k, q, delta_theta):
-    """Reduced form of q model for scipy.curvefit input. Can only be applied for normalized timeseries between 0 to 1"""
-    theta_star = 1.0
-    theta_w = 0.0
-
-    s0 = (delta_theta - theta_w) ** (1 - q)
-
-    a = (1 - q) / ((theta_star - theta_w) ** q)
-
-    return (-k * a * t + s0) ** (1 / (1 - q)) + theta_w
-
-
-def original_q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
+def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
     s0 = (delta_theta - theta_w) ** (1 - q)
 
     a = (1 - q) / ((theta_star - theta_w) ** q)
@@ -203,7 +191,9 @@ class DrydownModel:
         # Execute the event fit for the normalized timeseries between 0 and 1
         return self.fit_model(
             event=event,
-            model=lambda t, q, delta_theta: q_model(t, event.pet, q, delta_theta),
+            model=lambda t, q, delta_theta: q_model(
+                t, event.pet, q, delta_theta, 1.0, 0.0
+            ),
             bounds=bounds,
             p0=p0,
             norm=True,
