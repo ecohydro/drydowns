@@ -54,12 +54,12 @@ class EventSeparator:
         event_end = np.zeros(num_events, dtype=bool)
 
         for i in range(1, num_events):
-            if self.data.df["event_start"][i]:
+            if self.data.df.event_start.iloc[i]:
                 for j in range(i + 1, num_events):
                     # If there is positive increments more than a threshold value, truncate a drydown
                     # Or, if there is a rainfall event during the drydown, truncate a drydown.
-                    if (self.data.df.dS[j] >= self.dSdt_thresh) or (
-                        self.data.df.precip[j] > self.precip_thresh
+                    if (self.data.df.dS.iloc[j] >= self.dSdt_thresh) or (
+                        self.data.df.precip.iloc[j] > self.precip_thresh
                     ):
                         event_end[j] = True
                         break
