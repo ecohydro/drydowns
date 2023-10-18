@@ -82,4 +82,5 @@ class Agent:
         Args:
             results (list): concatinated results returned from serial/multi-threadding analysis
         """
-        self.smapgrid.remap_results(results)
+        da = self.smapgrid.remap_results(results)
+        self.smapgrid.plot_remapped_results(da)
