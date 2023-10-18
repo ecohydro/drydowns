@@ -47,6 +47,9 @@ class DrydownModel:
             except Exception as e:
                 print(e)
 
+        if self.plot_results:
+            self.plot_drydown_models_in_timesreies()
+
     def fit_one_event(self, event):
         """Fit multiple drydown models for one event
 
@@ -101,7 +104,7 @@ class DrydownModel:
             y_opt = model(event.x, *popt)
 
             if norm:
-                y_opt *= self.data.range_sm
+                y_opt = y_opt * self.data.range_sm + self.data.min_sm
 
             # Calculate the residuals
             residuals = event.y - y_opt
@@ -241,16 +244,19 @@ class DrydownModel:
             )
             return df
 
-    def plot_drydown_models(self, event):
+    def plot_drydown_models(self, event, ax=None, plot_mode="single"):
         # Plot exponential model
         date_range = pd.date_range(start=event.start_date, end=event.end_date, freq="D")
         x = date_range[event.x]
+
         # Create a figure and axes
-        fig, ax = plt.subplots()
+        if ax is None:
+            fig, ax = plt.subplots()
 
         # ______________________________________
         # Plot observed data
-        ax.scatter(x, event.y)
+        if plot_mode == "single":
+            ax.scatter(x, event.y)
 
         # ______________________________________
 
@@ -258,6 +264,8 @@ class DrydownModel:
             x,
             event.exponential["y_opt"],
             alpha=0.7,
+            linestyle="--",
+            color="orange",
             label=f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}",
         )
 
@@ -267,28 +275,89 @@ class DrydownModel:
             x,
             event.q["y_opt"],
             alpha=0.7,
-            label=f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.5f}); PET={event.pet:.1f}",
+            linestyle="--",
+            color="green",
+            label=f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}; PET={event.pet:.2f}",
         )
 
         # ______________________________________
-        ax.set_title(f"Event {event.index}")
-        ax.set_xlabel("Date")
-        ax.set_ylabel("Soil Moisture")
-        ax.set_xlim([event.start_date, event.end_date])
-        ax.legend()
-        # Rotate the x tick labels
-        ax.tick_params(axis="x", rotation=45)
+        if plot_mode == "single":
+            ax.set_title(f"Event {event.index}")
+            ax.set_xlabel("Date")
+            ax.set_ylabel("Soil Moisture")
+            ax.set_xlim([event.start_date, event.end_date])
+            ax.legend()
+            # Rotate the x tick labels
+            ax.tick_params(axis="x", rotation=45)
+        elif plot_mode == "multiple":
+            exp_param = f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}"
+
+            ax.text(
+                x[0],
+                event.q["y_opt"][0] + 0.02,
+                f"param={exp_param}",
+                fontsize=12,
+                ha="left",
+                va="bottom",
+                color="orange",
+            )
+
+            q_param = f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}"
+            ax.text(
+                x[0],
+                event.q["y_opt"][0],
+                f"{q_param}",
+                fontsize=12,
+                ha="left",
+                va="bottom",
+                color="green",
+            )
 
         # ___________________________________________________________________________________
         # Save results
-        filename = f"{self.data.EASE_row_index:03d}_{self.data.EASE_column_index:03d}_event_{event.index}.png"
+        if plot_mode == "single":
+            filename = f"{self.data.EASE_row_index:03d}_{self.data.EASE_column_index:03d}_event_{event.index}.png"
+            output_dir2 = os.path.join(self.output_dir, "plots")
+            if not os.path.exists(output_dir2):
+                os.makedirs(output_dir2)
+
+            plt.savefig(
+                os.path.join(output_dir2, filename),
+                dpi=600,
+                bbox_inches="tight",
+            )
+            # plt.close()  # Close the current figure to release resources
+
+    def plot_drydown_models_in_timesreies(self):
+        years_of_record = max(self.data.df.index.year) - min(self.data.df.index.year)
+        fig, (ax11, ax12) = plt.subplots(2, 1, figsize=(20 * years_of_record, 5))
+
+        self.data.df.soil_moisture_daily.plot(ax=ax11, alpha=0.5)
+        ax11.scatter(
+            self.data.df.soil_moisture_daily[self.data.df["event_start"]].index,
+            self.data.df.soil_moisture_daily[self.data.df["event_start"]].values,
+            color="orange",
+            alpha=0.5,
+        )
+        ax11.scatter(
+            self.data.df.soil_moisture_daily[self.data.df["event_end"]].index,
+            self.data.df.soil_moisture_daily[self.data.df["event_end"]].values,
+            color="orange",
+            marker="x",
+            alpha=0.5,
+        )
+        ax11.set_ylabel("VSWC[m3/m3]")
+        self.data.df.precip.plot(ax=ax12, alpha=0.5)
+        ax12.set_ylabel("Precipitation[mm/d]")
+
+        for event in self.events:
+            self.plot_drydown_models(event, ax=ax11, plot_mode="multiple")
+
+        # Save results
+        filename = f"{self.data.EASE_row_index:03d}_{self.data.EASE_column_index:03d}_events_in_ts.png"
         output_dir2 = os.path.join(self.output_dir, "plots")
         if not os.path.exists(output_dir2):
             os.makedirs(output_dir2)
 
-        plt.savefig(
-            os.path.join(output_dir2, filename),
-            dpi=600,
-            bbox_inches="tight",
-        )
-        plt.close()  # Close the current figure to release resources
+        fig.tight_layout()
+        fig.savefig(os.path.join(output_dir2, filename))
