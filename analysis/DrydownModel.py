@@ -170,9 +170,8 @@ class DrydownModel:
         # Define the boundary condition for optimizing q_model(t, k, q, delta_theta)
 
         ### k (should be equal to PET to reduce dimensionality ###
-        epsilon = 1.0e-64
-        min_k = event.pet - epsilon
-        max_k = event.pet + epsilon
+        min_k = 0
+        max_k = event.pet
         ini_k = event.pet
 
         ### q ###
@@ -185,18 +184,16 @@ class DrydownModel:
         max_delta_theta = 1.0
         ini_delta_theta = 0.1
 
-        # bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
-        # p0 = [ini_k, ini_q, ini_delta_theta]
-        bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
-        p0 = [ini_q, ini_delta_theta]
+        bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
+        p0 = [ini_k, ini_q, ini_delta_theta]
+        # bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
+        # p0 = [ini_q, ini_delta_theta]
 
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
         return self.fit_model(
             event=event,
-            model=lambda t, q, delta_theta: q_model(
-                t, event.pet, q, delta_theta, 1.0, 0.0
-            ),
+            model=lambda t, k, q, delta_theta: q_model(t, k, q, delta_theta, 1.0, 0.0),
             bounds=bounds,
             p0=p0,
             norm=True,
@@ -213,6 +210,8 @@ class DrydownModel:
                     "EASE_column_index": self.data.EASE_column_index,
                     "event_start": event.start_date,
                     "event_end": event.end_date,
+                    "sm": event.soil_moisture_subset,
+                    "pet": event.pet,
                     "exp_delta_theta": event.exponential["delta_theta"],
                     "exp_theta_w": event.exponential["theta_w"],
                     "exp_tau": event.exponential["tau"],
@@ -225,7 +224,8 @@ class DrydownModel:
                     "q_y_opt": event.q["y_opt"],
                 }
                 results.append(_results)
-            except:
+            except Exception as e:
+                print(e)
                 continue
 
         # Convert results into dataframe
@@ -235,14 +235,7 @@ class DrydownModel:
         if not results:
             return pd.DataFrame()
         else:
-            # Merge results
-            df = pd.merge(
-                self.events.events_df,
-                df_results,
-                on=["event_start", "event_end"],
-                how="outer",
-            )
-            return df
+            return df_results
 
     def plot_drydown_models(self, event, ax=None, plot_mode="single"):
         # Plot exponential model

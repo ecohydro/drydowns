@@ -34,12 +34,14 @@ def main():
     # Run the model
     if run_mode == "serial":
         results = agent.run(agent.target_EASE_idx[500])
-    if run_mode == "parallel":
+    elif run_mode == "parallel":
         nprocess = int(cfg["MULTIPROCESSING"]["nprocess"])
         with mp.Pool(nprocess) as pool:
             results = list(pool.imap(agent.run, agent.target_EASE_idx))
         pool.close()
         pool.join()
+    else:
+        print("run_mode in config is invalid: should be either 'serial' or 'parallel'")
 
     # _______________________________________________________________________________________________
     # Finalize the model

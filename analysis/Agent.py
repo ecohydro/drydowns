@@ -6,6 +6,7 @@ import warnings
 from datetime import datetime
 import os
 import getpass
+import pandas as pd
 
 
 def create_output_dir():
@@ -82,5 +83,14 @@ class Agent:
         Args:
             results (list): concatinated results returned from serial/multi-threadding analysis
         """
-        da = self.smapgrid.remap_results(results)
+        df_results = self.save_to_csv(results)
+        da = self.smapgrid.remap_results(df_results)
         self.smapgrid.plot_remapped_results(da)
+
+    def save_to_csv(self, results):
+        if len(results) > 1:
+            df = pd.concat(results)
+        else:
+            df = results
+        df.to_csv(os.path.join(self.output_dir, "all_results.csv"))
+        return df
