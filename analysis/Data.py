@@ -182,5 +182,6 @@ class Data:
         df["dSdt"] = df["dSdt"].shift(periods=-1)
 
         df.loc[df["soil_moisture_daily"].shift(-1).isna(), "dSdt"] = np.nan
+        df["dSdt"] = df["dSdt"].ffill(limit=5)
 
         return df

@@ -89,7 +89,10 @@ class Agent:
 
     def save_to_csv(self, results):
         if len(results) > 1:
-            df = pd.concat(results)
+            try:
+                df = pd.concat(results)
+            except:
+                df = results
         else:
             df = results
         df.to_csv(os.path.join(self.output_dir, "all_results.csv"))
