@@ -47,10 +47,13 @@ def main():
     # Finalize the model
     print(f"--- Finished analysis ---")
 
-    try:
-        agent.finalize(results)
-    except NameError:
+    if not results:
         print("No results are returned")
+    else:
+        try:
+            agent.finalize(results)
+        except NameError:
+            print("No results are returned")
 
     end = time.perf_counter()
     log.debug(f"Run took : {(end - start):.6f} seconds")

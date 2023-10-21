@@ -14,10 +14,11 @@ class EventSeparator:
 
     def init_params(self):
         self.precip_thresh = self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh")
-        self.noise_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
+        self.target_rmsd = self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd")
+        _noise_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
             "EVENT_SEPARATION", "increment_thresh_fraction"
         )
-        self.target_rmsd = self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd")
+        self.noise_thresh = np.minimum(_noise_thresh, self.target_rmsd * 2)
         self.minimium_consective_days = self.cfg.getint(
             "EVENT_SEPARATION", "minimium_consective_days"
         )
@@ -129,9 +130,10 @@ class EventSeparator:
                 if np.isnan(self.data.df.loc[current_date].soil_moisture_daily):
                     continue
 
-                if (self.data.df.loc[current_date].dSdt >= self.noise_thresh) or (
-                    self.data.df.loc[current_date].precip > self.precip_thresh
-                ):
+                if (
+                    (self.data.df.loc[current_date].dSdt >= self.noise_thresh)
+                    or (self.data.df.loc[current_date].precip > self.precip_thresh)
+                ) or self.data.df.loc[current_date].event_start:
                     # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded (if there is not precipitation) if it would otherwise truncate a drydown.
                     self.data.df.loc[current_date, "event_end"] = True
                     break

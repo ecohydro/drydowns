@@ -34,6 +34,12 @@ class SMAPgrid:
         self.max_lon = self.cfg.getfloat("EXTENT", "max_lon")
         self.max_lat = self.cfg.getfloat("EXTENT", "max_lat")
 
+        if not ((self.min_lon < self.max_lon) and (self.min_lat < self.max_lat)):
+            # If the condition is not met, issue a warning
+            warnings.warn(
+                "min_lon should be less than max_lon, and min_lat should be less than max_lat"
+            )
+
     def get_coordinates(self):
         """Get the information on the coordinate-index pair"""
         file_path = os.path.join(self.data_dir, self.datarods_dir, "coord_info.csv")
