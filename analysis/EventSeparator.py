@@ -14,7 +14,7 @@ class EventSeparator:
 
     def init_params(self):
         self.precip_thresh = self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh")
-        self.dSdt_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
+        self.noise_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
             "EVENT_SEPARATION", "increment_thresh_fraction"
         )
         self.target_rmsd = self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd")
@@ -28,6 +28,8 @@ class EventSeparator:
         self.output_dir = output_dir
 
         self.identify_event_starts()
+        self.adjust_event_starts_1()
+        self.adjust_event_starts_2()
         self.identify_event_ends()
         self.events_df = self.create_event_dataframe()
         self.filter_events(self.minimium_consective_days)
@@ -41,34 +43,93 @@ class EventSeparator:
     def identify_event_starts(self):
         # The event starts where negative increament of soil mositure follows the positive increment of soil moisture
         negative_increments = self.data.df.dSdt < 0
-        positive_increments = self.data.df.dSdt > self.target_rmsd
+        positive_increments = self.data.df.dSdt > (self.target_rmsd * 2)
         self.data.df["event_start"] = negative_increments.values & np.concatenate(
             ([False], positive_increments[:-1])
         )
+
+    def adjust_event_starts_1(self):
+        event_start_idx = self.data.df["event_start"][self.data.df["event_start"]].index
+        for i, event_start_date in enumerate(event_start_idx):
+            for j in range(
+                0, 6
+            ):  # Look back up to 5 timesteps to seek for sm value which is not nan, or start of the precip event
+                current_date = event_start_date - pd.Timedelta(days=j)
+
+                # If rainfall exceeds threshold, stop there
+                if self.data.df.loc[current_date].precip > self.precip_thresh:
+                    # If sm value is NOT nap.nan, stop there
+                    if not np.isnan(
+                        self.data.df.loc[current_date].soil_moisture_daily
+                    ):  # Check if sm value is np.nan
+                        update_date = current_date
+                    else:
+                        update_date = event_start_date
+                    break
+
+                # If dS > 0, stop there
+                if self.data.df.loc[current_date].dS > 0:
+                    update_date = event_start_date
+                    break
+
+                # SM value is not NaN, update to that value
+                if ((i - j) >= 0) or (
+                    not np.isnan(self.data.df.loc[current_date].soil_moisture_daily)
+                ):
+                    update_date = current_date
+                    break
+
+            self.data.df.loc[event_start_date, "event_start"] = False
+            self.data.df.loc[update_date, "event_start"] = True
+
+    def adjust_event_starts_2(self):
+        event_start_idx_2 = pd.isna(
+            self.data.df["soil_moisture_daily"][self.data.df["event_start"]]
+        ).index
+        for i, event_start_date in enumerate(event_start_idx_2):
+            update_date = event_start_date
+            for j in range(
+                0, 6
+            ):  # Look back up to 5 timesteps to seek for sm value which is not nan, or start of the precip event
+                current_date = event_start_date + pd.Timedelta(days=j)
+                # If rainfall exceeds threshold, stop there
+                # SM value is not NaN, update to that value
+                if ((i + j) >= len(self.data.df)) or (
+                    not pd.isna(self.data.df.loc[current_date].soil_moisture_daily)
+                ):
+                    update_date = current_date
+                    break
+
+            self.data.df.loc[event_start_date, "event_start"] = False
+            self.data.df.loc[update_date, "event_start"] = True
 
     def identify_event_ends(self):
         """Detect the end of a storm event"""
 
         # Initialize
         num_events = self.data.df.shape[0]
-        event_end = np.zeros(num_events, dtype=bool)
+        self.data.df["event_end"] = np.zeros(len(self.data.df), dtype=bool)
+        event_start_idx = self.data.df["event_start"][self.data.df["event_start"]].index
+        for i, event_start_date in enumerate(event_start_idx):
+            for j in range(1, len(self.data.df)):
+                current_date = event_start_date + pd.Timedelta(days=j)
 
-        for i in range(1, num_events):
-            if self.data.df.event_start.iloc[i]:
-                for j in range(i + 1, num_events):
-                    # If there is positive increments more than a threshold value, truncate a drydown
-                    # Or, if there is a rainfall event during the drydown, truncate a drydown.
-                    if (self.data.df.dS.iloc[j] >= self.dSdt_thresh) or (
-                        self.data.df.precip.iloc[j] > self.precip_thresh
-                    ):
-                        event_end[j] = True
-                        break
+                if (i + j) > len(self.data.df):
+                    break
+
+                if np.isnan(self.data.df.loc[current_date].soil_moisture_daily):
+                    continue
+
+                if (self.data.df.loc[current_date].dSdt >= self.noise_thresh) or (
+                    self.data.df.loc[current_date].precip > self.precip_thresh
+                ):
+                    # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded (if there is not precipitation) if it would otherwise truncate a drydown.
+                    self.data.df.loc[current_date, "event_end"] = True
+                    break
+                else:
+                    continue
 
         # create a new column for event_end
-        self.data.df["event_end"] = event_end
-        self.data.df["event_end"] = self.data.df["event_end"].shift(-1)
-        self.data.df = self.data.df[:-1]
-        self.data.df["event_start"][self.data.df["event_end"]].index
         self.data.df["dSdt(t-1)"] = self.data.df.dSdt.shift(+1)
 
     def create_event_dataframe(self):

@@ -3,6 +3,10 @@ import warnings
 import xarray as xr
 import os
 import numpy as np
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+import matplotlib.pyplot as plt
+import pyproj
 
 
 class SMAPgrid:
@@ -14,6 +18,7 @@ class SMAPgrid:
 
         self.data_dir = cfg["PATHS"]["data_dir"]
         self.datarods_dir = cfg["PATHS"]["datarods_dir"]
+        self.output_dir = cfg["PATHS"]["output_dir"]
 
         self.get_attributes()
         self.coord_info = self.get_coordinates()
@@ -89,22 +94,49 @@ class SMAPgrid:
     def get_template_xarray(self):
         """Get the template xaray with nan data with EASE coordinates of the extent"""
         # Create a 2D numpy array filled with NaNs
-        y_coords = self.coord_info_subset["latitude"].to_list()
-        x_coords = self.coord_info_subset["longitude"].to_list()
+        y_coords = sorted(set(self.coord_info["latitude"]), reverse=True)
+        x_coords = sorted(set(self.coord_info["longitude"]))
         _data = np.empty((len(y_coords), len(x_coords)))
         _data[:] = np.nan
 
         # Create an xarray DataArray with the empty data and the coordinates
         da = xr.DataArray(_data, coords=[("y", y_coords), ("x", x_coords)], name="data")
-
+        da.attrs["crs"] = "EPSG:4326"  # pyproj.CRS.from_epsg(4326)
         return da
 
-    def remap_results(self, results):
-        df_results = pd.DataFrame(results)
+    def remap_results(self, df_results):
+        # Save results in a dataarray format
         da = self.template_xarray.copy()
         for index, row in df_results.iterrows():
             i = row["EASE_row_index"]
             j = row["EASE_column_index"]
-            avg_q = row["q"].mean()
+            avg_q = np.average(row["q_q"])
             da.isel(y=i, x=j).values = avg_q
+
+        # Save the data
+        filename = f"output_q.nc"
+        da.to_netcdf(os.path.join(self.output_dir, filename))
+
+        return da
+
+    def plot_remapped_results(self, da):
+        # Plot and save the figure
+        filename = f"output_q.png"
+
+        # Create a figure and axis with a specified projection (e.g., PlateCarree)
+        fig, ax = plt.subplots(subplot_kw={"projection": ccrs.PlateCarree()})
+
+        # Add coastlines to the map
+        ax.add_feature(cfeature.COASTLINE)
+
+        # Customize the plot (e.g., add gridlines, set extent)
+        ax.gridlines(draw_labels=True, linestyle="--")
+
+        # Set the map extent (you can customize these coordinates)
+        ax.set_extent([-180, 180, -90, 90], crs=ccrs.PlateCarree())
+
+        da.plot(ax=ax)
+
+        fig.savefig(os.path.join(self.output_dir, filename))
+
         return da
