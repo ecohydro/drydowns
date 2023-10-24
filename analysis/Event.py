@@ -5,7 +5,7 @@ import os
 from MyLogger import getLogger
 
 # Create a logger
-log = getLogger("Event")
+log = getLogger(__name__)
 
 
 class Event:

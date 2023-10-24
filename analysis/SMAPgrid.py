@@ -10,7 +10,7 @@ import pyproj
 from MyLogger import getLogger
 
 # Create a logger
-log = getLogger("SMAPgrid")
+log = getLogger(__name__)
 
 
 class SMAPgrid:

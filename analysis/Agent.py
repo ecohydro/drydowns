@@ -83,7 +83,13 @@ class Agent:
         drydown_model = DrydownModel(self.cfg, data, events)
         drydown_model.fit_models(output_dir=self.output_dir)
 
-        return drydown_model.return_result_df()
+        results_df = drydown_model.return_result_df()
+
+        log.info(
+            f"Drydown model analysis completed at {data.EASE_row_index, data.EASE_column_index}: {len(results_df)}/{len(events)} events fitted"
+        )
+
+        return results_df
 
     def finalize(self, results):
         """Finalize the analysis from all the pixels

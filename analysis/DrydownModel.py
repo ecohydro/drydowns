@@ -7,7 +7,7 @@ from MyLogger import getLogger
 import threading
 
 # Create a logger
-log = getLogger("DrydownModel")
+log = getLogger(__name__)
 
 
 def exponential_model(t, delta_theta, theta_w, tau):

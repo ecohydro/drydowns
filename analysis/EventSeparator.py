@@ -8,6 +8,9 @@ import threading
 from MyLogger import getLogger, modifyLogger
 import logging
 
+# Create a logger
+log = getLogger(__name__)
+
 
 class ThreadNameHandler(logging.StreamHandler):
     def emit(self, record):
@@ -32,9 +35,9 @@ class EventSeparator:
         )
         self.thread_name = current_thread.name
 
-        # Not working at the moment ...
-        custom_handler = ThreadNameHandler()
-        log = modifyLogger(name=__name__, custom_handler=custom_handler)
+        # # Not working at the moment ...
+        # custom_handler = ThreadNameHandler()
+        # log = modifyLogger(name=__name__, custom_handler=custom_handler)
 
     def init_params(self):
         self.precip_thresh = self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh")
