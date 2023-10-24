@@ -7,6 +7,10 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
 import pyproj
+from MyLogger import getLogger
+
+# Create a logger
+log = getLogger("SMAPgrid")
 
 
 class SMAPgrid:
@@ -36,7 +40,7 @@ class SMAPgrid:
 
         if not ((self.min_lon < self.max_lon) and (self.min_lat < self.max_lat)):
             # If the condition is not met, issue a warning
-            warnings.warn(
+            log.warning(
                 "min_lon should be less than max_lon, and min_lat should be less than max_lat"
             )
 
@@ -63,7 +67,7 @@ class SMAPgrid:
             & (self.coord_info["longitude"] <= self.max_lon)
         ].copy()
         if self.verbose:
-            print(f"Number of pixels in the spatial extent: {len(subset)}")
+            log.info(f"Number of pixels in the spatial extent: {len(subset)}")
 
         ### Mask with openwater pixels
         return subset
@@ -86,7 +90,7 @@ class SMAPgrid:
             .drop(columns="_merge")
         )
         if self.verbose:
-            print(f"Number of pixels without openwater: {len(subset)}")
+            log.info(f"Number of pixels without openwater: {len(subset)}")
         return subset
 
     def get_EASE_index_subset(self):

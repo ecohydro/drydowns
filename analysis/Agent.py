@@ -7,6 +7,11 @@ from datetime import datetime
 import os
 import getpass
 import pandas as pd
+import logging
+from MyLogger import getLogger
+
+# Create a logger
+log = getLogger(__name__)
 
 
 def create_output_dir():
@@ -15,13 +20,14 @@ def create_output_dir():
     output_dir = rf"/home/waves/projects/smap-drydown/output/fit_models_py_{username}_{formatted_now}"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-        print(f"Directory '{output_dir}' created.")
+        log.info(f"Directory '{output_dir}' created.")
     return output_dir
 
 
 class Agent:
-    def __init__(self, cfg=None):
+    def __init__(self, cfg=None, logger=None):
         self.cfg = cfg
+        self.logger = logger
         self.smapgrid = SMAPgrid(cfg=self.cfg)
         self.target_EASE_idx = self.smapgrid.get_EASE_index_subset()
         self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
@@ -40,7 +46,9 @@ class Agent:
         # _______________________________________________________________________________________________
         # Get the sampling point attributes (EASE pixel)
         if self.verbose:
-            print(f"Currently processing pixel {sample_EASE_index}")
+            log.info(
+                f"Currently processing pixel {sample_EASE_index}",
+            )
 
         # _______________________________________________________________________________________________
         # Read dataset for a pixel
@@ -61,12 +69,12 @@ class Agent:
         # If there is no drydown event detected for the pixel, skip the analysis
         # Check if there is SM data
         if not events:
-            warnings.warn(
+            log.warning(
                 f"No event drydown was detected at {data.EASE_row_index, data.EASE_column_index}"
             )
             return None
 
-        print(
+        log.info(
             f"Event separation success at {data.EASE_row_index, data.EASE_column_index}: {len(events)} events detected"
         )
 

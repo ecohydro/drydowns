@@ -4,13 +4,37 @@ import matplotlib.pyplot as plt
 import os
 from Event import Event
 import warnings
+import threading
+from MyLogger import getLogger, modifyLogger
+import logging
+
+
+class ThreadNameHandler(logging.StreamHandler):
+    def emit(self, record):
+        try:
+            # Add thread name to the log message
+            record.threadName = threading.current_thread().name
+            super(ThreadNameHandler, self).emit(record)
+        except Exception:
+            self.handleError(record)
 
 
 class EventSeparator:
     def __init__(self, cfg, Data):
         self.cfg = cfg
+        self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
         self.data = Data
         self.init_params()
+
+        current_thread = threading.current_thread()
+        current_thread.name = (
+            f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
+        )
+        self.thread_name = current_thread.name
+
+        # Not working at the moment ...
+        custom_handler = ThreadNameHandler()
+        log = modifyLogger(name=__name__, custom_handler=custom_handler)
 
     def init_params(self):
         self.precip_thresh = self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh")
@@ -33,6 +57,9 @@ class EventSeparator:
         self.adjust_event_starts_2()
         self.identify_event_ends()
         self.events_df = self.create_event_dataframe()
+        if self.events_df.empty:
+            return None
+
         self.filter_events(self.minimium_consective_days)
         self.events = self.create_event_instances(self.events_df)
 
@@ -207,6 +234,10 @@ class EventSeparator:
         filename = f"{self.data.EASE_row_index:03d}_{self.data.EASE_column_index:03d}_eventseparation.png"
         output_dir2 = os.path.join(self.output_dir, "plots")
         if not os.path.exists(output_dir2):
-            os.makedirs(output_dir2)
+            # Use a lock to ensure only one thread creates the directory
+            with threading.Lock():
+                # Check again if the directory was created while waiting
+                if not os.path.exists(output_dir2):
+                    os.makedirs(output_dir2)
 
         fig.savefig(os.path.join(output_dir2, filename))

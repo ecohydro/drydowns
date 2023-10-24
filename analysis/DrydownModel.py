@@ -3,6 +3,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from MyLogger import getLogger
+import threading
+
+# Create a logger
+log = getLogger("DrydownModel")
 
 
 def exponential_model(t, delta_theta, theta_w, tau):
@@ -35,6 +40,12 @@ class DrydownModel:
         self.events = Events
         self.plot_results = cfg["MODEL"]["plot_results"].lower() in ["true", "yes", "1"]
 
+        current_thread = threading.current_thread()
+        current_thread.name = (
+            f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
+        )
+        self.thread_name = current_thread.name
+
     def fit_models(self, output_dir):
         """Loop through the list of events, fit the drydown models, and update the Event intances' attributes"""
         self.output_dir = output_dir
@@ -45,7 +56,7 @@ class DrydownModel:
                 # Replace the old Event instance with updated one
                 self.events[i] = updated_event
             except Exception as e:
-                print(e)
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
         if self.plot_results:
             self.plot_drydown_models_in_timesreies()
@@ -114,7 +125,7 @@ class DrydownModel:
             return popt, r_squared, y_opt
 
         except Exception as e:
-            print("An error occurred:", e)
+            log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
     def fit_exponential_model(self, event):
         """Fits an exponential model to the given event data and returns the fitted parameters.
@@ -225,7 +236,7 @@ class DrydownModel:
                 }
                 results.append(_results)
             except Exception as e:
-                print(e)
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
                 continue
 
         # Convert results into dataframe
@@ -252,26 +263,31 @@ class DrydownModel:
             ax.scatter(x, event.y)
 
         # ______________________________________
-
-        ax.plot(
-            x,
-            event.exponential["y_opt"],
-            alpha=0.7,
-            linestyle="--",
-            color="orange",
-            label=f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}",
-        )
+        try:
+            ax.plot(
+                x,
+                event.exponential["y_opt"],
+                alpha=0.7,
+                linestyle="--",
+                color="orange",
+                label=f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}",
+            )
+        except Exception as e:
+            log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
         # ______________________________________
         # Plot q model
-        ax.plot(
-            x,
-            event.q["y_opt"],
-            alpha=0.7,
-            linestyle="--",
-            color="green",
-            label=f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}; PET={event.pet:.2f}",
-        )
+        try:
+            ax.plot(
+                x,
+                event.q["y_opt"],
+                alpha=0.7,
+                linestyle="--",
+                color="green",
+                label=f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}; PET={event.pet:.2f}",
+            )
+        except Exception as e:
+            log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
         # ______________________________________
         if plot_mode == "single":
@@ -283,28 +299,36 @@ class DrydownModel:
             # Rotate the x tick labels
             ax.tick_params(axis="x", rotation=45)
         elif plot_mode == "multiple":
-            exp_param = f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}"
+            try:
+                exp_param = f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}"
 
-            ax.text(
-                x[0],
-                event.q["y_opt"][0] + 0.02,
-                f"param={exp_param}",
-                fontsize=12,
-                ha="left",
-                va="bottom",
-                color="orange",
-            )
+                ax.text(
+                    x[0],
+                    event.q["y_opt"][0] + 0.02,
+                    f"param={exp_param}",
+                    fontsize=12,
+                    ha="left",
+                    va="bottom",
+                    color="orange",
+                )
+            except Exception as e:
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
-            q_param = f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}"
-            ax.text(
-                x[0],
-                event.q["y_opt"][0],
-                f"{q_param}",
-                fontsize=12,
-                ha="left",
-                va="bottom",
-                color="green",
-            )
+            try:
+                q_param = (
+                    f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}"
+                )
+                ax.text(
+                    x[0],
+                    event.q["y_opt"][0],
+                    f"{q_param}",
+                    fontsize=12,
+                    ha="left",
+                    va="bottom",
+                    color="green",
+                )
+            except Exception as e:
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
         # ___________________________________________________________________________________
         # Save results
