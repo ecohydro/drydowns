@@ -43,53 +43,56 @@ class Agent:
             sample_EASE_index (list.shape[1,2]): a pair of EASE index, representing [0,0] the EASE row index (y, or latitude) and [0,1] EASE column index (x, or longitude)
         """
 
-        # _______________________________________________________________________________________________
-        # Get the sampling point attributes (EASE pixel)
-        if self.verbose:
+        try:
+            # _______________________________________________________________________________________________
+            # Get the sampling point attributes (EASE pixel)
+            if self.verbose:
+                log.info(
+                    f"Currently processing pixel {sample_EASE_index}",
+                )
+
+            # _______________________________________________________________________________________________
+            # Read dataset for a pixel
+            data = Data(self.cfg, sample_EASE_index)
+
+            # If there is no soil moisture data available for the pixel, skip the analysis
+            if data.df["soil_moisture_daily"].isna().all():
+                warnings.warn(
+                    f"No soil moisture data at the EASE pixel {sample_EASE_index}"
+                )
+                return None
+
+            # _______________________________________________________________________________________________
+            # Run the stormevent separation
+            separator = EventSeparator(self.cfg, data)
+            events = separator.separate_events(output_dir=self.output_dir)
+
+            # If there is no drydown event detected for the pixel, skip the analysis
+            # Check if there is SM data
+            if not events:
+                log.warning(f"No event drydown was detected at {sample_EASE_index}")
+                return None
+
             log.info(
-                f"Currently processing pixel {sample_EASE_index}",
+                f"Event separation success at {sample_EASE_index}: {len(events)} events detected"
             )
 
-        # _______________________________________________________________________________________________
-        # Read dataset for a pixel
-        data = Data(self.cfg, sample_EASE_index)
+            # _______________________________________________________________________________________________
+            # Execute the main analysis --- fit drydown models
+            drydown_model = DrydownModel(self.cfg, data, events)
+            drydown_model.fit_models(output_dir=self.output_dir)
 
-        # If there is no soil moisture data available for the pixel, skip the analysis
-        if data.df["soil_moisture_daily"].isna().all():
-            warnings.warn(
-                f"No soil moisture data at the EASE pixel {sample_EASE_index}"
+            results_df = drydown_model.return_result_df()
+
+            log.info(
+                f"Drydown model analysis completed at {sample_EASE_index}: {len(results_df)}/{len(events)} events fitted"
             )
-            return None
 
-        # _______________________________________________________________________________________________
-        # Run the stormevent separation
-        separator = EventSeparator(self.cfg, data)
-        events = separator.separate_events(output_dir=self.output_dir)
+            return results_df
 
-        # If there is no drydown event detected for the pixel, skip the analysis
-        # Check if there is SM data
-        if not events:
-            log.warning(
-                f"No event drydown was detected at {data.EASE_row_index, data.EASE_column_index}"
-            )
-            return None
-
-        log.info(
-            f"Event separation success at {data.EASE_row_index, data.EASE_column_index}: {len(events)} events detected"
-        )
-
-        # _______________________________________________________________________________________________
-        # Execute the main analysis --- fit drydown models
-        drydown_model = DrydownModel(self.cfg, data, events)
-        drydown_model.fit_models(output_dir=self.output_dir)
-
-        results_df = drydown_model.return_result_df()
-
-        log.info(
-            f"Drydown model analysis completed at {data.EASE_row_index, data.EASE_column_index}: {len(results_df)}/{len(events)} events fitted"
-        )
-
-        return results_df
+        except Exception as e:
+            print(f"Error in thread: {sample_EASE_index}")
+            print(f"Error message: {str(e)}")
 
     def finalize(self, results):
         """Finalize the analysis from all the pixels

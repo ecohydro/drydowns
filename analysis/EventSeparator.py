@@ -134,9 +134,11 @@ class EventSeparator:
             ):  # Look ahead up to 6 timesteps to seek for sm value which is not nan, or start of the precip event
                 current_date = event_start_date + pd.Timedelta(days=j)
                 # If Non-nan SM value is detected, update start date value to this timstep
-                if ((i + j) >= len(self.data.df)) or (
-                    not pd.isna(self.data.df.loc[current_date].soil_moisture_daily)
-                ):
+                if current_date > self.data.end_date:
+                    update_date = current_date
+                    break
+
+                if not pd.isna(self.data.df.loc[current_date].soil_moisture_daily):
                     update_date = current_date
                     break
 
@@ -154,7 +156,7 @@ class EventSeparator:
             for j in range(1, len(self.data.df)):
                 current_date = event_start_date + pd.Timedelta(days=j)
 
-                if (i + j) > len(self.data.df):
+                if current_date > self.data.end_date:
                     break
 
                 if np.isnan(self.data.df.loc[current_date].soil_moisture_daily):

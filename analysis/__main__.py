@@ -12,7 +12,6 @@ log = getLogger(__name__)
 def main():
     """Main execution script ot run the drydown analysis"""
     start = time.perf_counter()
-
     log.info("--- Initializing the model ---")
 
     # _______________________________________________________________________________________________
