@@ -343,7 +343,9 @@ class DrydownModel:
                 dpi=600,
                 bbox_inches="tight",
             )
-            # plt.close()  # Close the current figure to release resources
+
+        # Close the current figure to release resources
+        plt.close(fig)
 
     def plot_drydown_models_in_timesreies(self):
         years_of_record = max(self.data.df.index.year) - min(self.data.df.index.year)
@@ -378,3 +380,5 @@ class DrydownModel:
 
         fig.tight_layout()
         fig.savefig(os.path.join(output_dir2, filename))
+
+        plt.close(fig)

@@ -148,5 +148,5 @@ class SMAPgrid:
         da.plot(ax=ax)
 
         fig.savefig(os.path.join(self.output_dir, filename))
-
+        plt.close(fig)
         return da
