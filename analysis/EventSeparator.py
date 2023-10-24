@@ -244,4 +244,4 @@ class EventSeparator:
                     os.makedirs(output_dir2)
 
         fig.savefig(os.path.join(output_dir2, filename))
-        plt.close(fig)
+        plt.close()
