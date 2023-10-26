@@ -4,6 +4,10 @@ from pathlib import Path
 from datetime import datetime
 import os
 import warnings
+from MyLogger import getLogger
+
+# Create a logger
+log = getLogger(__name__)
 
 
 def get_filename(varname, EASE_row_index, EASE_column_index):

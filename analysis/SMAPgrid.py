@@ -7,6 +7,10 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
 import pyproj
+from MyLogger import getLogger
+
+# Create a logger
+log = getLogger(__name__)
 
 
 class SMAPgrid:
@@ -34,6 +38,12 @@ class SMAPgrid:
         self.max_lon = self.cfg.getfloat("EXTENT", "max_lon")
         self.max_lat = self.cfg.getfloat("EXTENT", "max_lat")
 
+        if not ((self.min_lon < self.max_lon) and (self.min_lat < self.max_lat)):
+            # If the condition is not met, issue a warning
+            log.warning(
+                "min_lon should be less than max_lon, and min_lat should be less than max_lat"
+            )
+
     def get_coordinates(self):
         """Get the information on the coordinate-index pair"""
         file_path = os.path.join(self.data_dir, self.datarods_dir, "coord_info.csv")
@@ -57,7 +67,7 @@ class SMAPgrid:
             & (self.coord_info["longitude"] <= self.max_lon)
         ].copy()
         if self.verbose:
-            print(f"Number of pixels in the spatial extent: {len(subset)}")
+            log.info(f"Number of pixels in the spatial extent: {len(subset)}")
 
         ### Mask with openwater pixels
         return subset
@@ -80,7 +90,7 @@ class SMAPgrid:
             .drop(columns="_merge")
         )
         if self.verbose:
-            print(f"Number of pixels without openwater: {len(subset)}")
+            log.info(f"Number of pixels without openwater: {len(subset)}")
         return subset
 
     def get_EASE_index_subset(self):
@@ -119,24 +129,25 @@ class SMAPgrid:
 
         return da
 
-    def plot_remapped_results(self, da):
-        # Plot and save the figure
-        filename = f"output_q.png"
+    # Not working
+    # def plot_remapped_results(self, da):
+    #     # Plot and save the figure
+    #     filename = f"output_q.png"
 
-        # Create a figure and axis with a specified projection (e.g., PlateCarree)
-        fig, ax = plt.subplots(subplot_kw={"projection": ccrs.PlateCarree()})
+    #     # Create a figure and axis with a specified projection (e.g., PlateCarree)
+    #     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.PlateCarree()})
 
-        # Add coastlines to the map
-        ax.add_feature(cfeature.COASTLINE)
+    #     # Add coastlines to the map
+    #     ax.add_feature(cfeature.COASTLINE)
 
-        # Customize the plot (e.g., add gridlines, set extent)
-        ax.gridlines(draw_labels=True, linestyle="--")
+    #     # Customize the plot (e.g., add gridlines, set extent)
+    #     ax.gridlines(draw_labels=True, linestyle="--")
 
-        # Set the map extent (you can customize these coordinates)
-        ax.set_extent([-180, 180, -90, 90], crs=ccrs.PlateCarree())
+    #     # Set the map extent (you can customize these coordinates)
+    #     ax.set_extent([-180, 180, -90, 90], crs=ccrs.PlateCarree())
 
-        da.plot(ax=ax)
+    #     da.plot(ax=ax)
 
-        fig.savefig(os.path.join(self.output_dir, filename))
-
-        return da
+    #     fig.savefig(os.path.join(self.output_dir, filename))
+    #     plt.close(fig)
+    #     return da

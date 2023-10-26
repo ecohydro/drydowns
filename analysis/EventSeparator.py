@@ -4,20 +4,48 @@ import matplotlib.pyplot as plt
 import os
 from Event import Event
 import warnings
+import threading
+from MyLogger import getLogger, modifyLogger
+import logging
+
+# Create a logger
+log = getLogger(__name__)
+
+
+class ThreadNameHandler(logging.StreamHandler):
+    def emit(self, record):
+        try:
+            # Add thread name to the log message
+            record.threadName = threading.current_thread().name
+            super(ThreadNameHandler, self).emit(record)
+        except Exception:
+            self.handleError(record)
 
 
 class EventSeparator:
     def __init__(self, cfg, Data):
         self.cfg = cfg
+        self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
         self.data = Data
         self.init_params()
 
+        current_thread = threading.current_thread()
+        current_thread.name = (
+            f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
+        )
+        self.thread_name = current_thread.name
+
+        # # Not working at the moment ...
+        # custom_handler = ThreadNameHandler()
+        # log = modifyLogger(name=__name__, custom_handler=custom_handler)
+
     def init_params(self):
         self.precip_thresh = self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh")
-        self.noise_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
+        self.target_rmsd = self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd")
+        _noise_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
             "EVENT_SEPARATION", "increment_thresh_fraction"
         )
-        self.target_rmsd = self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd")
+        self.noise_thresh = np.minimum(_noise_thresh, self.target_rmsd * 2)
         self.minimium_consective_days = self.cfg.getint(
             "EVENT_SEPARATION", "minimium_consective_days"
         )
@@ -32,6 +60,9 @@ class EventSeparator:
         self.adjust_event_starts_2()
         self.identify_event_ends()
         self.events_df = self.create_event_dataframe()
+        if self.events_df.empty:
+            return None
+
         self.filter_events(self.minimium_consective_days)
         self.events = self.create_event_instances(self.events_df)
 
@@ -103,9 +134,11 @@ class EventSeparator:
             ):  # Look ahead up to 6 timesteps to seek for sm value which is not nan, or start of the precip event
                 current_date = event_start_date + pd.Timedelta(days=j)
                 # If Non-nan SM value is detected, update start date value to this timstep
-                if ((i + j) >= len(self.data.df)) or (
-                    not pd.isna(self.data.df.loc[current_date].soil_moisture_daily)
-                ):
+                if current_date > self.data.end_date:
+                    update_date = current_date
+                    break
+
+                if not pd.isna(self.data.df.loc[current_date].soil_moisture_daily):
                     update_date = current_date
                     break
 
@@ -123,15 +156,16 @@ class EventSeparator:
             for j in range(1, len(self.data.df)):
                 current_date = event_start_date + pd.Timedelta(days=j)
 
-                if (i + j) > len(self.data.df):
+                if current_date > self.data.end_date:
                     break
 
                 if np.isnan(self.data.df.loc[current_date].soil_moisture_daily):
                     continue
 
-                if (self.data.df.loc[current_date].dSdt >= self.noise_thresh) or (
-                    self.data.df.loc[current_date].precip > self.precip_thresh
-                ):
+                if (
+                    (self.data.df.loc[current_date].dSdt >= self.noise_thresh)
+                    or (self.data.df.loc[current_date].precip > self.precip_thresh)
+                ) or self.data.df.loc[current_date].event_start:
                     # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded (if there is not precipitation) if it would otherwise truncate a drydown.
                     self.data.df.loc[current_date, "event_end"] = True
                     break
@@ -205,6 +239,11 @@ class EventSeparator:
         filename = f"{self.data.EASE_row_index:03d}_{self.data.EASE_column_index:03d}_eventseparation.png"
         output_dir2 = os.path.join(self.output_dir, "plots")
         if not os.path.exists(output_dir2):
-            os.makedirs(output_dir2)
+            # Use a lock to ensure only one thread creates the directory
+            with threading.Lock():
+                # Check again if the directory was created while waiting
+                if not os.path.exists(output_dir2):
+                    os.makedirs(output_dir2)
 
         fig.savefig(os.path.join(output_dir2, filename))
+        plt.close()
