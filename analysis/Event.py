@@ -30,7 +30,9 @@ class Event:
         self.y = self.soil_moisture_subset[~np.isnan(self.soil_moisture_subset)]
         self.norm_y = norm_soil_moisture_subset[~np.isnan(self.soil_moisture_subset)]
 
-    def add_attributes(self, model_type, popt, r_squared, y_opt):
+    def add_attributes(
+        self, model_type="", popt=[], r_squared=np.nan, y_opt=[], force_PET=False
+    ):
         if model_type == "exponential":
             self.exponential = {
                 "delta_theta": popt[0],
@@ -41,10 +43,18 @@ class Event:
             }
 
         if model_type == "q":
-            self.q = {
-                "k": popt[0],
-                "q": popt[1],
-                "delta_theta": popt[2],
-                "r_squared": r_squared,
-                "y_opt": y_opt.tolist(),
-            }
+            if not force_PET:
+                self.q = {
+                    "k": popt[0],
+                    "q": popt[1],
+                    "delta_theta": popt[2],
+                    "r_squared": r_squared,
+                    "y_opt": y_opt.tolist(),
+                }
+            else:
+                self.q = {
+                    "q": popt[0],
+                    "delta_theta": popt[1],
+                    "r_squared": r_squared,
+                    "y_opt": y_opt.tolist(),
+                }

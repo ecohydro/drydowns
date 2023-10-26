@@ -39,12 +39,16 @@ class DrydownModel:
         self.data = Data
         self.events = Events
         self.plot_results = cfg["MODEL"]["plot_results"].lower() in ["true", "yes", "1"]
+        self.force_PET = cfg["MODEL"]["force_PET"].lower() in ["true", "yes", "1"]
 
-        current_thread = threading.current_thread()
-        current_thread.name = (
-            f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
-        )
-        self.thread_name = current_thread.name
+        if cfg["MODEL"]["run_mode"] == "parallel":
+            current_thread = threading.current_thread()
+            current_thread.name = (
+                f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
+            )
+            self.thread_name = current_thread.name
+        else:
+            self.thread_name = "main thread"
 
     def fit_models(self, output_dir):
         """Loop through the list of events, fit the drydown models, and update the Event intances' attributes"""
@@ -78,7 +82,7 @@ class DrydownModel:
         # _____________________________________________
         # Fit q model
         popt, r_squared, y_opt = self.fit_q_model(event)
-        event.add_attributes("q", popt, r_squared, y_opt)
+        event.add_attributes("q", popt, r_squared, y_opt, self.force_PET)
 
         # _____________________________________________
         # Finalize results for one event
@@ -195,20 +199,36 @@ class DrydownModel:
         max_delta_theta = 1.0
         ini_delta_theta = 0.1
 
-        bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
-        p0 = [ini_k, ini_q, ini_delta_theta]
-        # bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
-        # p0 = [ini_q, ini_delta_theta]
-
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
-        return self.fit_model(
-            event=event,
-            model=lambda t, k, q, delta_theta: q_model(t, k, q, delta_theta, 1.0, 0.0),
-            bounds=bounds,
-            p0=p0,
-            norm=True,
-        )
+
+        if not self.force_PET:
+            bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
+            p0 = [ini_k, ini_q, ini_delta_theta]
+
+            return self.fit_model(
+                event=event,
+                model=lambda t, k, q, delta_theta: q_model(
+                    t, k, q, delta_theta, 1.0, 0.0
+                ),
+                bounds=bounds,
+                p0=p0,
+                norm=True,
+            )
+
+        if self.force_PET:
+            bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
+            p0 = [ini_q, ini_delta_theta]
+
+            return self.fit_model(
+                event=event,
+                model=lambda t, q, delta_theta: q_model(
+                    t, event.pet, q, delta_theta, 1.0, 0.0
+                ),
+                bounds=bounds,
+                p0=p0,
+                norm=True,
+            )
 
     def return_result_df(self):
         """Return results in the pandas dataframe format for easier concatination"""
@@ -216,6 +236,11 @@ class DrydownModel:
         results = []
         for event in self.events:
             try:
+                if not self.force_PET:
+                    q_k = event.q["k"]
+                else:
+                    q_k = event.pet
+
                 _results = {
                     "EASE_row_index": self.data.EASE_row_index,
                     "EASE_column_index": self.data.EASE_column_index,
@@ -228,7 +253,7 @@ class DrydownModel:
                     "exp_tau": event.exponential["tau"],
                     "exp_r_squared": event.exponential["r_squared"],
                     "exp_y_opt": event.exponential["y_opt"],
-                    "q_k": event.q["k"],
+                    "q_k": q_k,
                     "q_q": event.q["q"],
                     "q_delta_theta": event.q["delta_theta"],
                     "q_r_squared": event.q["r_squared"],
@@ -304,7 +329,7 @@ class DrydownModel:
 
                 ax.text(
                     x[0],
-                    event.q["y_opt"][0] + 0.02,
+                    event.q["y_opt"][0] + 0.03,
                     f"param={exp_param}",
                     fontsize=12,
                     ha="left",

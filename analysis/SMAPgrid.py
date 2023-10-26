@@ -129,24 +129,25 @@ class SMAPgrid:
 
         return da
 
-    def plot_remapped_results(self, da):
-        # Plot and save the figure
-        filename = f"output_q.png"
+    # Not working
+    # def plot_remapped_results(self, da):
+    #     # Plot and save the figure
+    #     filename = f"output_q.png"
 
-        # Create a figure and axis with a specified projection (e.g., PlateCarree)
-        fig, ax = plt.subplots(subplot_kw={"projection": ccrs.PlateCarree()})
+    #     # Create a figure and axis with a specified projection (e.g., PlateCarree)
+    #     fig, ax = plt.subplots(subplot_kw={"projection": ccrs.PlateCarree()})
 
-        # Add coastlines to the map
-        ax.add_feature(cfeature.COASTLINE)
+    #     # Add coastlines to the map
+    #     ax.add_feature(cfeature.COASTLINE)
 
-        # Customize the plot (e.g., add gridlines, set extent)
-        ax.gridlines(draw_labels=True, linestyle="--")
+    #     # Customize the plot (e.g., add gridlines, set extent)
+    #     ax.gridlines(draw_labels=True, linestyle="--")
 
-        # Set the map extent (you can customize these coordinates)
-        ax.set_extent([-180, 180, -90, 90], crs=ccrs.PlateCarree())
+    #     # Set the map extent (you can customize these coordinates)
+    #     ax.set_extent([-180, 180, -90, 90], crs=ccrs.PlateCarree())
 
-        da.plot(ax=ax)
+    #     da.plot(ax=ax)
 
-        fig.savefig(os.path.join(self.output_dir, filename))
-        plt.close(fig)
-        return da
+    #     fig.savefig(os.path.join(self.output_dir, filename))
+    #     plt.close(fig)
+    #     return da

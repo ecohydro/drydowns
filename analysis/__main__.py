@@ -46,13 +46,23 @@ def main():
     # Finalize the model
     log.info(f"--- Finished analysis ---")
 
-    if not results:
-        log.info("No results are returned")
-    else:
-        try:
-            agent.finalize(results)
-        except NameError:
+    if run_mode == "serial":
+        if results.empty:
             log.info("No results are returned")
+        else:
+            try:
+                agent.finalize(results)
+            except NameError:
+                log.info("No results are returned")
+
+    elif run_mode == "parallel":
+        if not results:
+            log.info("No results are returned")
+        else:
+            try:
+                agent.finalize(results)
+            except NameError:
+                log.info("No results are returned")
 
     end = time.perf_counter()
     log.debug(f"Run took : {(end - start):.6f} seconds")

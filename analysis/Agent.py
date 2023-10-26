@@ -101,8 +101,8 @@ class Agent:
             results (list): concatinated results returned from serial/multi-threadding analysis
         """
         df_results = self.save_to_csv(results)
-        da = self.smapgrid.remap_results(df_results)
-        self.smapgrid.plot_remapped_results(da)
+        # self.smapgrid.remap_results(df_results)
+        # self.smapgrid.plot_remapped_results(da)
 
     def save_to_csv(self, results):
         if len(results) > 1:
