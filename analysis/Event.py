@@ -17,6 +17,8 @@ class Event:
         self.soil_moisture_subset = np.asarray(event_dict["soil_moisture_daily"])
         norm_soil_moisture_subset = np.asarray(event_dict["normalized_sm"])
         self.pet = np.average(event_dict["PET"])
+        self.min_sm = event_dict["min_sm"]
+        self.max_sm = event_dict["max_sm"]
 
         # Prepare the attributes
         self.subset_sm_range = np.nanmax(self.soil_moisture_subset) - np.nanmin(

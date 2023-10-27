@@ -184,6 +184,8 @@ class EventSeparator:
             {
                 "event_start": start_index,
                 "event_end": end_index,
+                "min_sm": self.data.min_sm,
+                "max_sm": self.data.max_sm,
                 "soil_moisture_daily": list(
                     self.data.df.loc[
                         start_index:end_index, "soil_moisture_daily"
