@@ -240,8 +240,8 @@ class DrydownModel:
 
         ### k (should be equal to PET to reduce dimensionality ###
         min_k = 0
-        max_k = event.pet * 100
-        ini_k = event.pet
+        max_k = event.pet
+        ini_k = event.pet * 0.5
 
         ### q ###
         min_q = 0.0
