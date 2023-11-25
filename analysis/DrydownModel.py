@@ -238,14 +238,14 @@ class DrydownModel:
         # ___________________________________________________________________________________
         # Define the boundary condition for optimizing q_model(t, k, q, delta_theta)
 
-        ### k (should be equal to PET to reduce dimensionality ###
+        ### k (should be equal to PET/z to reduce dimensionality ###
         min_k = 0
-        max_k = event.pet
-        ini_k = event.pet * 0.5
+        max_k = event.pet / 50 * 100
+        ini_k = event.pet / 50
 
         ### q ###
         min_q = 0.0
-        max_q = 22
+        max_q = 100
         ini_q = 1.0 + 1.0e-03
 
         ### delta_theta ###
@@ -359,11 +359,6 @@ class DrydownModel:
         results = []
         for event in self.events:
             try:
-                if not self.force_PET:
-                    q_k = event.q["k"]
-                else:
-                    q_k = event.pet
-
                 _results = {
                     "EASE_row_index": self.data.EASE_row_index,
                     "EASE_column_index": self.data.EASE_column_index,
@@ -388,7 +383,10 @@ class DrydownModel:
                     )
 
                 if self.run_q_model:
-                    q_k = ...  # Calculation or value for q_k goes here
+                    if not self.force_PET:
+                        q_k = event.q["k"]
+                    else:
+                        q_k = event.pet
                     _results.update(
                         {
                             "q_k": q_k,

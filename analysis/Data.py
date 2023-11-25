@@ -121,7 +121,15 @@ class Data:
 
         # Get max and min values
         self.min_sm = df.soil_moisture_daily.min(skipna=True)
-        self.max_sm = df.soil_moisture_daily.max(skipna=True)
+        # Instead of actual max values, take the 95% percentile as max_sm # df.soil_moisture_daily.max(skipna=True)
+        self.max_sm = df.soil_moisture_daily.quantile(0.95)
+        # df.soil_moisture_daily.max(skipna=True)
+        # self.s_thresh = df.soil_moisture_daily.quantile(
+        #     0.95
+        # )
+        df["soil_moisture_daily_before_masking"] = df["soil_moisture_daily"].copy()
+        # Mask out the timeseries when sm is larger than 90% percentile value
+        df.loc[df["soil_moisture_daily"] > self.max_sm, "soil_moisture_daily"] = np.nan
         self.range_sm = self.max_sm - self.min_sm
         if not (np.isnan(self.min_sm) or np.isnan(self.max_sm)):
             df["normalized_sm"] = (df.soil_moisture_daily - self.min_sm) / self.range_sm
@@ -161,7 +169,7 @@ class Data:
         """Calculate d(Soil Moisture)/dt"""
 
         # Allow detecting soil moisture increment even if there is no SM data in between before/after rainfall event
-        df["sm_for_dS_calc"] = df["soil_moisture_daily"].ffill()
+        df["sm_for_dS_calc"] = df["soil_moisture_daily_before_masking"].ffill()
 
         # Calculate dS
         df["dS"] = (
@@ -185,7 +193,9 @@ class Data:
         df["dSdt"] = df["dS"] / df["dt"]
         df["dSdt"] = df["dSdt"].shift(periods=-1)
 
-        df.loc[df["soil_moisture_daily"].shift(-1).isna(), "dSdt"] = np.nan
+        df.loc[
+            df["soil_moisture_daily_before_masking"].shift(-1).isna(), "dSdt"
+        ] = np.nan
         df["dSdt"] = df["dSdt"].ffill(limit=5)
 
         return df
