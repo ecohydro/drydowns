@@ -14,10 +14,10 @@ from MyLogger import getLogger
 log = getLogger(__name__)
 
 
-def create_output_dir():
+def create_output_dir(parent_dir):
     username = getpass.getuser()
     formatted_now = datetime.now().strftime("%Y-%m-%d")
-    output_dir = rf"/home/waves/projects/smap-drydown/output/fit_models_py_{username}_{formatted_now}"
+    output_dir = rf"{parent_dir}/{username}_{formatted_now}"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         log.info(f"Directory '{output_dir}' created.")
@@ -31,7 +31,7 @@ class Agent:
         self.smapgrid = SMAPgrid(cfg=self.cfg)
         self.target_EASE_idx = self.smapgrid.get_EASE_index_subset()
         self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
-        self.output_dir = create_output_dir()
+        self.output_dir = create_output_dir(parent_dir=cfg["PATHS"]["output_dir"])
 
     def initialize(self):
         None

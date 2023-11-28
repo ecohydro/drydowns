@@ -96,7 +96,11 @@ class EventSeparator:
                 # If rainfall exceeds threshold, stop there
                 if self.data.df.loc[current_date].precip > self.precip_thresh:
                     # If SM value IS NOT nap.nan, update the event start date value to this timestep
-                    if not np.isnan(self.data.df.loc[current_date].soil_moisture_daily):
+                    if not np.isnan(
+                        self.data.df.loc[
+                            current_date
+                        ].soil_moisture_daily_before_masking
+                    ):
                         update_date = current_date
                     # If SM value IS nap.nan, don't update the event start date value
                     else:
@@ -110,7 +114,11 @@ class EventSeparator:
 
                 # If reached to the NON-nan SM value, update start date value to this timestep
                 if ((i - j) >= 0) or (
-                    not np.isnan(self.data.df.loc[current_date].soil_moisture_daily)
+                    not np.isnan(
+                        self.data.df.loc[
+                            current_date
+                        ].soil_moisture_daily_before_masking
+                    )
                 ):
                     update_date = current_date
                     break
@@ -124,7 +132,9 @@ class EventSeparator:
 
         # Get the event start dates
         event_start_idx_2 = pd.isna(
-            self.data.df["soil_moisture_daily"][self.data.df["event_start"]]
+            self.data.df["soil_moisture_daily_before_masking"][
+                self.data.df["event_start"]
+            ]
         ).index
 
         for i, event_start_date in enumerate(event_start_idx_2):
@@ -138,7 +148,9 @@ class EventSeparator:
                     update_date = current_date
                     break
 
-                if not pd.isna(self.data.df.loc[current_date].soil_moisture_daily):
+                if not pd.isna(
+                    self.data.df.loc[current_date].soil_moisture_daily_before_masking
+                ):
                     update_date = current_date
                     break
 
@@ -159,7 +171,9 @@ class EventSeparator:
                 if current_date > self.data.end_date:
                     break
 
-                if np.isnan(self.data.df.loc[current_date].soil_moisture_daily):
+                if np.isnan(
+                    self.data.df.loc[current_date].soil_moisture_daily_before_masking
+                ):
                     continue
 
                 if (
@@ -189,6 +203,11 @@ class EventSeparator:
                 "soil_moisture_daily": list(
                     self.data.df.loc[
                         start_index:end_index, "soil_moisture_daily"
+                    ].values
+                ),
+                "soil_moisture_daily_before_masking": list(
+                    self.data.df.loc[
+                        start_index:end_index, "soil_moisture_daily_before_masking"
                     ].values
                 ),
                 "normalized_sm": list(
@@ -221,16 +240,24 @@ class EventSeparator:
     def plot_events(self):
         fig, (ax11, ax12) = plt.subplots(2, 1, figsize=(20, 5))
 
-        self.data.df.soil_moisture_daily.plot(ax=ax11, alpha=0.5)
+        self.data.df.soil_moisture_daily_before_masking.plot(ax=ax11, alpha=0.5)
         ax11.scatter(
-            self.data.df.soil_moisture_daily[self.data.df["event_start"]].index,
-            self.data.df.soil_moisture_daily[self.data.df["event_start"]].values,
+            self.data.df.soil_moisture_daily_before_masking[
+                self.data.df["event_start"]
+            ].index,
+            self.data.df.soil_moisture_daily_before_masking[
+                self.data.df["event_start"]
+            ].values,
             color="orange",
             alpha=0.5,
         )
         ax11.scatter(
-            self.data.df.soil_moisture_daily[self.data.df["event_end"]].index,
-            self.data.df.soil_moisture_daily[self.data.df["event_end"]].values,
+            self.data.df.soil_moisture_daily_before_masking[
+                self.data.df["event_end"]
+            ].index,
+            self.data.df.soil_moisture_daily_before_masking[
+                self.data.df["event_end"]
+            ].values,
             color="orange",
             marker="x",
             alpha=0.5,

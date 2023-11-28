@@ -4,6 +4,7 @@ import time
 
 from Agent import Agent
 from MyLogger import getLogger
+from utils import is_true
 
 # Create a logger
 log = getLogger(__name__)
@@ -27,6 +28,16 @@ def main():
     # Define serial/parallel mode
     run_mode = cfg["MODEL"]["run_mode"]
     log.info(f"--- Analysis started with {run_mode} mode ---")
+
+    # _______________________________________________________________________________________________
+    # Verbose models to run
+    log.info(f"Running the following models:")
+    if is_true(cfg["MODEL"]["exponential_model"]):
+        log.info(f"Exponential model")
+    if is_true(cfg["MODEL"]["q_model"]):
+        log.info(f"q model")
+    if is_true(cfg["MODEL"]["sigmoid_model"]):
+        log.info(f"Sigmoid model")
 
     # Run the model
     if run_mode == "serial":

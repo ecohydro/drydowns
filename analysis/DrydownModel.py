@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import os
 from MyLogger import getLogger
 import threading
+from scipy.integrate import solve_ivp
+from scipy.optimize import minimize
+from utils import is_true
 
 # Create a logger
 log = getLogger(__name__)
@@ -33,13 +36,44 @@ def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
     return (-k * a * t + s0) ** (1 / (1 - q)) + theta_w
 
 
+# The differential equation dy/dt = f(y, a, b)
+# Sigmoid model cannot be analytically solved, so this is numerically impelmented
+def loss_sigmoid(t, theta, s50, k, ETmax, theta_wp=0.0):
+    exp_arg = np.clip(-k * (theta - s50), -np.inf, 700)
+    d_theta = -1 * (ETmax + theta_wp) / (1 + np.exp(exp_arg))
+    return d_theta
+
+
+# Function to solve the DE with given parameters and return y at the time points
+def solve_de(t_obs, y_init, parameters):
+    s50, k, ETmax = parameters
+    sol = solve_ivp(
+        lambda t, theta: loss_sigmoid(t, theta, s50, k, ETmax),
+        [t_obs[0], t_obs[-1]],
+        [y_init],
+        t_eval=t_obs,
+        vectorized=True,
+    )
+    return sol.y.ravel()
+
+
+# The objective function to minimize (sum of squared errors)
+def objective_function(parameters, y_obs, y_init, t_obs):
+    y_model = solve_de(t_obs, y_init, parameters)
+    error = y_obs - y_model
+    return np.sum(error**2)
+
+
 class DrydownModel:
     def __init__(self, cfg, Data, Events):
         self.cfg = cfg
         self.data = Data
         self.events = Events
-        self.plot_results = cfg["MODEL"]["plot_results"].lower() in ["true", "yes", "1"]
-        self.force_PET = cfg["MODEL"]["force_PET"].lower() in ["true", "yes", "1"]
+        self.plot_results = is_true(cfg["MODEL"]["plot_results"])
+        self.force_PET = is_true(cfg["MODEL"]["force_PET"])
+        self.run_exponential_model = is_true(cfg["MODEL"]["exponential_model"])
+        self.run_q_model = is_true(cfg["MODEL"]["q_model"])
+        self.run_sigmoid_model = is_true(cfg["MODEL"]["sigmoid_model"])
 
         if cfg["MODEL"]["run_mode"] == "parallel":
             current_thread = threading.current_thread()
@@ -58,7 +92,8 @@ class DrydownModel:
             try:
                 updated_event = self.fit_one_event(event)
                 # Replace the old Event instance with updated one
-                self.events[i] = updated_event
+                if updated_event is not None:
+                    self.events[i] = updated_event
             except Exception as e:
                 log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
@@ -74,16 +109,35 @@ class DrydownModel:
         Returns:
             _type_: _description_
         """
+        # Currently, all the three models need to be fitted to return results
+
         # _____________________________________________
         # Fit exponential model
-        popt, r_squared, y_opt = self.fit_exponential_model(event)
-        event.add_attributes("exponential", popt, r_squared, y_opt)
-
+        if self.run_exponential_model:
+            try:
+                popt, r_squared, y_opt = self.fit_exponential_model(event)
+                event.add_attributes("exponential", popt, r_squared, y_opt)
+            except Exception as e:
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+                return None
         # _____________________________________________
         # Fit q model
-        popt, r_squared, y_opt = self.fit_q_model(event)
-        event.add_attributes("q", popt, r_squared, y_opt, self.force_PET)
-
+        if self.run_q_model:
+            try:
+                popt, r_squared, y_opt = self.fit_q_model(event)
+                event.add_attributes("q", popt, r_squared, y_opt, self.force_PET)
+            except Exception as e:
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+                return None
+        # _____________________________________________
+        # Fit sigmoid model
+        if self.run_sigmoid_model:
+            try:
+                popt, r_squared, y_opt = self.fit_sigmoid_model(event)
+                event.add_attributes("sigmoid", popt, r_squared, y_opt)
+            except Exception as e:
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+                return None
         # _____________________________________________
         # Finalize results for one event
         # if self.plot_results:
@@ -184,14 +238,14 @@ class DrydownModel:
         # ___________________________________________________________________________________
         # Define the boundary condition for optimizing q_model(t, k, q, delta_theta)
 
-        ### k (should be equal to PET to reduce dimensionality ###
+        ### k (should be equal to PET/z to reduce dimensionality ###
         min_k = 0
-        max_k = event.pet * 100
-        ini_k = event.pet
+        max_k = event.pet / 50 * 100
+        ini_k = event.pet / 50
 
         ### q ###
         min_q = 0.0
-        max_q = 22
+        max_q = 100
         ini_q = 1.0 + 1.0e-03
 
         ### delta_theta ###
@@ -230,17 +284,81 @@ class DrydownModel:
                 norm=True,
             )
 
+    def fit_sigmoid_model(self, event):
+        """Base function for fitting models
+
+        Args:
+            event (_type_): _description_
+            model (_type_): _description_
+            bounds (_type_): _description_
+            p0 (_type_): _description_
+            norm (bool, optional): _description_. Defaults to False.
+
+        Returns:
+            _type_: _description_
+        """
+        try:
+            # Observed time series data
+            t_obs = event.x
+            y_obs = event.y
+            y_init = y_obs[
+                0
+            ]  # Initial condition (assuming that the first observed data point is the initial condition)
+
+            # Initial guess for parameters s50, k, ETmax
+            ini_s50 = 0.5
+            ini_k = 10
+            ini_ETmax = 1.0
+
+            min_s50 = 0.0
+            min_k = None
+            min_ETmax = 0.0
+
+            max_s50 = 1.0
+            max_k = None
+            max_ETmax = None
+
+            initial_guess = [ini_s50, ini_k, ini_ETmax]
+            bounds = [(min_s50, max_s50), (min_k, max_k), (min_ETmax, max_ETmax)]
+
+            # Perform the optimization
+            result = minimize(
+                objective_function,
+                initial_guess,
+                args=(y_obs, y_init, t_obs),
+                method="L-BFGS-B",
+                bounds=bounds,
+            )  # You can choose a different method if needed
+
+            # The result contains the optimized parameters
+            s50_best, k_best, ETmaxbest = result.x
+            best_solution = solve_ivp(
+                lambda t, theta: loss_sigmoid(t, theta, s50_best, k_best, ETmaxbest),
+                [t_obs[0], t_obs[-1]],
+                [y_init],
+                t_eval=t_obs,
+            )
+
+            # Get the optimal fit
+            y_opt = best_solution.y[0]
+
+            # Calculate the residuals
+            popt = result.x
+            residuals = event.y - y_opt
+            ss_res = np.sum(residuals**2)
+            r_squared = 1 - ss_res / np.sum((event.y - np.nanmean(event.y)) ** 2)
+
+            return popt, r_squared, y_opt
+
+        except Exception as e:
+            log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+
     def return_result_df(self):
         """Return results in the pandas dataframe format for easier concatination"""
 
         results = []
         for event in self.events:
             try:
-                if not self.force_PET:
-                    q_k = event.q["k"]
-                else:
-                    q_k = event.pet
-
                 _results = {
                     "EASE_row_index": self.data.EASE_row_index,
                     "EASE_column_index": self.data.EASE_column_index,
@@ -251,18 +369,48 @@ class DrydownModel:
                     "min_sm": event.min_sm,
                     "max_sm": event.max_sm,
                     "pet": event.pet,
-                    "exp_delta_theta": event.exponential["delta_theta"],
-                    "exp_theta_w": event.exponential["theta_w"],
-                    "exp_tau": event.exponential["tau"],
-                    "exp_r_squared": event.exponential["r_squared"],
-                    "exp_y_opt": event.exponential["y_opt"],
-                    "q_k": q_k,
-                    "q_q": event.q["q"],
-                    "q_delta_theta": event.q["delta_theta"],
-                    "q_r_squared": event.q["r_squared"],
-                    "q_y_opt": event.q["y_opt"],
                 }
+
+                if self.run_exponential_model:
+                    _results.update(
+                        {
+                            "exp_delta_theta": event.exponential["delta_theta"],
+                            "exp_theta_w": event.exponential["theta_w"],
+                            "exp_tau": event.exponential["tau"],
+                            "exp_r_squared": event.exponential["r_squared"],
+                            "exp_y_opt": event.exponential["y_opt"],
+                        }
+                    )
+
+                if self.run_q_model:
+                    if not self.force_PET:
+                        q_k = event.q["k"]
+                    else:
+                        q_k = event.pet
+                    _results.update(
+                        {
+                            "q_k": q_k,
+                            "q_q": event.q["q"],
+                            "q_delta_theta": event.q["delta_theta"],
+                            "q_r_squared": event.q["r_squared"],
+                            "q_y_opt": event.q["y_opt"],
+                        }
+                    )
+
+                if self.run_sigmoid_model:
+                    _results.update(
+                        {
+                            "sigmoid_s50": event.sigmoid["s50"],
+                            "sigmoid_k": event.sigmoid["k"],
+                            "sigmoid_ETmax": event.sigmoid["ETmax"],
+                            "sigmoid_r_squared": event.sigmoid["r_squared"],
+                            "sigmoid_y_opt": event.sigmoid["y_opt"],
+                        }
+                    )
+
+                # Now, _results contains only the relevant fields based on the boolean flags.
                 results.append(_results)
+
             except Exception as e:
                 log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
                 continue
@@ -283,7 +431,7 @@ class DrydownModel:
 
         # Create a figure and axes
         if ax is None:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(5, 5))
 
         # ______________________________________
         # Plot observed data
@@ -291,31 +439,49 @@ class DrydownModel:
             ax.scatter(x, event.y)
 
         # ______________________________________
-        try:
-            ax.plot(
-                x,
-                event.exponential["y_opt"],
-                alpha=0.7,
-                linestyle="--",
-                color="orange",
-                label=f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}",
-            )
-        except Exception as e:
-            log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+        # Plot exponential model
+        if self.run_exponential_model:
+            try:
+                ax.plot(
+                    x,
+                    event.exponential["y_opt"],
+                    alpha=0.7,
+                    linestyle="--",
+                    color="orange",
+                    label=f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}",
+                )
+            except Exception as e:
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
         # ______________________________________
         # Plot q model
-        try:
-            ax.plot(
-                x,
-                event.q["y_opt"],
-                alpha=0.7,
-                linestyle="--",
-                color="green",
-                label=f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}; PET={event.pet:.2f}",
-            )
-        except Exception as e:
-            log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+        if self.run_q_model:
+            try:
+                ax.plot(
+                    x,
+                    event.q["y_opt"],
+                    alpha=0.7,
+                    linestyle="--",
+                    color="green",
+                    label=f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}; PET={event.pet:.2f}",
+                )
+            except Exception as e:
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+
+        # ______________________________________
+        # Plot sigmoid model
+        if self.run_sigmoid_model:
+            try:
+                ax.plot(
+                    x,
+                    event.sigmoid["y_opt"],
+                    alpha=0.7,
+                    linestyle="--",
+                    color="blue",
+                    label=f"sigmoid: R^2={event.sigmoid['r_squared']:.2f}; k={event.sigmoid['k']:.2f}",
+                )
+            except Exception as e:
+                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
         # ______________________________________
         if plot_mode == "single":
@@ -326,37 +492,61 @@ class DrydownModel:
             ax.legend()
             # Rotate the x tick labels
             ax.tick_params(axis="x", rotation=45)
+
         elif plot_mode == "multiple":
-            try:
-                exp_param = f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}"
+            # ______________________________________
+            # Plot exponential model
+            if self.run_exponential_model:
+                try:
+                    exp_param = f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}"
 
-                ax.text(
-                    x[0],
-                    event.q["y_opt"][0] + 0.03,
-                    f"param={exp_param}",
-                    fontsize=12,
-                    ha="left",
-                    va="bottom",
-                    color="orange",
-                )
-            except Exception as e:
-                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+                    ax.text(
+                        x[0],
+                        event.q["y_opt"][0] + 0.03,
+                        f"param={exp_param}",
+                        fontsize=12,
+                        ha="left",
+                        va="bottom",
+                        color="orange",
+                    )
+                except Exception as e:
+                    log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
-            try:
-                q_param = (
-                    f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}"
-                )
-                ax.text(
-                    x[0],
-                    event.q["y_opt"][0],
-                    f"{q_param}",
-                    fontsize=12,
-                    ha="left",
-                    va="bottom",
-                    color="green",
-                )
-            except Exception as e:
-                log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+            # ______________________________________
+            # Plot q model
+            if self.run_q_model:
+                try:
+                    q_param = (
+                        f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}"
+                    )
+                    ax.text(
+                        x[0],
+                        event.q["y_opt"][0],
+                        f"{q_param}",
+                        fontsize=12,
+                        ha="left",
+                        va="bottom",
+                        color="green",
+                    )
+                except Exception as e:
+                    log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
+
+            # ______________________________________
+            # Plot sigmoid model
+            if self.run_sigmoid_model:
+                try:
+                    sigmoid_param = f"sigmoid model: R^2={event.sigmoid['r_squared']:.2f}; k={event.sigmoid['k']:.2f}"
+                    ax.text(
+                        x[0],
+                        event.sigmoid["y_opt"][0] - 0.03,
+                        f"{sigmoid_param}",
+                        fontsize=12,
+                        ha="left",
+                        va="bottom",
+                        color="blue",
+                    )
+                except Exception as e:
+                    log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
         # ___________________________________________________________________________________
         # Save results
@@ -366,6 +556,7 @@ class DrydownModel:
             if not os.path.exists(output_dir2):
                 os.makedirs(output_dir2)
 
+            plt.tight_layout()
             plt.savefig(
                 os.path.join(output_dir2, filename),
                 dpi=600,
