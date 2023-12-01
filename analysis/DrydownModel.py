@@ -50,14 +50,14 @@ def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
         float: Rate of change in soil moisture (dtheta/dt) for the given timestep, in m3/m3/day.
     """
 
-    s0 = (delta_theta - theta_w) ** (1 - q)
+    theta_0 = (delta_theta - theta_w) ** (1 - q)
 
     a = (1 - q) / ((theta_star - theta_w) ** q)
 
-    return (-k * a * t + s0) ** (1 / (1 - q)) + theta_w
+    return (-k * a * t + theta_0) ** (1 / (1 - q)) + theta_w
 
 
-def loss_sigmoid(t, theta, theta50, k, ETmax, theta_wp=0.0):
+def loss_sigmoid(t, theta, theta50, k, a):
     """
     Calculate the loss function (dtheta/dt vs theta relationship) using sigmoid model
 
@@ -65,17 +65,16 @@ def loss_sigmoid(t, theta, theta50, k, ETmax, theta_wp=0.0):
     t (int): Timestep, in day.
     theta (float): Volumetric soil moisture content, in m3/m3.
     theta50 (float, optional): 50 percentile soil moisture content, equal to s50 * porosity, in m3/m3
-    k (float): Degree of non-linearity in the soil moisture response, in ???
-    ETmax
-    theta_wp (float, optional): Wilting point soil moisture content, equal to s_star * porosity, in m3/m3. Default is 0.0.
+    k (float): Degree of non-linearity in the soil moisture response. k = k0 (original coefficient of sigmoid) / n (porosity), in m3/m3
+    a (float): The spremum of dtheta/dt, a [-/day] = ETmax [mm/day] / z [mm]
 
     Returns:
     float: Rate of change in soil moisture (dtheta/dt) for the given soil mositure content, in m3/m3/day.
     """
     exp_arg = np.clip(
-        -k * (theta - theta50), -np.inf, 700
+        -k * (theta - theta50), -np.inf, 10000
     )  # Clip exponent item to avoid failure
-    d_theta = -1 * (ETmax + theta_wp) / (1 + np.exp(exp_arg))
+    d_theta = -1 * a / (1 + np.exp(exp_arg))
     return d_theta
 
 
@@ -91,12 +90,12 @@ def solve_de(t_obs, y_init, parameters):
     y_init (float): Observed volumetric soil moisture content, in m3/m3.
     parameters: a list of the follwing parameters
         theta50 (float, optional): 50 percentile soil moisture content, equal to s50 * porosity, in m3/m3
-        k (float): Degree of non-linearity in the soil moisture response, in ???
-        ETmax
+        k (float): Degree of non-linearity in the soil moisture response. k = k0 (original coefficient of sigmoid) / n (porosity), in m3/m3
+        a (float): The spremum of dtheta/dt, a [-/day] = ETmax [mm/day] / z [mm]
     """
-    theta50, k, ETmax = parameters
+    theta50, k, a = parameters
     sol = solve_ivp(
-        lambda t, theta: loss_sigmoid(t, theta, theta50, k, ETmax),
+        lambda t, theta: loss_sigmoid(t, theta, theta50, k, a),
         [t_obs[0], t_obs[-1]],
         [y_init],
         t_eval=t_obs,
@@ -356,24 +355,26 @@ class DrydownModel:
                 0
             ]  # Initial condition (assuming that the first observed data point is the initial condition)
 
-            # Initial guess for parameters theta50, k, ETmax
+            # Initial guess for parameters theta50, k, a
+            PET = event.pet
+
             ini_theta50 = 0.5
-            ini_k = 10
-            ini_ETmax = 1.0
+            ini_k = 1
+            ini_a = PET / 50
 
             min_theta50 = 0.0
-            min_k = None
-            min_ETmax = 0.0
+            min_k = 0.0
+            min_a = 0.0
 
             max_theta50 = 1.0
-            max_k = None
-            max_ETmax = None
+            max_k = np.inf
+            max_a = PET / 50 * 100
 
-            initial_guess = [ini_theta50, ini_k, ini_ETmax]
+            initial_guess = [ini_theta50, ini_k, ini_a]
             bounds = [
                 (min_theta50, max_theta50),
                 (min_k, max_k),
-                (min_ETmax, max_ETmax),
+                (min_a, max_a),
             ]
 
             # Perform the optimization
@@ -386,11 +387,9 @@ class DrydownModel:
             )  # You can choose a different method if needed
 
             # The result contains the optimized parameters
-            theta50_best, k_best, ETmaxbest = result.x
+            theta50_best, k_best, a_best = result.x
             best_solution = solve_ivp(
-                lambda t, theta: loss_sigmoid(
-                    t, theta, theta50_best, k_best, ETmaxbest
-                ),
+                lambda t, theta: loss_sigmoid(t, theta, theta50_best, k_best, a_best),
                 [t_obs[0], t_obs[-1]],
                 [y_init],
                 t_eval=t_obs,
@@ -459,7 +458,7 @@ class DrydownModel:
                         {
                             "sigmoid_theta50": event.sigmoid["theta50"],
                             "sigmoid_k": event.sigmoid["k"],
-                            "sigmoid_ETmax": event.sigmoid["ETmax"],
+                            "sigmoid_a": event.sigmoid["a"],
                             "sigmoid_r_squared": event.sigmoid["r_squared"],
                             "sigmoid_y_opt": event.sigmoid["y_opt"],
                         }

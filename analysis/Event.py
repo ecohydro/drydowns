@@ -65,7 +65,7 @@ class Event:
             self.sigmoid = {
                 "s50": popt[0],
                 "k": popt[1],
-                "ETmax": popt[2],
+                "a": popt[2],
                 "r_squared": r_squared,
                 "y_opt": y_opt.tolist(),
             }
