@@ -63,7 +63,7 @@ class Event:
 
         if model_type == "sigmoid":
             self.sigmoid = {
-                "s50": popt[0],
+                "theta50": popt[0],
                 "k": popt[1],
                 "a": popt[2],
                 "r_squared": r_squared,
