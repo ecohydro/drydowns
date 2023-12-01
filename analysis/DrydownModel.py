@@ -14,21 +14,42 @@ log = getLogger(__name__)
 
 
 def exponential_model(t, delta_theta, theta_w, tau):
+    """
+    Calculate the drydown curve for soil moisture over time using non-linear plant stress model.
+
+    Parameters:
+        t (int): Timestep, in day.
+        delta_theta (float): Shift/increment in soil moisture after precipitation, in m3/m3.
+        theta_w (float, optional): Wilting point soil moisture content, equal to s_star * porosity, in m3/m3. Default is 0.0.
+        tau (float): decay rate, in 1/day.
+
+    Returns:
+        float: Rate of change in soil moisture (dtheta/dt) for the given timestep, in m3/m3/day.
+
+    Reference:
+        McColl, K.A., W. Wang, B. Peng, R. Akbar, D.J. Short Gianotti, et al. 2017.
+        Global characterization of surface soil moisture drydowns.
+        Geophys. Res. Lett. 44(8): 3682–3690. doi: 10.1002/2017GL072819.
+    """
     return delta_theta * np.exp(-t / tau) + theta_w
 
 
-def neg_log_likelihood(params, t, y):
-    delta_theta, theta_w, tau, sigma = params
-    y_hat = exponential_model(t, delta_theta, theta_w, tau)
-    residuals = y - y_hat
-    ssr = np.sum(residuals**2)
-    n = len(y)
-    sigma2 = ssr / n
-    ll = -(n / 2) * np.log(2 * np.pi * sigma2) - (1 / (2 * sigma2)) * ssr
-    return -ll
-
-
 def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
+    """
+    Calculate the drydown curve for soil moisture over time using non-linear plant stress model.
+
+    Parameters:
+        t (int): Timestep, in day.
+        k (float): Product of soil thickness (z) and maximum rate of change in normalized soil moisture (k), equivalent to maximum ET rate (ETmax), in m3/m3/day.
+        q (float): Degree of non-linearity in the soil moisture response.
+        delta_theta (float): Shift/increment in soil moisture after precipitation, in m3/m3.
+        theta_star (float, optional): Critical soil moisture content, equal to s_star * porosity, in m3/m3. Default is 1.0.
+        theta_w (float, optional): Wilting point soil moisture content, equal to s_star * porosity, in m3/m3. Default is 0.0.
+
+    Returns:
+        float: Rate of change in soil moisture (dtheta/dt) for the given timestep, in m3/m3/day.
+    """
+
     s0 = (delta_theta - theta_w) ** (1 - q)
 
     a = (1 - q) / ((theta_star - theta_w) ** q)
@@ -36,19 +57,46 @@ def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
     return (-k * a * t + s0) ** (1 / (1 - q)) + theta_w
 
 
-# The differential equation dy/dt = f(y, a, b)
-# Sigmoid model cannot be analytically solved, so this is numerically impelmented
-def loss_sigmoid(t, theta, s50, k, ETmax, theta_wp=0.0):
-    exp_arg = np.clip(-k * (theta - s50), -np.inf, 700)
+def loss_sigmoid(t, theta, theta50, k, ETmax, theta_wp=0.0):
+    """
+    Calculate the loss function (dtheta/dt vs theta relationship) using sigmoid model
+
+    Parameters:
+    t (int): Timestep, in day.
+    theta (float): Volumetric soil moisture content, in m3/m3.
+    theta50 (float, optional): 50 percentile soil moisture content, equal to s50 * porosity, in m3/m3
+    k (float): Degree of non-linearity in the soil moisture response, in ???
+    ETmax
+    theta_wp (float, optional): Wilting point soil moisture content, equal to s_star * porosity, in m3/m3. Default is 0.0.
+
+    Returns:
+    float: Rate of change in soil moisture (dtheta/dt) for the given soil mositure content, in m3/m3/day.
+    """
+    exp_arg = np.clip(
+        -k * (theta - theta50), -np.inf, 700
+    )  # Clip exponent item to avoid failure
     d_theta = -1 * (ETmax + theta_wp) / (1 + np.exp(exp_arg))
     return d_theta
 
 
 # Function to solve the DE with given parameters and return y at the time points
 def solve_de(t_obs, y_init, parameters):
-    s50, k, ETmax = parameters
+    """
+    The sigmoid loss function is a differential equation of dy/dt = f(y, a, b), which cannot be analytically solved,
+    so the fitting of this model to drydown is numerically impelmented.
+    solve_ivp finds y(t) approximately satisfying the differential equations, given an initial value y(t0)=y0.
+
+    Parameters:
+    t_obs (int): Timestep, in day.
+    y_init (float): Observed volumetric soil moisture content, in m3/m3.
+    parameters: a list of the follwing parameters
+        theta50 (float, optional): 50 percentile soil moisture content, equal to s50 * porosity, in m3/m3
+        k (float): Degree of non-linearity in the soil moisture response, in ???
+        ETmax
+    """
+    theta50, k, ETmax = parameters
     sol = solve_ivp(
-        lambda t, theta: loss_sigmoid(t, theta, s50, k, ETmax),
+        lambda t, theta: loss_sigmoid(t, theta, theta50, k, ETmax),
         [t_obs[0], t_obs[-1]],
         [y_init],
         t_eval=t_obs,
@@ -160,6 +208,9 @@ class DrydownModel:
         """
         try:
             if norm:
+                # Use normalized y
+                # It is easier to fit q model with normalized soil moisture timeseries
+                # The parameters will be get de-normalized in the post-analysis
                 y_fit = event.norm_y
             else:
                 y_fit = event.y
@@ -238,7 +289,7 @@ class DrydownModel:
         # ___________________________________________________________________________________
         # Define the boundary condition for optimizing q_model(t, k, q, delta_theta)
 
-        ### k (should be equal to PET/z to reduce dimensionality ###
+        ### k (should be close to PET/z ###
         min_k = 0
         max_k = event.pet / 50 * 100
         ini_k = event.pet / 50
@@ -305,21 +356,25 @@ class DrydownModel:
                 0
             ]  # Initial condition (assuming that the first observed data point is the initial condition)
 
-            # Initial guess for parameters s50, k, ETmax
-            ini_s50 = 0.5
+            # Initial guess for parameters theta50, k, ETmax
+            ini_theta50 = 0.5
             ini_k = 10
             ini_ETmax = 1.0
 
-            min_s50 = 0.0
+            min_theta50 = 0.0
             min_k = None
             min_ETmax = 0.0
 
-            max_s50 = 1.0
+            max_theta50 = 1.0
             max_k = None
             max_ETmax = None
 
-            initial_guess = [ini_s50, ini_k, ini_ETmax]
-            bounds = [(min_s50, max_s50), (min_k, max_k), (min_ETmax, max_ETmax)]
+            initial_guess = [ini_theta50, ini_k, ini_ETmax]
+            bounds = [
+                (min_theta50, max_theta50),
+                (min_k, max_k),
+                (min_ETmax, max_ETmax),
+            ]
 
             # Perform the optimization
             result = minimize(
@@ -331,9 +386,11 @@ class DrydownModel:
             )  # You can choose a different method if needed
 
             # The result contains the optimized parameters
-            s50_best, k_best, ETmaxbest = result.x
+            theta50_best, k_best, ETmaxbest = result.x
             best_solution = solve_ivp(
-                lambda t, theta: loss_sigmoid(t, theta, s50_best, k_best, ETmaxbest),
+                lambda t, theta: loss_sigmoid(
+                    t, theta, theta50_best, k_best, ETmaxbest
+                ),
                 [t_obs[0], t_obs[-1]],
                 [y_init],
                 t_eval=t_obs,
@@ -400,7 +457,7 @@ class DrydownModel:
                 if self.run_sigmoid_model:
                     _results.update(
                         {
-                            "sigmoid_s50": event.sigmoid["s50"],
+                            "sigmoid_theta50": event.sigmoid["theta50"],
                             "sigmoid_k": event.sigmoid["k"],
                             "sigmoid_ETmax": event.sigmoid["ETmax"],
                             "sigmoid_r_squared": event.sigmoid["r_squared"],
@@ -601,3 +658,19 @@ class DrydownModel:
         fig.savefig(os.path.join(output_dir2, filename))
 
         plt.close()
+
+
+"""Old codes
+
+
+def neg_log_likelihood(params, t, y):
+    delta_theta, theta_w, tau, sigma = params
+    y_hat = exponential_model(t, delta_theta, theta_w, tau)
+    residuals = y - y_hat
+    ssr = np.sum(residuals**2)
+    n = len(y)
+    sigma2 = ssr / n
+    ll = -(n / 2) * np.log(2 * np.pi * sigma2) - (1 / (2 * sigma2)) * ssr
+    return -ll
+
+"""
