@@ -366,7 +366,7 @@ class DrydownModel:
             min_k = 0.0
             min_a = 0.0
 
-            max_theta50 = 1.0
+            max_theta50 = event.max_sm
             max_k = np.inf
             max_a = PET / 50 * 100
 
