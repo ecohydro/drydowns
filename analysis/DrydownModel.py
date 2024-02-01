@@ -250,8 +250,8 @@ class DrydownModel:
 
         ### Delta_theta ###
         min_delta_theta = 0
-        max_delta_theta = 2 * event.subset_sm_range
-        ini_delta_theta = 0.5 * event.subset_sm_range
+        max_delta_theta = event.range_sm
+        ini_delta_theta = event.subset_sm_range
 
         ### Theta_w ###
         min_theta_w = self.data.min_sm
@@ -290,18 +290,18 @@ class DrydownModel:
 
         ### k (should be close to PET/z ###
         min_k = 0
-        max_k = event.pet / 50 * 100
+        max_k = np.inf
         ini_k = event.pet / 50
 
         ### q ###
         min_q = 0.0
-        max_q = 100
+        max_q = np.inf
         ini_q = 1.0 + 1.0e-03
 
         ### delta_theta ###
         min_delta_theta = 0.0
-        max_delta_theta = 1.0
-        ini_delta_theta = 0.1
+        max_delta_theta = event.range_sm
+        ini_delta_theta = event.subset_sm_range
 
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
