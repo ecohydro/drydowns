@@ -42,7 +42,7 @@ def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
         t (int): Timestep, in day.
         k (float): Product of soil thickness (z) and maximum rate of change in normalized soil moisture (k), equivalent to maximum ET rate (ETmax), in m3/m3/day.
         q (float): Degree of non-linearity in the soil moisture response.
-        delta_theta (float): Shift/increment in soil moisture after precipitation, in m3/m3.
+        delta_theta (float): Shift/increment in soil moisture after precipitation, in m3/m3. It is equal to theta_0 - theta_w.
         theta_star (float, optional): Critical soil moisture content, equal to s_star * porosity, in m3/m3. Default is 1.0.
         theta_w (float, optional): Wilting point soil moisture content, equal to s_star * porosity, in m3/m3. Default is 0.0.
 
@@ -50,11 +50,11 @@ def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
         float: Rate of change in soil moisture (dtheta/dt) for the given timestep, in m3/m3/day.
     """
 
-    theta_0 = (delta_theta - theta_w) ** (1 - q)
+    b = delta_theta ** (1 - q)
 
     a = (1 - q) / ((theta_star - theta_w) ** q)
 
-    return (-k * a * t + theta_0) ** (1 / (1 - q)) + theta_w
+    return (-k * a * t + b) ** (1 / (1 - q)) + theta_w
 
 
 def loss_sigmoid(t, theta, theta50, k, a):
@@ -250,7 +250,7 @@ class DrydownModel:
 
         ### Delta_theta ###
         min_delta_theta = 0
-        max_delta_theta = event.range_sm
+        max_delta_theta = self.data.range_sm
         ini_delta_theta = event.subset_sm_range
 
         ### Theta_w ###
@@ -300,7 +300,7 @@ class DrydownModel:
 
         ### delta_theta ###
         min_delta_theta = 0.0
-        max_delta_theta = event.range_sm
+        max_delta_theta = self.data.range_sm
         ini_delta_theta = event.subset_sm_range
 
         # ______________________________________________________________________________________
