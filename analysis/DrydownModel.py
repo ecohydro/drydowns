@@ -300,8 +300,8 @@ class DrydownModel:
 
         ### delta_theta ###
         min_delta_theta = 0.0
-        max_delta_theta = self.data.range_sm
-        ini_delta_theta = event.subset_sm_range
+        max_delta_theta = 1.0  # Equivalent of self.data.range_sm as the input theta values are normalized in this code
+        ini_delta_theta = event.subset_sm_range / self.data.range_sm
 
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
