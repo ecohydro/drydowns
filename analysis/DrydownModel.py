@@ -9,6 +9,9 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
 from utils import is_true
 
+from Event import Event
+from towerevent import TowerEvent
+
 # Create a logger
 log = getLogger(__name__)
 
@@ -57,7 +60,7 @@ def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
     return (-k * a * t + b) ** (1 / (1 - q)) + theta_w
 
 
-def loss_sigmoid(t, theta, theta50, k, a):
+def loss_sigmoid(t, theta, theta_50, k, a):
     """
     Calculate the loss function (dtheta/dt vs theta relationship) using sigmoid model
 
@@ -72,7 +75,7 @@ def loss_sigmoid(t, theta, theta50, k, a):
     float: Rate of change in soil moisture (dtheta/dt) for the given soil mositure content, in m3/m3/day.
     """
     exp_arg = np.clip(
-        -k * (theta - theta50), -np.inf, 10000
+        -k * (theta - theta_50), -np.inf, 10000
     )  # Clip exponent item to avoid failure
     d_theta = -1 * a / (1 + np.exp(exp_arg))
     return d_theta
@@ -93,9 +96,9 @@ def solve_de(t_obs, y_init, parameters):
         k (float): Degree of non-linearity in the soil moisture response. k = k0 (original coefficient of sigmoid) / n (porosity), in m3/m3
         a (float): The spremum of dtheta/dt, a [-/day] = ETmax [mm/day] / z [mm]
     """
-    theta50, k, a = parameters
+    theta_50, k, a = parameters
     sol = solve_ivp(
-        lambda t, theta: loss_sigmoid(t, theta, theta50, k, a),
+        lambda t, theta: loss_sigmoid(t, theta, theta_50, k, a),
         [t_obs[0], t_obs[-1]],
         [y_init],
         t_eval=t_obs,
@@ -112,20 +115,33 @@ def objective_function(parameters, y_obs, y_init, t_obs):
 
 
 class DrydownModel:
-    def __init__(self, cfg, Data, Events):
+    def __init__(self, cfg, data, events):
         self.cfg = cfg
-        self.data = Data
-        self.events = Events
-        self.plot_results = is_true(cfg["MODEL"]["plot_results"])
-        self.force_PET = is_true(cfg["MODEL"]["force_PET"])
-        self.run_exponential_model = is_true(cfg["MODEL"]["exponential_model"])
-        self.run_q_model = is_true(cfg["MODEL"]["q_model"])
-        self.run_sigmoid_model = is_true(cfg["MODEL"]["sigmoid_model"])
+        self.data = data
+        self.events = events
 
-        if cfg["MODEL"]["run_mode"] == "parallel":
+        self.cfg_model = cfg["MODEL"]
+
+        # self.plot_results = is_true(cfg["MODEL"]["plot_results"])
+        # self.force_PET = is_true(cfg["MODEL"]["force_PET"])
+        self._force_PET = self.cfg_model.getboolean("force_PET")
+
+
+        # TODO: pull out models into subclasses
+        # self.run_exponential_model = is_true(cfg["MODEL"]["exponential_model"])
+        # self.run_q_model = is_true(cfg["MODEL"]["q_model"])
+        # self.run_sigmoid_model = is_true(cfg["MODEL"]["sigmoid_model"])
+        self._run_exponential = self.cfg_model.getboolean("exponential_model")
+        self._run_q = self.cfg_model.getboolean("q_model")
+        self._run_sigmoid = self.cfg_model.getboolean("sigmoid_model")
+
+
+        if self.cfg_model["run_mode"] == "parallel":
             current_thread = threading.current_thread()
             current_thread.name = (
-                f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
+                # f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
+                f"{self.data.id[0]}, {self.data.id[1]}"
+
             )
             self.thread_name = current_thread.name
         else:
@@ -137,17 +153,17 @@ class DrydownModel:
 
         for i, event in enumerate(self.events):
             try:
-                updated_event = self.fit_one_event(event)
+                updated_event = self.fit_event(event)
                 # Replace the old Event instance with updated one
                 if updated_event is not None:
                     self.events[i] = updated_event
             except Exception as e:
                 log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
-        if self.plot_results:
+        if self.cfg_model.getboolean('plot_results'):
             self.plot_drydown_models_in_timesreies()
 
-    def fit_one_event(self, event):
+    def fit_event(self, event):
         """Fit multiple drydown models for one event
 
         Args:
@@ -160,7 +176,7 @@ class DrydownModel:
 
         # _____________________________________________
         # Fit exponential model
-        if self.run_exponential_model:
+        if self._run_exponential:
             try:
                 popt, r_squared, y_opt = self.fit_exponential_model(event)
                 event.add_attributes("exponential", popt, r_squared, y_opt)
@@ -169,16 +185,16 @@ class DrydownModel:
                 return None
         # _____________________________________________
         # Fit q model
-        if self.run_q_model:
+        if self._run_q:
             try:
                 popt, r_squared, y_opt = self.fit_q_model(event)
-                event.add_attributes("q", popt, r_squared, y_opt, self.force_PET)
+                event.add_attributes("q", popt, r_squared, y_opt, self._force_PET)
             except Exception as e:
                 log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
                 return None
         # _____________________________________________
         # Fit sigmoid model
-        if self.run_sigmoid_model:
+        if self._run_sigmoid:
             try:
                 popt, r_squared, y_opt = self.fit_sigmoid_model(event)
                 event.add_attributes("sigmoid", popt, r_squared, y_opt)
@@ -187,8 +203,12 @@ class DrydownModel:
                 return None
         # _____________________________________________
         # Finalize results for one event
-        # if self.plot_results:
+        # if cfg["MODEL"].getboolean('plot_results'):
         #     self.plot_drydown_models(event)
+        
+        # TODO: I think if event is not returned here, it would not need to be 
+        # replaced in fit_models (it may not need to regardless; I think this happens
+        # in place?).
 
         return event
 
@@ -210,25 +230,33 @@ class DrydownModel:
                 # Use normalized y
                 # It is easier to fit q model with normalized soil moisture timeseries
                 # The parameters will be get de-normalized in the post-analysis
-                y_fit = event.norm_y
+                # y_fit = event.norm_y
+                y_fit = event.theta_norm
             else:
-                y_fit = event.y
+                # y_fit = event.y
+                y_fit = event.theta
 
             # Fit the model
             popt, _ = curve_fit(
-                f=model, xdata=event.x, ydata=y_fit, p0=p0, bounds=bounds
+                # f=model, xdata=event.x, ydata=y_fit, p0=p0, bounds=bounds
+                f=model, xdata=event.t, ydata=y_fit, p0=p0, bounds=bounds
+
             )
 
             # Get the optimal fit
-            y_opt = model(event.x, *popt)
+            # y_opt = model(event.x, *popt)
+            y_opt = model(event.t, *popt)
+
 
             if norm:
                 y_opt = y_opt * self.data.range_sm + self.data.min_sm
 
             # Calculate the residuals
-            residuals = event.y - y_opt
+            residuals = event.theta - y_opt #event.y - y_opt
             ss_res = np.sum(residuals**2)
-            r_squared = 1 - ss_res / np.sum((event.y - np.nanmean(event.y)) ** 2)
+            # r_squared = 1 - ss_res / np.sum((event.y - np.nanmean(event.y)) ** 2)
+            r_squared = 1 - ss_res / np.sum((event.theta - np.nanmean(event.theta)) ** 2)
+
 
             return popt, r_squared, y_opt
 
@@ -251,11 +279,13 @@ class DrydownModel:
         ### Delta_theta ###
         min_delta_theta = 0
         max_delta_theta = self.data.range_sm
-        ini_delta_theta = event.subset_sm_range
+        # ini_delta_theta = event.subset_sm_range
+        ini_delta_theta = event.event_range
 
         ### Theta_w ###
         min_theta_w = self.data.min_sm
-        max_theta_w = event.subset_min_sm
+        # max_theta_w = event.subset_min_sm
+        max_theta_w = event.event_min
         ini_theta_w = (min_theta_w + max_theta_w) / 2
 
         ### Tau ###
@@ -291,7 +321,8 @@ class DrydownModel:
         ### k (should be close to PET/z ###
         min_k = 0
         max_k = np.inf
-        ini_k = event.pet / 50
+        # PET is in mm, z is in m
+        ini_k = event.pet / (self.data.z*1000) #50
 
         ### q ###
         min_q = 0.0
@@ -301,38 +332,70 @@ class DrydownModel:
         ### delta_theta ###
         min_delta_theta = 0.0
         max_delta_theta = 1.0  # Equivalent of self.data.range_sm as the input theta values are normalized in this code
-        ini_delta_theta = event.subset_sm_range / self.data.range_sm
+        # ini_delta_theta = event.subset_sm_range / self.data.range_sm
+        ini_delta_theta = event.event_range / self.data.range_sm
+
 
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
 
-        if not self.force_PET:
+        if not self._force_PET:
             bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
             p0 = [ini_k, ini_q, ini_delta_theta]
-
-            return self.fit_model(
-                event=event,
-                model=lambda t, k, q, delta_theta: q_model(
-                    t, k, q, delta_theta, 1.0, 0.0
-                ),
-                bounds=bounds,
-                p0=p0,
-                norm=True,
-            )
-
-        if self.force_PET:
+            mod = lambda t, k, q, delta_theta: q_model(t, k, q, delta_theta, 1.0, 0.0)
+        
+        elif self._force_PET:
             bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
             p0 = [ini_q, ini_delta_theta]
+            mod = lambda t, q, delta_theta: q_model(t, event.pet, q, delta_theta, 1.0, 0.0)
+        
+        mod_fit = self.fit_model(
+            event=event,
+            model=mod,
+            bounds=bounds,
+            p0=p0,
+            norm=True,
+        )
 
-            return self.fit_model(
-                event=event,
-                model=lambda t, q, delta_theta: q_model(
-                    t, event.pet, q, delta_theta, 1.0, 0.0
-                ),
-                bounds=bounds,
-                p0=p0,
-                norm=True,
-            )
+        return mod_fit
+
+        #     return self.fit_model(
+        #         event=event,
+        #         model=lambda t, k, q, delta_theta: q_model(
+        #             t, k, q, delta_theta, 1.0, 0.0
+        #         ),
+        #         bounds=bounds,
+        #         p0=p0,
+        #         norm=True,
+        #     )
+
+        # if not self._force_PET:
+        #     bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
+        #     p0 = [ini_k, ini_q, ini_delta_theta]
+
+        #     return self.fit_model(
+        #         event=event,
+        #         model=lambda t, k, q, delta_theta: q_model(
+        #             t, k, q, delta_theta, 1.0, 0.0
+        #         ),
+        #         bounds=bounds,
+        #         p0=p0,
+        #         norm=True,
+        #     )
+
+        # if self._force_PET:
+        #     bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
+        #     p0 = [ini_q, ini_delta_theta]
+
+        #     return self.fit_model(
+        #         event=event,
+        #         model=lambda t, q, delta_theta: q_model(
+        #             t, event.pet, q, delta_theta, 1.0, 0.0
+        #         ),
+        #         bounds=bounds,
+        #         p0=p0,
+        #         norm=True,
+        #     )
 
     def fit_sigmoid_model(self, event):
         """Base function for fitting models
@@ -350,7 +413,8 @@ class DrydownModel:
         try:
             # Observed time series data
             t_obs = event.x
-            y_obs = event.y
+            # y_obs = event.y
+            y_obs = event.theta
             y_init = y_obs[
                 0
             ]  # Initial condition (assuming that the first observed data point is the initial condition)
@@ -360,15 +424,15 @@ class DrydownModel:
 
             ini_theta50 = 0.5
             ini_k = 1
-            ini_a = PET / 50
+            ini_a = PET / (self.data.z * 1e3) #50
 
             min_theta50 = 0.0
             min_k = 0.0
             min_a = 0.0
 
-            max_theta50 = event.max_sm
+            max_theta50 = event.theta_star #event.max_sm
             max_k = np.inf
-            max_a = PET / 50 * 100
+            max_a = PET / (self.data.z*1e3) * 100 #50 * 100
 
             initial_guess = [ini_theta50, ini_k, ini_a]
             bounds = [
@@ -400,9 +464,11 @@ class DrydownModel:
 
             # Calculate the residuals
             popt = result.x
-            residuals = event.y - y_opt
+            # residuals = event.y - y_opt
+            residuals = event.theta - y_opt
             ss_res = np.sum(residuals**2)
-            r_squared = 1 - ss_res / np.sum((event.y - np.nanmean(event.y)) ** 2)
+            # r_squared = 1 - ss_res / np.sum((event.y - np.nanmean(event.y)) ** 2)
+            r_squared = 1 - ss_res / np.sum((event.theta - np.nanmean(event.theta)) ** 2)
 
             return popt, r_squared, y_opt
 
@@ -410,59 +476,80 @@ class DrydownModel:
             log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
     def return_result_df(self):
-        """Return results in the pandas dataframe format for easier concatination"""
+        """Return results in the pandas dataframe format for easier concatenation"""
 
         results = []
         for event in self.events:
             try:
+                if isinstance(event, TowerEvent):
+                    col_ids = ("SITE_ID", "Sensor_ID")
+                elif isinstance(event, Event):
+                    col_ids = ("EASE_row_index", "EASE_column_index")
+
                 _results = {
-                    "EASE_row_index": self.data.EASE_row_index,
-                    "EASE_column_index": self.data.EASE_column_index,
+                    # "EASE_row_index": self.data.EASE_row_index,
+                    # "EASE_column_index": self.data.EASE_column_index,
+                    col_ids[0] : self.data.id[0],
+                    col_ids[1] : self.data.id[1],
+                    "z_m" : self.data.z,
                     "event_start": event.start_date,
                     "event_end": event.end_date,
-                    "time": event.x,
-                    "sm": event.y,
-                    "min_sm": event.min_sm,
-                    "max_sm": event.max_sm,
+                    "duration" : (event.end_date - event.start_date).days,
+                    # "time": event.x,
+                    "time" : event.t,
+                    # "sm": event.y,
+                    "theta": event.theta,
+                    # "min_sm": event.min_sm,
+                    # "max_sm": event.max_sm,
+                    "min_sm": event.theta_w,
+                    "max_sm": event.theta_star,
                     "pet": event.pet,
                 }
+                if self._run_exponential:
+                    _results.update({'exp_' + k : v for k, v in event.exponential.items()})
 
-                if self.run_exponential_model:
-                    _results.update(
-                        {
-                            "exp_delta_theta": event.exponential["delta_theta"],
-                            "exp_theta_w": event.exponential["theta_w"],
-                            "exp_tau": event.exponential["tau"],
-                            "exp_r_squared": event.exponential["r_squared"],
-                            "exp_y_opt": event.exponential["y_opt"],
-                        }
-                    )
+                if self._run_q:
+                    _results.update({'q_' + k : v for k, v in event.q.items()})
 
-                if self.run_q_model:
-                    if not self.force_PET:
-                        q_k = event.q["k"]
-                    else:
-                        q_k = event.pet
-                    _results.update(
-                        {
-                            "q_k": q_k,
-                            "q_q": event.q["q"],
-                            "q_delta_theta": event.q["delta_theta"],
-                            "q_r_squared": event.q["r_squared"],
-                            "q_y_opt": event.q["y_opt"],
-                        }
-                    )
+                if self._run_sigmoid:
+                    _results.update({'sigmoid_' + k : v for k, v in event.sigmoid.items()})
 
-                if self.run_sigmoid_model:
-                    _results.update(
-                        {
-                            "sigmoid_theta50": event.sigmoid["theta50"],
-                            "sigmoid_k": event.sigmoid["k"],
-                            "sigmoid_a": event.sigmoid["a"],
-                            "sigmoid_r_squared": event.sigmoid["r_squared"],
-                            "sigmoid_y_opt": event.sigmoid["y_opt"],
-                        }
-                    )
+                # if self._run_exponential:
+                #     _results.update(
+                #         {
+                #             "exp_delta_theta": event.exponential["delta_theta"],
+                #             "exp_theta_w": event.exponential["theta_w"],
+                #             "exp_tau": event.exponential["tau"],
+                #             "exp_r_squared": event.exponential["r_squared"],
+                #             "exp_y_opt": event.exponential["y_opt"],
+                #         }
+                #     )
+
+                # if self._run_q:
+                #     if not self._force_PET:
+                #         q_k = event.q["k"]
+                #     else:
+                #         q_k = event.pet
+                #     _results.update(
+                #         {
+                #             "q_k": q_k,
+                #             "q_q": event.q["q"],
+                #             "q_delta_theta": event.q["delta_theta"],
+                #             "q_r_squared": event.q["r_squared"],
+                #             "q_y_opt": event.q["y_opt"],
+                #         }
+                #     )
+
+                # if self._run_sigmoid:
+                #     _results.update(
+                #         {
+                #             "sigmoid_theta50": event.sigmoid["theta50"],
+                #             "sigmoid_k": event.sigmoid["k"],
+                #             "sigmoid_a": event.sigmoid["a"],
+                #             "sigmoid_r_squared": event.sigmoid["r_squared"],
+                #             "sigmoid_y_opt": event.sigmoid["y_opt"],
+                #         }
+                #     )
 
                 # Now, _results contains only the relevant fields based on the boolean flags.
                 results.append(_results)
@@ -496,7 +583,7 @@ class DrydownModel:
 
         # ______________________________________
         # Plot exponential model
-        if self.run_exponential_model:
+        if self._run_exponential:
             try:
                 ax.plot(
                     x,
@@ -511,7 +598,7 @@ class DrydownModel:
 
         # ______________________________________
         # Plot q model
-        if self.run_q_model:
+        if self._run_q:
             try:
                 ax.plot(
                     x,
@@ -526,7 +613,7 @@ class DrydownModel:
 
         # ______________________________________
         # Plot sigmoid model
-        if self.run_sigmoid_model:
+        if self._run_sigmoid:
             try:
                 ax.plot(
                     x,
@@ -552,7 +639,7 @@ class DrydownModel:
         elif plot_mode == "multiple":
             # ______________________________________
             # Plot exponential model
-            if self.run_exponential_model:
+            if self._run_exponential:
                 try:
                     exp_param = f"expoential: R^2={event.exponential['r_squared']:.2f}; tau={event.exponential['tau']:.2f}"
 
@@ -570,7 +657,7 @@ class DrydownModel:
 
             # ______________________________________
             # Plot q model
-            if self.run_q_model:
+            if self._run_q:
                 try:
                     q_param = (
                         f"q model: R^2={event.q['r_squared']:.2f}; q={event.q['q']:.2f}"
@@ -589,7 +676,7 @@ class DrydownModel:
 
             # ______________________________________
             # Plot sigmoid model
-            if self.run_sigmoid_model:
+            if self._run_sigmoid:
                 try:
                     sigmoid_param = f"sigmoid model: R^2={event.sigmoid['r_squared']:.2f}; k={event.sigmoid['k']:.2f}"
                     ax.text(

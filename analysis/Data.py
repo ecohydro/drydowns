@@ -23,7 +23,7 @@ def set_time_index(df, index_name="time"):
 
 
 class Data:
-    """Class that handles datarods (Precipitation, SM, PET data) for a EASE pixel"""
+    """Class that handles datarods (Precipitation, SM, PET data) for an EASE pixel"""
 
     def __init__(self, cfg, EASEindex) -> None:
         # _______________________________________________________________________________
@@ -31,8 +31,13 @@ class Data:
 
         # Read inputs
         self.cfg = cfg
-        self.EASE_row_index = EASEindex[0]
-        self.EASE_column_index = EASEindex[1]
+        # TODO: Refactor EASE_row_index and EASE_column_index to be lat/long
+        self.id = EASEindex
+        # self.EASE_row_index = EASEindex[0]
+        # self.EASE_column_index = EASEindex[1]
+
+        # Define soil depth [m]
+        self.z = 0.05
 
         # Get the directory name
         self.data_dir = cfg["PATHS"]["data_dir"]
@@ -76,8 +81,8 @@ class Data:
 
         fn = get_filename(
             varname,
-            EASE_row_index=self.EASE_row_index,
-            EASE_column_index=self.EASE_column_index,
+            EASE_row_index=self.id[0], #self.EASE_row_index,
+            EASE_column_index=self.id[1], #self.EASE_column_index,
         )
         _df = pd.read_csv(os.path.join(self.data_dir, self.datarods_dir, varname, fn))
 

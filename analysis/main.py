@@ -1,8 +1,10 @@
 import multiprocessing as mp
 from configparser import ConfigParser
+from config import Config
 import time
 
 from Agent import Agent
+from toweragent import TowerAgent
 from MyLogger import getLogger
 from utils import is_true
 
@@ -17,11 +19,17 @@ def main():
 
     # _______________________________________________________________________________________________
     # Read config
-    cfg = ConfigParser()
-    cfg.read("config.ini")
+    # cfg = ConfigParser()
+    # cfg.read("config.ini")
+    cfg = Config('config.ini').config
+
+    cfg_model = cfg["MODEL"]
 
     # Initiate agent
-    agent = Agent(cfg=cfg)
+    if cfg['DATA']['data_type'] != 'SMAP':
+        agent = TowerAgent(cfg=cfg)
+    else:
+        agent = Agent(cfg=cfg)
     agent.initialize()
 
     # _______________________________________________________________________________________________
@@ -32,20 +40,26 @@ def main():
     # _______________________________________________________________________________________________
     # Verbose models to run
     log.info(f"Running the following models:")
-    if is_true(cfg["MODEL"]["exponential_model"]):
-        log.info(f"Exponential model")
-    if is_true(cfg["MODEL"]["q_model"]):
-        log.info(f"q model")
-    if is_true(cfg["MODEL"]["sigmoid_model"]):
-        log.info(f"Sigmoid model")
+    # if is_true(cfg["MODEL"]["exponential_model"]):
+    #     log.info(f"Exponential model")
+    # if is_true(cfg["MODEL"]["q_model"]):
+    #     log.info(f"q model")
+    # if is_true(cfg["MODEL"]["sigmoid_model"]):
+    #     log.info(f"Sigmoid model")
+    for mod_name in ['exponential_model', 'q_model', 'sigmoid_model']:
+        if cfg_model.getboolean(mod_name):
+            log.info(f"{mod_name}")
+    # [m for m in ['exponential_model', 'q_model', 'sigmoid_model'] if cfg_model.getboolean(m)]
 
     # Run the model
     if run_mode == "serial":
-        results = agent.run(agent.target_EASE_idx[500])
+        results = agent.run(agent.data_ids[500])
+    
     elif run_mode == "parallel":
-        nprocess = int(cfg["MULTIPROCESSING"]["nprocess"])
+        # nprocess = int(cfg["MULTIPROCESSING"]["nprocess"])
+        nprocess = cfg.getint("MULTIPROCESSING", "nprocess")
         with mp.Pool(nprocess) as pool:
-            results = list(pool.imap(agent.run, agent.target_EASE_idx))
+            results = list(pool.imap(agent.run, agent.data_ids))
         pool.close()
         pool.join()
     else:

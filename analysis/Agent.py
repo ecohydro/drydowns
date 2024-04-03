@@ -28,19 +28,23 @@ class Agent:
     def __init__(self, cfg=None, logger=None):
         self.cfg = cfg
         self.logger = logger
-        self.smapgrid = SMAPgrid(cfg=self.cfg)
-        self.target_EASE_idx = self.smapgrid.get_EASE_index_subset()
         self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
+        
+        self._smapgrid = SMAPgrid(cfg=self.cfg)
+        self.data_ids = self._smapgrid.get_EASE_index_subset()
+        
         self.output_dir = create_output_dir(parent_dir=cfg["PATHS"]["output_dir"])
 
     def initialize(self):
         None
 
-    def run(self, sample_EASE_index):
+    def run(self, did):
         """Run the analysis for one pixel
 
         Args:
-            sample_EASE_index (list.shape[1,2]): a pair of EASE index, representing [0,0] the EASE row index (y, or latitude) and [0,1] EASE column index (x, or longitude)
+            did (list.shape[1,2]): Data ID; 
+            a pair of EASE index, representing [0,0] the EASE row index (y, or 
+            latitude) and [0,1] EASE column index (x, or longitude)
         """
 
         try:
@@ -48,17 +52,17 @@ class Agent:
             # Get the sampling point attributes (EASE pixel)
             if self.verbose:
                 log.info(
-                    f"Currently processing pixel {sample_EASE_index}",
+                    f"Currently processing pixel {did}",
                 )
 
             # _______________________________________________________________________________________________
             # Read dataset for a pixel
-            data = Data(self.cfg, sample_EASE_index)
+            data = Data(self.cfg, did)
 
             # If there is no soil moisture data available for the pixel, skip the analysis
             if data.df["soil_moisture_daily"].isna().all():
                 warnings.warn(
-                    f"No soil moisture data at the EASE pixel {sample_EASE_index}"
+                    f"No soil moisture data at the EASE pixel {did}"
                 )
                 return None
 
@@ -70,11 +74,11 @@ class Agent:
             # If there is no drydown event detected for the pixel, skip the analysis
             # Check if there is SM data
             if not events:
-                log.warning(f"No event drydown was detected at {sample_EASE_index}")
+                log.warning(f"No event drydown was detected at {did}")
                 return None
 
             log.info(
-                f"Event separation success at {sample_EASE_index}: {len(events)} events detected"
+                f"Event separation success at {did}: {len(events)} events detected"
             )
 
             # _______________________________________________________________________________________________
@@ -85,13 +89,13 @@ class Agent:
             results_df = drydown_model.return_result_df()
 
             log.info(
-                f"Drydown model analysis completed at {sample_EASE_index}: {len(results_df)}/{len(events)} events fitted"
+                f"Drydown model analysis completed at {did}: {len(results_df)}/{len(events)} events fitted"
             )
 
             return results_df
 
         except Exception as e:
-            print(f"Error in thread: {sample_EASE_index}")
+            print(f"Error in thread: {did}")
             print(f"Error message: {str(e)}")
 
     def finalize(self, results):

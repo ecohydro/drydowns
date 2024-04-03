@@ -23,15 +23,17 @@ class ThreadNameHandler(logging.StreamHandler):
 
 
 class EventSeparator:
-    def __init__(self, cfg, Data):
+    def __init__(self, cfg, data):
         self.cfg = cfg
         self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
-        self.data = Data
+        self.data = data
         self.init_params()
 
         current_thread = threading.current_thread()
         current_thread.name = (
-            f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
+            # f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
+            f"[{self.data.id[0]},{self.data.id[1]}]"
+
         )
         self.thread_name = current_thread.name
 
@@ -43,11 +45,11 @@ class EventSeparator:
         self.precip_thresh = self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh")
         self.target_rmsd = self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd")
         _noise_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
-            "EVENT_SEPARATION", "increment_thresh_fraction"
+            "EVENT_SEPARATION", "frac_range_thresh"
         )
         self.noise_thresh = np.minimum(_noise_thresh, self.target_rmsd * 2)
-        self.minimium_consective_days = self.cfg.getint(
-            "EVENT_SEPARATION", "minimium_consective_days"
+        self.min_duration = self.cfg.getint(
+            "EVENT_SEPARATION", "min_duration"
         )
         self.plot = self.cfg["MODEL"]["plot_results"].lower() in ["true", "yes", "1"]
 
@@ -63,7 +65,7 @@ class EventSeparator:
         if self.events_df.empty:
             return None
 
-        self.filter_events(self.minimium_consective_days)
+        self.filter_events(self.min_duration)
         self.events = self.create_event_instances(self.events_df)
 
         # if self.plot:
@@ -73,7 +75,7 @@ class EventSeparator:
 
     def identify_event_starts(self):
         """Identify the start date of the event"""
-        # The event starts where negative increament of soil mositure follows the positive increment of soil moisture
+        # The event starts where negative increment of soil mositure follows the positive increment of soil moisture
         negative_increments = self.data.df.dSdt < 0
         positive_increments = self.data.df.dSdt > (self.target_rmsd * 2)
         self.data.df["event_start"] = negative_increments.values & np.concatenate(
@@ -81,7 +83,10 @@ class EventSeparator:
         )
 
     def adjust_event_starts_1(self):
-        """In case the soil moisture data is nan on the initial event_start dates, look for data in the previous timesteps"""
+        """
+        In case the soil moisture data is nan on the initial event_start dates, 
+        look for data in the previous timesteps
+        """
 
         # Get the event start dates
         event_start_idx = self.data.df["event_start"][self.data.df["event_start"]].index
@@ -128,7 +133,10 @@ class EventSeparator:
             self.data.df.loc[update_date, "event_start"] = True
 
     def adjust_event_starts_2(self):
-        """In case the soil moisture data is nan on the initial event_start dates, look for data in the later timesteps"""
+        """
+        In case the soil moisture data is nan on the initial event_start dates, 
+        look for data in the later timesteps
+        """
 
         # Get the event start dates
         event_start_idx_2 = pd.isna(
