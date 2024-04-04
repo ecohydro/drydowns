@@ -9,6 +9,7 @@ import warnings
 from datetime import datetime
 import os
 import getpass
+import numpy as np
 import pandas as pd
 import logging
 from MyLogger import getLogger
@@ -44,11 +45,16 @@ def get_cols(
         col_list += tower.get_var_cols(variable=var, exclude='ERA')
         cols = tower.get_var_cols(variable=var, exclude='ERA')
         col_dict[var] = {
-            'var_cols' : [col for col in cols if 'QC' not in col], 
-            'qc_cols' : [col for col in cols if 'QC' in col]
+            'var_cols' : sorted([col for col in cols if 'QC' not in col]), 
+            'qc_cols' : sorted([col for col in cols if 'QC' in col])
         }
 
     return col_list, col_dict
+
+def get_grps(tower, cols):
+    vi = tower._get_var_info(as_dict=False)
+    grps = vi[vi.VARNAME.isin(cols)].GROUP_ID.unique()
+    return grps
 
 #-------------------------------------------------------------------------------
 # VARIABLES
@@ -107,19 +113,31 @@ class TowerAgent:
             # 2. Get list of soil moisture columns
             cols, col_dict = get_cols(tower)
             sm_cols = col_dict['SWC']['var_cols']
+            grps = get_grps(tower, sm_cols)
 
             log.info(f"Found {len(sm_cols)} soil moisture columns for {did} : {sm_cols}")
 
             # 3. Run the analysis for each soil moisture column
             data = []
             results = []
-            for col in sm_cols:
-                output = self.run_sensor(tower, col, return_data=return_data)
+            # for col in sm_cols:
+            #     output = self.run_sensor(tower, col, return_data=return_data)
+            for grp in grps:
+                output = self.run_sensor(tower, grp, return_data=return_data)
                 if return_data:
                     data.append(output[0])
                     results.append(output[1])
                 else:
                     results.append(output)
+            
+            # If all results are NOne, return
+            if all([r is None for r in results]):
+                log.warning(f"No drydown events detected for {did}")
+                if return_data:
+                    return data, None
+                else:
+                    return None
+             
 
             log.info(
                 f"Finished with tower {did}: {len(results)}/{len(sm_cols)} sensors analyzed"
@@ -129,6 +147,9 @@ class TowerAgent:
             results['IGBP'] = tower.metadata.get('IGBP', None)
             results['LAT'] = tower.coords[0]
             results['LON'] = tower.coords[1]
+            results['MAT'] = tower.metadata.get('MAT', np.nan)
+            results['MAP'] = tower.metadata.get('MAP', np.nan)
+
 
             if return_data:
                 return data, results
@@ -140,36 +161,37 @@ class TowerAgent:
             print(f"Error message: {str(e)}")
 
 
-    def run_sensor(self, tower, swc_col, return_data=False):
+    # def run_sensor(self, tower, swc_col, return_data=False):
+    def run_sensor(self, tower, grp, return_data=False):
         """ Run the analysis for one soil moisture sensor"""
         try:
             
             # 1. Initialize sensor data object
-            log.info(f"Initializing sensor {swc_col}")
-            data = SoilSensorData(self.cfg, tower, swc_col)
+            log.info(f"Initializing sensor {grp}")
+            data = SoilSensorData(self.cfg, tower, grp)
 
             # 2. Separate events
-            log.info(f"Separating events for sensor {swc_col}")
+            log.info(f"Separating events for sensor {grp}")
             data.separate_events()
 
             if not data.events:
-                log.warning(f"No event drydown was detected for {swc_col}")
+                log.warning(f"No event drydown was detected for {grp}")
                 if return_data:
                     return data, None
                 else:
                     return None
             else:
-                log.info(f"Found {len(data.events)} events for sensor {swc_col}")
+                log.info(f"Found {len(data.events)} events for sensor {grp}")
 
             # 3. Fit drydown models
-            log.info(f"Fitting drydown models for sensor {swc_col}")
+            log.info(f"Fitting drydown models for sensor {grp}")
             model = DrydownModel(self.cfg, data, data.events)
             model.fit_models(output_dir=self._output_dir)
             # 4. Return results
             results = model.return_result_df()
 
             log.info(
-                f"Drydown model analysis completed for {swc_col}: {len(results)}/{len(data.events)} events fitted"
+                f"Drydown model analysis completed for {grp}: {len(results)}/{len(data.events)} events fitted"
             )
             if return_data:
                 return data, results
@@ -177,7 +199,7 @@ class TowerAgent:
                 return results
 
         except Exception as e:
-            print(f"Error in thread: {swc_col}")
+            print(f"Error in thread: {grp}")
             print(f"Error message: {str(e)}")
 
 

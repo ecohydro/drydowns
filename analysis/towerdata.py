@@ -89,23 +89,23 @@ class ThreadNameHandler(logging.StreamHandler):
 
 class SoilSensorData(Data):
 
-    def __init__(self, cfg, tower, sensor_col,):
+    def __init__(self, cfg, tower, sensor_grp,):
         # cfg
         self.cfg = cfg
 
         # tower
         self._tower = tower
         # id
-        self.id = (self._tower.id, sensor_col)
+        self.id = (self._tower.id, sensor_grp)
 
         # info about sensor
-        self.info = self._tower.var_info.get(sensor_col).copy()
+        self.info = self._tower.grp_info.get(sensor_grp).copy()
 
         # z (depth of sensor) [m]
         self.z = float(self.info['HEIGHT']) * -1.
 
         # data
-        self.df = self.get_sensor_data(sensor_col)
+        self.df = self.get_sensor_data(sensor_grp)
 
         # min, max, range
         self.min_sm = self.df.SWC.min()
@@ -131,9 +131,19 @@ class SoilSensorData(Data):
 
 
 
-    def get_sensor_data(self, sensor_col):
+    # def get_sensor_data(self, sensor_col):
+    def get_sensor_data(self, sensor_grp):
         # Copy soil moisture data
-        df = self._tower.data[['TIMESTAMP']+[sensor_col]].copy()
+        sensor_col = self._tower.grp_info.get(sensor_grp).get('VARNAME')
+
+        start = self._tower.grp_info.get(sensor_grp).get('DATE')
+        end = self._get_end_date(sensor_grp, sensor_col)
+
+        df = self._tower.data.loc[
+            (self._tower.data.TIMESTAMP >= start) & (self._tower.data.TIMESTAMP < end),
+            ['TIMESTAMP'] + [sensor_col]
+        ].copy()
+        # df = self._tower.data[['TIMESTAMP']+[sensor_col]].copy()
         df.set_index('TIMESTAMP', inplace=True, drop=False)
         df.index.name = 'DATE'
         # Rename to standard column name
@@ -147,7 +157,16 @@ class SoilSensorData(Data):
         self.info.update({'unit': 'm3 m-3'})
 
         return df
-    
+
+    def _get_end_date(self, grp, col):
+        try:
+            ind = self._tower.var_info[col]['GROUP_ID'].index(grp)
+            end_date = self._tower.var_info[col]['DATE'][ind+1]
+        except:
+            end_date = self._tower.data.iloc[-1].TIMESTAMP + pd.Timedelta(days=1)
+        return end_date
+
+
     def add_data_cols(self, cols):
         # self.df = pd.concat([self.df, cols], axis=1)
         self.df = self.df.join(self._tower.data.set_index('TIMESTAMP')[cols])

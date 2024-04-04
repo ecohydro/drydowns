@@ -43,7 +43,8 @@ class Config:
             self.config = Config.create_config(ini_file=ini_file)
         self.status = True
         self.logger = logger
-        self.logger.setLevel(logging.NOTSET)
+        # self.logger.setLevel(logging.NOTSET)
+        self.logger.setLevel(logging.DEBUG)
             
 
     def __repr__(self):
