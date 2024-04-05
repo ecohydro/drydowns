@@ -1,0 +1,1967 @@
+  1099 DEBUG    matplotlib   matplotlib data path: /home/brynmorgan/miniforge3/envs/smap/lib/python3.12/site-packages/matplotlib/mpl-data
+  1103 DEBUG    matplotlib   CONFIGDIR=/home/brynmorgan/.config/matplotlib
+  1104 DEBUG    matplotlib   interactive is False
+  1105 DEBUG    matplotlib   platform is linux
+  1153 DEBUG    matplotlib   CACHEDIR=/home/brynmorgan/.cache/matplotlib
+  1155 DEBUG    matplotlib.font_manager Using fontManager instance from /home/brynmorgan/.cache/matplotlib/fontlist-v330.json
+  1763 DEBUG    fiona.session Could not import boto3, continuing with reduced functionality.
+  1780 DEBUG    fiona._env   GDAL_DATA found in environment.
+  1780 DEBUG    fiona._env   PROJ_DATA found in environment.
+  3194 INFO     __main__     --- Initializing the model ---
+  3339 INFO     __main__     --- Analysis started with parallel mode ---
+  3339 INFO     __main__     Running the following models:
+  3339 INFO     __main__     exponential_model
+  3342 INFO     __main__     q_model
+  3494 INFO     toweragent   Currently processing tower AR-SLu
+  3494 INFO     toweragent   Initalizing Tower AR-SLu
+  3496 INFO     toweragent   Currently processing tower AT-Neu
+  3497 INFO     toweragent   Currently processing tower AU-Ade
+  3497 INFO     toweragent   Initalizing Tower AT-Neu
+  3497 INFO     toweragent   Initalizing Tower AU-Ade
+  3498 INFO     toweragent   Currently processing tower AU-Cum
+  3497 INFO     toweragent   Currently processing tower AU-ASM
+  3497 INFO     toweragent   Currently processing tower AU-Cpr
+  3498 INFO     toweragent   Currently processing tower AU-DaP
+  3499 INFO     toweragent   Currently processing tower AU-DaS
+  3499 INFO     toweragent   Initalizing Tower AU-Cum
+  3499 INFO     toweragent   Initalizing Tower AU-DaP
+  3499 INFO     toweragent   Initalizing Tower AU-ASM
+  3499 INFO     toweragent   Initalizing Tower AU-Cpr
+  3499 INFO     toweragent   Initalizing Tower AU-DaS
+  3499 INFO     toweragent   Currently processing tower AU-Emr
+  3501 INFO     toweragent   Currently processing tower AU-How
+  3499 INFO     toweragent   Currently processing tower AU-Dry
+  3500 INFO     toweragent   Currently processing tower AU-Fog
+  3500 INFO     toweragent   Currently processing tower AU-Gin
+  3500 INFO     toweragent   Currently processing tower AU-GWW
+  3501 INFO     toweragent   Currently processing tower AU-Stp
+  3501 INFO     toweragent   Initalizing Tower AU-Stp
+  3503 INFO     toweragent   Currently processing tower AU-TTE
+  3501 INFO     toweragent   Initalizing Tower AU-How
+  3501 INFO     toweragent   Initalizing Tower AU-Emr
+  3501 INFO     toweragent   Initalizing Tower AU-Fog
+  3502 INFO     toweragent   Currently processing tower AU-Rig
+  3501 INFO     toweragent   Initalizing Tower AU-Dry
+  3501 INFO     toweragent   Initalizing Tower AU-Gin
+  3501 INFO     toweragent   Currently processing tower AU-Lox
+  3502 INFO     toweragent   Initalizing Tower AU-GWW
+  3501 INFO     toweragent   Currently processing tower AU-RDF
+  3502 INFO     toweragent   Currently processing tower AU-Rob
+  3503 INFO     toweragent   Initalizing Tower AU-RDF
+  3503 INFO     toweragent   Initalizing Tower AU-Rig
+  3503 INFO     toweragent   Initalizing Tower AU-Lox
+  3503 INFO     toweragent   Initalizing Tower AU-TTE
+  3503 INFO     toweragent   Initalizing Tower AU-Rob
+  5840 INFO     toweragent   Found 1 soil moisture columns for AU-Ade : ['SWC_F_MDS_1']
+  5840 INFO     toweragent   Initializing sensor 40127190
+  5847 INFO     toweragent   Separating events for sensor 40127190
+  5848 INFO     toweragent   Found 1 soil moisture columns for AU-Rob : ['SWC_F_MDS_1']
+  5848 INFO     toweragent   Found 1 soil moisture columns for AU-GWW : ['SWC_F_MDS_1']
+  5849 INFO     toweragent   Initializing sensor 40106951
+  5849 INFO     toweragent   Initializing sensor 40105248
+  5849 INFO     toweragent   Found 1 soil moisture columns for AR-SLu : ['SWC_F_MDS_1']
+  5851 INFO     toweragent   Found 1 soil moisture columns for AU-Cum : ['SWC_F_MDS_2']
+  5851 INFO     toweragent   Initializing sensor 40122496
+  5851 INFO     toweragent   Found 1 soil moisture columns for AU-RDF : ['SWC_F_MDS_1']
+  5852 WARNING  toweragent   No event drydown was detected for 40127190
+  5851 INFO     toweragent   Initializing sensor 40151987
+  5853 INFO     toweragent   Found 1 soil moisture columns for AU-DaP : ['SWC_F_MDS_1']
+  5853 WARNING  toweragent   No drydown events detected for AU-Ade
+  5853 INFO     toweragent   Initializing sensor 40167083
+  5853 INFO     toweragent   Initializing sensor 40096819
+  5856 INFO     toweragent   Currently processing tower AU-Tum
+  5856 INFO     toweragent   Separating events for sensor 40105248
+  5856 INFO     toweragent   Separating events for sensor 40106951
+  5856 INFO     toweragent   Initalizing Tower AU-Tum
+  5859 INFO     toweragent   Separating events for sensor 40122496
+  5860 INFO     toweragent   Separating events for sensor 40167083
+  5861 INFO     toweragent   Separating events for sensor 40096819
+  5862 WARNING  toweragent   No event drydown was detected for 40106951
+  5864 WARNING  toweragent   No drydown events detected for AU-Rob
+  5865 INFO     toweragent   Separating events for sensor 40151987
+  5866 INFO     toweragent   Currently processing tower AU-Wac
+  5867 INFO     toweragent   Initalizing Tower AU-Wac
+  5870 INFO     toweragent   Found 1 events for sensor 40105248
+  5870 INFO     toweragent   Fitting drydown models for sensor 40105248
+  5877 INFO     toweragent   Found 1 events for sensor 40122496
+  5877 INFO     toweragent   Fitting drydown models for sensor 40122496
+  5879 INFO     toweragent   Found 1 soil moisture columns for AU-DaS : ['SWC_F_MDS_1']
+  5880 INFO     toweragent   Initializing sensor 40124667
+  5883 INFO     toweragent   Found 1 soil moisture columns for AU-Emr : ['SWC_F_MDS_1']
+  5884 INFO     toweragent   Initializing sensor 40152817
+  5883 INFO     toweragent   Found 1 soil moisture columns for AU-ASM : ['SWC_F_MDS_1']
+  5884 INFO     toweragent   Drydown model analysis completed for 40105248: 1/1 events fitted
+  5884 DEBUG    DrydownModel Exception raised in the thread AU-Cum, 40122496: `x0` is infeasible.
+  5885 INFO     toweragent   Separating events for sensor 40124667
+  5886 DEBUG    DrydownModel Exception raised in the thread AU-Cum, 40122496: cannot unpack non-iterable NoneType object
+  5886 INFO     toweragent   Initializing sensor 40217670
+  5886 INFO     toweragent   Finished with tower AU-GWW: 1/1 sensors analyzed
+  5886 INFO     toweragent   Found 10 events for sensor 40167083
+  5887 INFO     toweragent   Found 1 events for sensor 40151987
+  5887 INFO     toweragent   Fitting drydown models for sensor 40167083
+  5888 DEBUG    DrydownModel Exception raised in the thread AU-Cum, 40122496: 'TowerEvent' object has no attribute 'q'
+  5888 INFO     toweragent   Fitting drydown models for sensor 40151987
+  5889 INFO     toweragent   Drydown model analysis completed for 40122496: 0/1 events fitted
+  5889 INFO     toweragent   Currently processing tower AU-Whr
+  5890 INFO     toweragent   Initalizing Tower AU-Whr
+  5890 INFO     toweragent   Finished with tower AU-Cum: 1/1 sensors analyzed
+  5891 INFO     toweragent   Separating events for sensor 40152817
+  5892 INFO     toweragent   Separating events for sensor 40217670
+  5894 INFO     toweragent   Currently processing tower AU-Wom
+  5896 INFO     toweragent   Initalizing Tower AU-Wom
+  5899 INFO     toweragent   Found 1 soil moisture columns for AU-Lox : ['SWC_F_MDS_1']
+  5900 INFO     toweragent   Initializing sensor 40103429
+  5901 INFO     toweragent   Drydown model analysis completed for 40151987: 1/1 events fitted
+  5902 INFO     toweragent   Finished with tower AR-SLu: 1/1 sensors analyzed
+  5905 INFO     toweragent   Currently processing tower AU-Ync
+  5905 INFO     toweragent   Initalizing Tower AU-Ync
+  5906 INFO     toweragent   Separating events for sensor 40103429
+  5911 INFO     toweragent   Found 30 events for sensor 40096819
+  5912 INFO     toweragent   Fitting drydown models for sensor 40096819
+  5914 DEBUG    DrydownModel Exception raised in the thread AU-RDF, 40167083: Each lower bound must be strictly less than each upper bound.
+  5916 DEBUG    DrydownModel Exception raised in the thread AU-RDF, 40167083: cannot unpack non-iterable NoneType object
+  5920 INFO     toweragent   Found 14 events for sensor 40152817
+  5921 INFO     toweragent   Fitting drydown models for sensor 40152817
+  5921 INFO     toweragent   Found 1 soil moisture columns for AU-TTE : ['SWC_F_MDS_1']
+  5923 INFO     toweragent   Initializing sensor 40162233
+  5929 INFO     toweragent   Separating events for sensor 40162233
+  5930 INFO     toweragent   Found 23 events for sensor 40217670
+  5932 INFO     toweragent   Fitting drydown models for sensor 40217670
+  5935 INFO     toweragent   Found 16 events for sensor 40103429
+  5935 DEBUG    DrydownModel Exception raised in the thread AU-DaP, 40096819: array must not contain infs or NaNs
+  5935 INFO     toweragent   Fitting drydown models for sensor 40103429
+  5937 DEBUG    DrydownModel Exception raised in the thread AU-DaP, 40096819: cannot unpack non-iterable NoneType object
+  5938 INFO     toweragent   Found 40 events for sensor 40124667
+  5939 INFO     toweragent   Fitting drydown models for sensor 40124667
+  5939 DEBUG    DrydownModel Exception raised in the thread AU-DaP, 40096819: `x0` is infeasible.
+  5941 DEBUG    DrydownModel Exception raised in the thread AU-DaP, 40096819: cannot unpack non-iterable NoneType object
+  5947 DEBUG    DrydownModel Exception raised in the thread AU-ASM, 40217670: `x0` is infeasible.
+  5948 DEBUG    DrydownModel Exception raised in the thread AU-ASM, 40217670: cannot unpack non-iterable NoneType object
+  5952 DEBUG    DrydownModel Exception raised in the thread AU-Emr, 40152817: `x0` is infeasible.
+  5952 DEBUG    DrydownModel Exception raised in the thread AU-Emr, 40152817: cannot unpack non-iterable NoneType object
+  5958 INFO     toweragent   Found 14 events for sensor 40162233
+  5958 INFO     toweragent   Fitting drydown models for sensor 40162233
+  5966 DEBUG    DrydownModel Exception raised in the thread AU-RDF, 40167083: 'TowerEvent' object has no attribute 'exponential'
+  5968 DEBUG    DrydownModel Exception raised in the thread AU-DaS, 40124667: Each lower bound must be strictly less than each upper bound.
+  5968 INFO     toweragent   Found 1 soil moisture columns for AU-Fog : ['SWC_F_MDS_1']
+  5969 DEBUG    DrydownModel Exception raised in the thread AU-DaS, 40124667: cannot unpack non-iterable NoneType object
+  5969 INFO     toweragent   Drydown model analysis completed for 40167083: 9/10 events fitted
+  5969 INFO     toweragent   Initializing sensor 40171721
+  5970 INFO     toweragent   Found 1 soil moisture columns for AU-Gin : ['SWC_F_MDS_1']
+  5970 INFO     toweragent   Initializing sensor 40106134
+  5971 INFO     toweragent   Finished with tower AU-RDF: 1/1 sensors analyzed
+  5973 DEBUG    DrydownModel Exception raised in the thread AU-TTE, 40162233: `x0` is infeasible.
+  5973 DEBUG    DrydownModel Exception raised in the thread AU-TTE, 40162233: cannot unpack non-iterable NoneType object
+  5974 DEBUG    DrydownModel Exception raised in the thread AU-TTE, 40162233: `x0` is infeasible.
+  5973 INFO     toweragent   Currently processing tower BE-Lon
+  5975 INFO     toweragent   Found 1 soil moisture columns for AU-Rig : ['SWC_F_MDS_1']
+  5975 INFO     toweragent   Separating events for sensor 40171721
+  5975 INFO     toweragent   Initializing sensor 40173723
+  5975 DEBUG    DrydownModel Exception raised in the thread AU-TTE, 40162233: cannot unpack non-iterable NoneType object
+  5976 INFO     toweragent   Separating events for sensor 40106134
+  5975 INFO     toweragent   Initalizing Tower BE-Lon
+  5977 DEBUG    DrydownModel Exception raised in the thread AU-Emr, 40152817: `x0` is infeasible.
+  5977 DEBUG    DrydownModel Exception raised in the thread AU-TTE, 40162233: `x0` is infeasible.
+  5979 DEBUG    DrydownModel Exception raised in the thread AU-Emr, 40152817: cannot unpack non-iterable NoneType object
+  5979 DEBUG    DrydownModel Exception raised in the thread AU-TTE, 40162233: cannot unpack non-iterable NoneType object
+  5980 WARNING  toweragent   No event drydown was detected for 40171721
+  5981 WARNING  toweragent   No drydown events detected for AU-Fog
+  5982 INFO     toweragent   Separating events for sensor 40173723
+  5982 WARNING  toweragent   No event drydown was detected for 40106134
+  5983 WARNING  toweragent   No drydown events detected for AU-Gin
+  5983 INFO     toweragent   Currently processing tower BE-Vie
+  5984 INFO     toweragent   Currently processing tower BR-Sa3
+  5985 INFO     toweragent   Initalizing Tower BE-Vie
+  5985 INFO     toweragent   Initalizing Tower BR-Sa3
+  5985 DEBUG    DrydownModel Exception raised in the thread AU-DaS, 40124667: Each lower bound must be strictly less than each upper bound.
+  5986 DEBUG    DrydownModel Exception raised in the thread AU-DaS, 40124667: cannot unpack non-iterable NoneType object
+  5988 WARNING  toweragent   No event drydown was detected for 40173723
+  5988 WARNING  toweragent   No drydown events detected for AU-Rig
+  5991 INFO     toweragent   Currently processing tower CA-Gro
+  5991 INFO     toweragent   Found 1 soil moisture columns for AU-Cpr : ['SWC_F_MDS_1']
+  5992 INFO     toweragent   Initalizing Tower CA-Gro
+  5992 INFO     toweragent   Initializing sensor 40153138
+  5996 DEBUG    DrydownModel Exception raised in the thread AU-ASM, 40217670: `x0` is infeasible.
+  5996 DEBUG    DrydownModel Exception raised in the thread AU-ASM, 40217670: cannot unpack non-iterable NoneType object
+  5997 INFO     toweragent   Found 1 soil moisture columns for AU-Dry : ['SWC_F_MDS_1']
+  5998 INFO     toweragent   Initializing sensor 40124988
+  5999 INFO     toweragent   Separating events for sensor 40153138
+  6004 INFO     toweragent   Separating events for sensor 40124988
+  6011 INFO     toweragent   Found 1 soil moisture columns for AU-Stp : ['SWC_F_MDS_1']
+  6011 INFO     toweragent   Initializing sensor 40126567
+  6018 INFO     toweragent   Separating events for sensor 40126567
+  6021 INFO     toweragent   Found 5 events for sensor 40153138
+  6021 INFO     toweragent   Fitting drydown models for sensor 40153138
+  6022 INFO     toweragent   Found 3 soil moisture columns for AT-Neu : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+  6023 INFO     toweragent   Initializing sensor 40161213
+  6024 DEBUG    DrydownModel Exception raised in the thread AU-Cpr, 40153138: `x0` is infeasible.
+  6025 DEBUG    DrydownModel Exception raised in the thread AU-Cpr, 40153138: cannot unpack non-iterable NoneType object
+  6030 INFO     toweragent   Separating events for sensor 40161213
+  6034 INFO     toweragent   Found 1 soil moisture columns for AU-How : ['SWC_F_MDS_1']
+  6034 INFO     toweragent   Initializing sensor 40172042
+  6035 INFO     toweragent   Found 1 events for sensor 40126567
+  6036 INFO     toweragent   Fitting drydown models for sensor 40126567
+  6036 DEBUG    DrydownModel Exception raised in the thread AU-Emr, 40152817: 'TowerEvent' object has no attribute 'exponential'
+  6036 WARNING  toweragent   No event drydown was detected for 40161213
+  6038 INFO     toweragent   Initializing sensor 40161214
+  6038 DEBUG    DrydownModel Exception raised in the thread AU-Emr, 40152817: 'TowerEvent' object has no attribute 'exponential'
+  6040 INFO     toweragent   Separating events for sensor 40172042
+  6041 INFO     toweragent   Drydown model analysis completed for 40152817: 12/14 events fitted
+  6043 INFO     toweragent   Separating events for sensor 40161214
+  6043 INFO     toweragent   Finished with tower AU-Emr: 1/1 sensors analyzed
+  6045 INFO     toweragent   Found 26 events for sensor 40124988
+  6045 INFO     toweragent   Fitting drydown models for sensor 40124988
+  6046 WARNING  toweragent   No event drydown was detected for 40161214
+  6047 INFO     toweragent   Currently processing tower CA-NS1
+  6048 INFO     toweragent   Initializing sensor 40161215
+  6048 INFO     toweragent   Initalizing Tower CA-NS1
+  6050 INFO     toweragent   Drydown model analysis completed for 40126567: 1/1 events fitted
+  6052 INFO     toweragent   Finished with tower AU-Stp: 1/1 sensors analyzed
+  6053 INFO     toweragent   Separating events for sensor 40161215
+  6055 INFO     toweragent   Currently processing tower CA-NS2
+  6055 INFO     toweragent   Initalizing Tower CA-NS2
+  6056 WARNING  toweragent   No event drydown was detected for 40161215
+  6057 WARNING  toweragent   No drydown events detected for AT-Neu
+  6059 INFO     toweragent   Currently processing tower CA-NS3
+  6059 INFO     toweragent   Initalizing Tower CA-NS3
+  6069 DEBUG    DrydownModel Exception raised in the thread AU-Dry, 40124988: `x0` is infeasible.
+  6069 DEBUG    DrydownModel Exception raised in the thread AU-Dry, 40124988: cannot unpack non-iterable NoneType object
+  6070 INFO     toweragent   Drydown model analysis completed for 40103429: 16/16 events fitted
+  6071 INFO     toweragent   Finished with tower AU-Lox: 1/1 sensors analyzed
+  6075 INFO     toweragent   Currently processing tower CA-NS4
+  6076 INFO     toweragent   Initalizing Tower CA-NS4
+  6085 INFO     toweragent   Found 25 events for sensor 40172042
+  6085 INFO     toweragent   Fitting drydown models for sensor 40172042
+  6089 DEBUG    DrydownModel Exception raised in the thread AU-TTE, 40162233: 'TowerEvent' object has no attribute 'exponential'
+  6089 DEBUG    DrydownModel Exception raised in the thread AU-TTE, 40162233: 'TowerEvent' object has no attribute 'exponential'
+  6090 DEBUG    DrydownModel Exception raised in the thread AU-Cpr, 40153138: `x0` is infeasible.
+  6090 DEBUG    DrydownModel Exception raised in the thread AU-TTE, 40162233: 'TowerEvent' object has no attribute 'exponential'
+  6091 DEBUG    DrydownModel Exception raised in the thread AU-Cpr, 40153138: cannot unpack non-iterable NoneType object
+  6093 DEBUG    DrydownModel Exception raised in the thread AU-Cpr, 40153138: 'TowerEvent' object has no attribute 'exponential'
+  6094 INFO     toweragent   Drydown model analysis completed for 40162233: 11/14 events fitted
+  6094 INFO     toweragent   Finished with tower AU-TTE: 1/1 sensors analyzed
+  6094 DEBUG    DrydownModel Exception raised in the thread AU-Dry, 40124988: `x0` is infeasible.
+  6095 DEBUG    DrydownModel Exception raised in the thread AU-Cpr, 40153138: 'TowerEvent' object has no attribute 'exponential'
+  6096 DEBUG    DrydownModel Exception raised in the thread AU-Dry, 40124988: cannot unpack non-iterable NoneType object
+  6097 INFO     toweragent   Drydown model analysis completed for 40153138: 3/5 events fitted
+  6098 INFO     toweragent   Finished with tower AU-Cpr: 1/1 sensors analyzed
+  6098 INFO     toweragent   Currently processing tower CA-NS5
+  6100 INFO     toweragent   Initalizing Tower CA-NS5
+  6102 INFO     toweragent   Currently processing tower CA-NS6
+  6102 INFO     toweragent   Initalizing Tower CA-NS6
+  6114 DEBUG    DrydownModel Exception raised in the thread AU-ASM, 40217670: 'TowerEvent' object has no attribute 'exponential'
+  6115 DEBUG    DrydownModel Exception raised in the thread AU-ASM, 40217670: 'TowerEvent' object has no attribute 'exponential'
+  6118 INFO     toweragent   Drydown model analysis completed for 40217670: 21/23 events fitted
+  6118 INFO     toweragent   Finished with tower AU-ASM: 1/1 sensors analyzed
+  6122 INFO     toweragent   Currently processing tower CA-NS7
+  6122 INFO     toweragent   Initalizing Tower CA-NS7
+  6207 DEBUG    DrydownModel Exception raised in the thread AU-DaS, 40124667: `x0` is infeasible.
+  6207 DEBUG    DrydownModel Exception raised in the thread AU-DaS, 40124667: cannot unpack non-iterable NoneType object
+  6213 DEBUG    DrydownModel Exception raised in the thread AU-DaP, 40096819: 'TowerEvent' object has no attribute 'q'
+  6213 DEBUG    DrydownModel Exception raised in the thread AU-DaP, 40096819: 'TowerEvent' object has no attribute 'exponential'
+  6218 INFO     toweragent   Drydown model analysis completed for 40096819: 28/30 events fitted
+  6219 INFO     toweragent   Finished with tower AU-DaP: 1/1 sensors analyzed
+  6222 INFO     toweragent   Currently processing tower CA-Oas
+  6223 INFO     toweragent   Initalizing Tower CA-Oas
+  6253 DEBUG    DrydownModel Exception raised in the thread AU-Dry, 40124988: 'TowerEvent' object has no attribute 'exponential'
+  6253 DEBUG    DrydownModel Exception raised in the thread AU-Dry, 40124988: 'TowerEvent' object has no attribute 'exponential'
+  6258 INFO     toweragent   Drydown model analysis completed for 40124988: 24/26 events fitted
+  6258 INFO     toweragent   Finished with tower AU-Dry: 1/1 sensors analyzed
+  6261 INFO     toweragent   Currently processing tower CA-Obs
+  6261 INFO     toweragent   Initalizing Tower CA-Obs
+  6281 DEBUG    DrydownModel Exception raised in the thread AU-DaS, 40124667: 'TowerEvent' object has no attribute 'exponential'
+  6281 DEBUG    DrydownModel Exception raised in the thread AU-DaS, 40124667: 'TowerEvent' object has no attribute 'exponential'
+  6284 DEBUG    DrydownModel Exception raised in the thread AU-DaS, 40124667: 'TowerEvent' object has no attribute 'exponential'
+  6287 INFO     toweragent   Drydown model analysis completed for 40124667: 37/40 events fitted
+  6288 INFO     toweragent   Finished with tower AU-DaS: 1/1 sensors analyzed
+  6291 INFO     toweragent   Currently processing tower CA-Qfo
+  6292 INFO     toweragent   Initalizing Tower CA-Qfo
+  6308 INFO     toweragent   Drydown model analysis completed for 40172042: 25/25 events fitted
+  6308 INFO     toweragent   Finished with tower AU-How: 1/1 sensors analyzed
+  6312 INFO     toweragent   Currently processing tower CA-SF1
+  6312 INFO     toweragent   Initalizing Tower CA-SF1
+  6787 INFO     toweragent   Found 1 soil moisture columns for AU-Wac : ['SWC_F_MDS_1']
+  6787 INFO     toweragent   Initializing sensor 40107801
+  6791 INFO     toweragent   Separating events for sensor 40107801
+  6795 WARNING  toweragent   No event drydown was detected for 40107801
+  6795 WARNING  toweragent   No drydown events detected for AU-Wac
+  6796 INFO     toweragent   Currently processing tower CA-SF2
+  6797 INFO     toweragent   Initalizing Tower CA-SF2
+  6835 INFO     toweragent   Found 1 soil moisture columns for AU-Ync : ['SWC_F_MDS_1']
+  6835 INFO     toweragent   Initializing sensor 40181885
+  6839 INFO     toweragent   Separating events for sensor 40181885
+  6858 INFO     toweragent   Found 10 events for sensor 40181885
+  6858 INFO     toweragent   Fitting drydown models for sensor 40181885
+  6874 INFO     toweragent   Found 1 soil moisture columns for AU-Whr : ['SWC_F_MDS_1']
+  6875 INFO     toweragent   Initializing sensor 40146529
+  6879 INFO     toweragent   Separating events for sensor 40146529
+  6893 INFO     toweragent   Found 3 events for sensor 40146529
+  6893 INFO     toweragent   Fitting drydown models for sensor 40146529
+  6916 INFO     toweragent   Found 1 soil moisture columns for AU-Wom : ['SWC_F_MDS_1']
+  6916 INFO     toweragent   Initializing sensor 40151343
+  6922 INFO     toweragent   Separating events for sensor 40151343
+  6922 INFO     toweragent   Drydown model analysis completed for 40146529: 3/3 events fitted
+  6924 INFO     toweragent   Finished with tower AU-Whr: 1/1 sensors analyzed
+  6927 WARNING  toweragent   No event drydown was detected for 40151343
+  6927 INFO     toweragent   Found 1 soil moisture columns for AU-Tum : ['SWC_F_MDS_1']
+  6928 INFO     toweragent   Currently processing tower CA-SF3
+  6928 INFO     toweragent   Initalizing Tower CA-SF3
+  6928 WARNING  toweragent   No drydown events detected for AU-Wom
+  6928 INFO     toweragent   Initializing sensor 40165449
+  6931 INFO     toweragent   Currently processing tower CA-TP1
+  6932 INFO     toweragent   Initalizing Tower CA-TP1
+  6935 INFO     toweragent   Separating events for sensor 40165449
+  6940 INFO     toweragent   Drydown model analysis completed for 40181885: 10/10 events fitted
+  6940 INFO     toweragent   Finished with tower AU-Ync: 1/1 sensors analyzed
+  6944 INFO     toweragent   Currently processing tower CA-TP2
+  6944 INFO     toweragent   Initalizing Tower CA-TP2
+  6957 INFO     toweragent   Found 1 events for sensor 40165449
+  6957 INFO     toweragent   Fitting drydown models for sensor 40165449
+  6968 INFO     toweragent   Drydown model analysis completed for 40165449: 1/1 events fitted
+  6968 INFO     toweragent   Finished with tower AU-Tum: 1/1 sensors analyzed
+  6971 INFO     toweragent   Currently processing tower CA-TP3
+  6972 INFO     toweragent   Initalizing Tower CA-TP3
+  7061 INFO     toweragent   Found 1 soil moisture columns for BR-Sa3 : ['SWC_F_MDS_1']
+  7061 INFO     toweragent   Initializing sensor 40091478
+  7065 INFO     toweragent   Separating events for sensor 40091478
+  7085 INFO     toweragent   Found 2 events for sensor 40091478
+  7085 INFO     toweragent   Fitting drydown models for sensor 40091478
+  7105 INFO     toweragent   Drydown model analysis completed for 40091478: 2/2 events fitted
+  7105 INFO     toweragent   Finished with tower BR-Sa3: 1/1 sensors analyzed
+  7110 INFO     toweragent   Currently processing tower CA-TP4
+  7110 INFO     toweragent   Initalizing Tower CA-TP4
+  7143 INFO     toweragent   Found 1 soil moisture columns for CA-NS1 : ['SWC_F_MDS_1']
+  7143 INFO     toweragent   Initializing sensor 40109699
+  7150 INFO     toweragent   Separating events for sensor 40109699
+  7150 INFO     toweragent   Found 1 soil moisture columns for CA-NS4 : ['SWC_F_MDS_1']
+  7152 INFO     toweragent   Initializing sensor 40144406
+  7152 INFO     toweragent   Found 1 soil moisture columns for CA-NS3 : ['SWC_F_MDS_1']
+  7153 INFO     toweragent   Initializing sensor 40171118
+  7154 WARNING  toweragent   No event drydown was detected for 40109699
+  7155 WARNING  toweragent   No drydown events detected for CA-NS1
+  7157 INFO     toweragent   Found 1 soil moisture columns for CA-NS2 : ['SWC_F_MDS_1']
+  7157 INFO     toweragent   Initializing sensor 40181026
+  7157 INFO     toweragent   Currently processing tower CA-TPD
+  7158 INFO     toweragent   Separating events for sensor 40144406
+  7158 INFO     toweragent   Initalizing Tower CA-TPD
+  7159 INFO     toweragent   Separating events for sensor 40171118
+  7162 WARNING  toweragent   No event drydown was detected for 40144406
+  7162 INFO     toweragent   Separating events for sensor 40181026
+  7162 WARNING  toweragent   No drydown events detected for CA-NS4
+  7164 WARNING  toweragent   No event drydown was detected for 40171118
+  7164 WARNING  toweragent   No drydown events detected for CA-NS3
+  7165 INFO     toweragent   Currently processing tower CH-Cha
+  7166 INFO     toweragent   Currently processing tower CH-Dav
+  7166 INFO     toweragent   Initalizing Tower CH-Dav
+  7166 WARNING  toweragent   No event drydown was detected for 40181026
+  7166 INFO     toweragent   Initalizing Tower CH-Cha
+  7168 WARNING  toweragent   No drydown events detected for CA-NS2
+  7170 INFO     toweragent   Currently processing tower CH-Fru
+  7171 INFO     toweragent   Initalizing Tower CH-Fru
+  7184 INFO     toweragent   Found 1 soil moisture columns for CA-NS7 : ['SWC_F_MDS_1']
+  7184 INFO     toweragent   Initializing sensor 40176934
+  7188 INFO     toweragent   Separating events for sensor 40176934
+  7192 WARNING  toweragent   No event drydown was detected for 40176934
+  7193 WARNING  toweragent   No drydown events detected for CA-NS7
+  7195 INFO     toweragent   Currently processing tower CH-Lae
+  7197 INFO     toweragent   Initalizing Tower CH-Lae
+  7212 INFO     toweragent   Found 1 soil moisture columns for CA-NS5 : ['SWC_F_MDS_1']
+  7213 INFO     toweragent   Initializing sensor 40213417
+  7217 INFO     toweragent   Separating events for sensor 40213417
+  7221 WARNING  toweragent   No event drydown was detected for 40213417
+  7222 WARNING  toweragent   No drydown events detected for CA-NS5
+  7223 INFO     toweragent   Currently processing tower CH-Oe1
+  7224 INFO     toweragent   Initalizing Tower CH-Oe1
+  7230 INFO     toweragent   Found 1 soil moisture columns for CA-NS6 : ['SWC_F_MDS_1']
+  7230 INFO     toweragent   Initializing sensor 40187274
+  7237 INFO     toweragent   Separating events for sensor 40187274
+  7242 WARNING  toweragent   No event drydown was detected for 40187274
+  7242 WARNING  toweragent   No drydown events detected for CA-NS6
+  7245 INFO     toweragent   Currently processing tower CH-Oe2
+  7246 INFO     toweragent   Initalizing Tower CH-Oe2
+  7250 INFO     toweragent   Found 1 soil moisture columns for CA-Gro : ['SWC_F_MDS_1']
+  7250 INFO     toweragent   Initializing sensor 40158435
+  7257 INFO     toweragent   Separating events for sensor 40158435
+  7261 WARNING  toweragent   No event drydown was detected for 40158435
+  7261 WARNING  toweragent   No drydown events detected for CA-Gro
+  7264 INFO     toweragent   Currently processing tower CN-Cha
+  7266 INFO     toweragent   Initalizing Tower CN-Cha
+  7269 INFO     toweragent   Found 4 soil moisture columns for BE-Lon : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+  7269 INFO     toweragent   Initializing sensor 40120525
+  7276 INFO     toweragent   Separating events for sensor 40120525
+  7281 WARNING  toweragent   No event drydown was detected for 40120525
+  7281 INFO     toweragent   Initializing sensor 40120526
+  7281 INFO     toweragent   Found 1 soil moisture columns for CA-SF1 : ['SWC_F_MDS_1']
+  7283 INFO     toweragent   Initializing sensor 40108522
+  7284 INFO     toweragent   Separating events for sensor 40120526
+  7288 WARNING  toweragent   No event drydown was detected for 40120526
+  7288 INFO     toweragent   Initializing sensor 40120527
+  7289 INFO     toweragent   Separating events for sensor 40108522
+  7291 INFO     toweragent   Separating events for sensor 40120527
+  7294 WARNING  toweragent   No event drydown was detected for 40120527
+  7294 INFO     toweragent   Initializing sensor 40120528
+  7298 INFO     toweragent   Separating events for sensor 40120528
+  7301 WARNING  toweragent   No event drydown was detected for 40120528
+  7301 INFO     toweragent   Initializing sensor 40120529
+  7302 INFO     toweragent   Found 1 events for sensor 40108522
+  7303 INFO     toweragent   Fitting drydown models for sensor 40108522
+  7305 DEBUG    DrydownModel Exception raised in the thread CA-SF1, 40108522: Each lower bound must be strictly less than each upper bound.
+  7306 INFO     toweragent   Separating events for sensor 40120529
+  7307 DEBUG    DrydownModel Exception raised in the thread CA-SF1, 40108522: cannot unpack non-iterable NoneType object
+  7308 DEBUG    DrydownModel Exception raised in the thread CA-SF1, 40108522: 'TowerEvent' object has no attribute 'exponential'
+  7309 INFO     toweragent   Drydown model analysis completed for 40108522: 0/1 events fitted
+  7309 WARNING  toweragent   No event drydown was detected for 40120529
+  7311 INFO     toweragent   Initializing sensor 40120530
+  7311 INFO     toweragent   Finished with tower CA-SF1: 1/1 sensors analyzed
+  7312 INFO     toweragent   Found 5 soil moisture columns for BE-Vie : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4', 'SWC_F_MDS_5']
+  7312 INFO     toweragent   Initializing sensor 40153479
+  7314 INFO     toweragent   Currently processing tower CN-Cng
+  7315 INFO     toweragent   Initalizing Tower CN-Cng
+  7315 INFO     toweragent   Separating events for sensor 40120530
+  7318 INFO     toweragent   Separating events for sensor 40153479
+  7319 WARNING  toweragent   No event drydown was detected for 40120530
+  7320 WARNING  toweragent   No drydown events detected for BE-Lon
+  7322 WARNING  toweragent   No event drydown was detected for 40153479
+  7322 INFO     toweragent   Initializing sensor 40153480
+  7323 INFO     toweragent   Currently processing tower CN-Dan
+  7324 INFO     toweragent   Initalizing Tower CN-Dan
+  7328 INFO     toweragent   Separating events for sensor 40153480
+  7349 INFO     toweragent   Found 1 soil moisture columns for CA-Qfo : ['SWC_F_MDS_1']
+  7350 INFO     toweragent   Initializing sensor 40151670
+  7351 INFO     toweragent   Found 1 events for sensor 40153480
+  7351 INFO     toweragent   Fitting drydown models for sensor 40153480
+  7354 INFO     toweragent   Separating events for sensor 40151670
+  7358 WARNING  toweragent   No event drydown was detected for 40151670
+  7358 WARNING  toweragent   No drydown events detected for CA-Qfo
+  7360 INFO     toweragent   Currently processing tower CN-Din
+  7361 INFO     toweragent   Drydown model analysis completed for 40153480: 1/1 events fitted
+  7362 INFO     toweragent   Initalizing Tower CN-Din
+  7362 INFO     toweragent   Initializing sensor 40153481
+  7367 INFO     toweragent   Separating events for sensor 40153481
+  7370 WARNING  toweragent   No event drydown was detected for 40153481
+  7370 INFO     toweragent   Initializing sensor 40153482
+  7375 INFO     toweragent   Separating events for sensor 40153482
+  7376 INFO     toweragent   Found 1 soil moisture columns for CA-Obs : ['SWC_F_MDS_2']
+  7377 INFO     toweragent   Initializing sensor 40159635
+  7378 WARNING  toweragent   No event drydown was detected for 40153482
+  7379 INFO     toweragent   Initializing sensor 40153483
+  7383 INFO     toweragent   Separating events for sensor 40159635
+  7384 INFO     toweragent   Separating events for sensor 40153483
+  7386 WARNING  toweragent   No event drydown was detected for 40159635
+  7387 WARNING  toweragent   No drydown events detected for CA-Obs
+  7389 INFO     toweragent   Currently processing tower CN-Du2
+  7390 INFO     toweragent   Initalizing Tower CN-Du2
+  7406 INFO     toweragent   Found 1 events for sensor 40153483
+  7407 INFO     toweragent   Fitting drydown models for sensor 40153483
+  7418 INFO     toweragent   Drydown model analysis completed for 40153483: 1/1 events fitted
+  7419 INFO     toweragent   Initializing sensor 40153484
+  7424 INFO     toweragent   Separating events for sensor 40153484
+  7427 WARNING  toweragent   No event drydown was detected for 40153484
+  7427 INFO     toweragent   Initializing sensor 40153485
+  7432 INFO     toweragent   Separating events for sensor 40153485
+  7435 WARNING  toweragent   No event drydown was detected for 40153485
+  7435 INFO     toweragent   Initializing sensor 40153486
+  7436 INFO     toweragent   Found 1 soil moisture columns for CA-Oas : ['SWC_F_MDS_1']
+  7437 INFO     toweragent   Initializing sensor 40102792
+  7440 INFO     toweragent   Separating events for sensor 40153486
+  7443 INFO     toweragent   Separating events for sensor 40102792
+  7444 WARNING  toweragent   No event drydown was detected for 40153486
+  7445 INFO     toweragent   Finished with tower BE-Vie: 8/5 sensors analyzed
+  7449 INFO     toweragent   Currently processing tower CN-Du3
+  7449 INFO     toweragent   Initalizing Tower CN-Du3
+  7465 INFO     toweragent   Found 1 events for sensor 40102792
+  7465 INFO     toweragent   Fitting drydown models for sensor 40102792
+  7482 INFO     toweragent   Drydown model analysis completed for 40102792: 1/1 events fitted
+  7482 INFO     toweragent   Finished with tower CA-Oas: 1/1 sensors analyzed
+  7486 INFO     toweragent   Currently processing tower CN-Ha2
+  7486 INFO     toweragent   Initalizing Tower CN-Ha2
+  7687 INFO     toweragent   Found 1 soil moisture columns for CA-SF2 : ['SWC_F_MDS_1']
+  7687 INFO     toweragent   Initializing sensor 40155547
+  7691 INFO     toweragent   Separating events for sensor 40155547
+  7713 INFO     toweragent   Found 5 events for sensor 40155547
+  7713 INFO     toweragent   Fitting drydown models for sensor 40155547
+  7820 INFO     toweragent   Drydown model analysis completed for 40155547: 5/5 events fitted
+  7820 INFO     toweragent   Finished with tower CA-SF2: 1/1 sensors analyzed
+  7825 INFO     toweragent   Currently processing tower CN-HaM
+  7825 INFO     toweragent   Initalizing Tower CN-HaM
+  7934 INFO     toweragent   Found 1 soil moisture columns for CA-TP2 : ['SWC_F_MDS_1']
+  7935 INFO     toweragent   Initializing sensor 40178634
+  7939 INFO     toweragent   Separating events for sensor 40178634
+  7973 INFO     toweragent   Found 1 soil moisture columns for CA-SF3 : ['SWC_F_MDS_1']
+  7974 INFO     toweragent   Initializing sensor 40138974
+  7977 INFO     toweragent   Separating events for sensor 40138974
+  7983 INFO     toweragent   Found 35 events for sensor 40178634
+  7983 INFO     toweragent   Fitting drydown models for sensor 40178634
+  7991 INFO     toweragent   Found 1 events for sensor 40138974
+  7992 INFO     toweragent   Fitting drydown models for sensor 40138974
+  8007 INFO     toweragent   Drydown model analysis completed for 40138974: 1/1 events fitted
+  8008 INFO     toweragent   Finished with tower CA-SF3: 1/1 sensors analyzed
+  8012 INFO     toweragent   Currently processing tower CN-Qia
+  8012 INFO     toweragent   Initalizing Tower CN-Qia
+  8088 INFO     toweragent   Found 1 soil moisture columns for CA-TP1 : ['SWC_F_MDS_1']
+  8088 INFO     toweragent   Initializing sensor 40141791
+  8093 INFO     toweragent   Separating events for sensor 40141791
+  8117 INFO     toweragent   Found 1 soil moisture columns for CA-TP3 : ['SWC_F_MDS_1']
+  8117 INFO     toweragent   Initializing sensor 40093970
+  8122 INFO     toweragent   Separating events for sensor 40093970
+  8141 INFO     toweragent   Found 31 events for sensor 40141791
+  8141 INFO     toweragent   Fitting drydown models for sensor 40141791
+  8174 INFO     toweragent   Found 36 events for sensor 40093970
+  8175 INFO     toweragent   Fitting drydown models for sensor 40093970
+  8215 INFO     toweragent   Found 1 soil moisture columns for CA-TPD : ['SWC_F_MDS_1']
+  8215 INFO     toweragent   Initializing sensor 40103108
+  8220 INFO     toweragent   Separating events for sensor 40103108
+  8237 INFO     toweragent   Found 4 events for sensor 40103108
+  8237 INFO     toweragent   Fitting drydown models for sensor 40103108
+  8254 INFO     toweragent   Found 1 soil moisture columns for CA-TP4 : ['SWC_F_MDS_1']
+  8254 INFO     toweragent   Initializing sensor 40144085
+  8259 INFO     toweragent   Separating events for sensor 40144085
+  8259 DEBUG    DrydownModel Exception raised in the thread CA-TP3, 40093970: `x0` is infeasible.
+  8261 DEBUG    DrydownModel Exception raised in the thread CA-TP3, 40093970: cannot unpack non-iterable NoneType object
+  8268 INFO     toweragent   Drydown model analysis completed for 40103108: 4/4 events fitted
+  8269 INFO     toweragent   Finished with tower CA-TPD: 1/1 sensors analyzed
+  8272 INFO     toweragent   Currently processing tower CN-Sw2
+  8272 INFO     toweragent   Initalizing Tower CN-Sw2
+  8274 INFO     toweragent   Found 4 soil moisture columns for CH-Cha : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_5']
+  8275 INFO     toweragent   Initializing sensor 40155886
+  8280 INFO     toweragent   Separating events for sensor 40155886
+  8283 WARNING  toweragent   No event drydown was detected for 40155886
+  8284 INFO     toweragent   Initializing sensor 40155887
+  8286 DEBUG    DrydownModel Exception raised in the thread CA-TP2, 40178634: array must not contain infs or NaNs
+  8287 DEBUG    DrydownModel Exception raised in the thread CA-TP2, 40178634: cannot unpack non-iterable NoneType object
+  8288 INFO     toweragent   Separating events for sensor 40155887
+  8292 WARNING  toweragent   No event drydown was detected for 40155887
+  8292 INFO     toweragent   Initializing sensor 40155888
+  8297 INFO     toweragent   Found 1 soil moisture columns for CN-Dan : ['SWC_F_MDS_1']
+  8297 INFO     toweragent   Initializing sensor 40173530
+  8297 INFO     toweragent   Separating events for sensor 40155888
+  8302 INFO     toweragent   Found 5 soil moisture columns for CH-Fru : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4', 'SWC_F_MDS_5']
+  8302 INFO     toweragent   Initializing sensor 40093326
+  8303 INFO     toweragent   Separating events for sensor 40173530
+  8303 WARNING  toweragent   No event drydown was detected for 40155888
+  8303 INFO     toweragent   Found 1 soil moisture columns for CN-Cha : ['SWC_F_MDS_1']
+  8304 INFO     toweragent   Initializing sensor 40110003
+  8304 INFO     toweragent   Initializing sensor 40155889
+  8305 DEBUG    DrydownModel Exception raised in the thread CA-TP2, 40178634: 'TowerEvent' object has no attribute 'q'
+  8307 INFO     toweragent   Drydown model analysis completed for 40178634: 34/35 events fitted
+  8308 INFO     toweragent   Finished with tower CA-TP2: 1/1 sensors analyzed
+  8308 INFO     toweragent   Found 1 soil moisture columns for CN-Cng : ['SWC_F_MDS_1']
+  8308 INFO     toweragent   Separating events for sensor 40093326
+  8309 INFO     toweragent   Separating events for sensor 40155889
+  8309 INFO     toweragent   Initializing sensor 40168942
+  8310 INFO     toweragent   Found 3 soil moisture columns for CH-Oe1 : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+  8311 INFO     toweragent   Initializing sensor 40109385
+  8311 INFO     toweragent   Currently processing tower CZ-BK1
+  8312 WARNING  toweragent   No event drydown was detected for 40155889
+  8312 WARNING  toweragent   No event drydown was detected for 40093326
+  8313 INFO     toweragent   Initalizing Tower CZ-BK1
+  8313 WARNING  toweragent   No drydown events detected for CH-Cha
+  8313 INFO     toweragent   Initializing sensor 40093327
+  8313 INFO     toweragent   Separating events for sensor 40110003
+  8314 INFO     toweragent   Currently processing tower CZ-BK2
+  8315 INFO     toweragent   Separating events for sensor 40168942
+  8315 INFO     toweragent   Initalizing Tower CZ-BK2
+  8316 INFO     toweragent   Found 1 events for sensor 40173530
+  8316 INFO     toweragent   Fitting drydown models for sensor 40173530
+  8317 WARNING  toweragent   No event drydown was detected for 40110003
+  8317 INFO     toweragent   Separating events for sensor 40093327
+  8317 WARNING  toweragent   No drydown events detected for CN-Cha
+  8317 INFO     toweragent   Separating events for sensor 40109385
+  8319 INFO     toweragent   Currently processing tower DE-Geb
+  8319 WARNING  toweragent   No event drydown was detected for 40168942
+  8319 INFO     toweragent   Initalizing Tower DE-Geb
+  8319 WARNING  toweragent   No drydown events detected for CN-Cng
+  8320 WARNING  toweragent   No event drydown was detected for 40093327
+  8321 INFO     toweragent   Initializing sensor 40093328
+  8321 INFO     toweragent   Currently processing tower DE-Gri
+  8323 INFO     toweragent   Initalizing Tower DE-Gri
+  8324 INFO     toweragent   Found 49 events for sensor 40144085
+  8324 INFO     toweragent   Found 4 soil moisture columns for CH-Lae : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+  8325 INFO     toweragent   Fitting drydown models for sensor 40144085
+  8325 INFO     toweragent   Initializing sensor 40139489
+  8326 INFO     toweragent   Separating events for sensor 40093328
+  8329 INFO     toweragent   Drydown model analysis completed for 40173530: 1/1 events fitted
+  8329 INFO     toweragent   Finished with tower CN-Dan: 1/1 sensors analyzed
+  8330 WARNING  toweragent   No event drydown was detected for 40093328
+  8330 INFO     toweragent   Initializing sensor 40093329
+  8331 INFO     toweragent   Separating events for sensor 40139489
+  8332 INFO     toweragent   Currently processing tower DE-Hai
+  8334 INFO     toweragent   Found 1 soil moisture columns for CN-Du3 : ['SWC_F_MDS_1']
+  8334 INFO     toweragent   Initalizing Tower DE-Hai
+  8334 INFO     toweragent   Initializing sensor 40187070
+  8336 INFO     toweragent   Separating events for sensor 40093329
+  8336 INFO     toweragent   Found 1 soil moisture columns for CN-Du2 : ['SWC_F_MDS_1']
+  8338 INFO     toweragent   Initializing sensor 40218803
+  8339 WARNING  toweragent   No event drydown was detected for 40093329
+  8339 INFO     toweragent   Found 2 events for sensor 40109385
+  8339 INFO     toweragent   Separating events for sensor 40187070
+  8340 INFO     toweragent   Initializing sensor 40093330
+  8341 INFO     toweragent   Found 1 soil moisture columns for CN-Din : ['SWC_F_MDS_1']
+  8340 INFO     toweragent   Fitting drydown models for sensor 40109385
+  8342 INFO     toweragent   Initializing sensor 40218497
+  8343 INFO     toweragent   Separating events for sensor 40218803
+  8345 INFO     toweragent   Separating events for sensor 40093330
+  8346 INFO     toweragent   Separating events for sensor 40218497
+  8349 WARNING  toweragent   No event drydown was detected for 40093330
+  8349 INFO     toweragent   Found 1 events for sensor 40139489
+  8350 INFO     toweragent   Fitting drydown models for sensor 40139489
+  8350 WARNING  toweragent   No drydown events detected for CH-Fru
+  8351 INFO     toweragent   Found 2 events for sensor 40187070
+  8352 INFO     toweragent   Fitting drydown models for sensor 40187070
+  8352 INFO     toweragent   Currently processing tower DE-Kli
+  8353 INFO     toweragent   Initalizing Tower DE-Kli
+  8360 INFO     toweragent   Found 6 events for sensor 40218803
+  8360 INFO     toweragent   Fitting drydown models for sensor 40218803
+  8363 DEBUG    DrydownModel Exception raised in the thread CN-Du3, 40187070: `x0` is infeasible.
+  8363 INFO     toweragent   Drydown model analysis completed for 40139489: 1/1 events fitted
+  8364 INFO     toweragent   Found 6 events for sensor 40218497
+  8364 DEBUG    DrydownModel Exception raised in the thread CN-Du3, 40187070: cannot unpack non-iterable NoneType object
+  8364 INFO     toweragent   Fitting drydown models for sensor 40218497
+  8364 INFO     toweragent   Initializing sensor 40139490
+  8365 INFO     toweragent   Drydown model analysis completed for 40109385: 2/2 events fitted
+  8365 DEBUG    DrydownModel Exception raised in the thread CN-Du3, 40187070: 'TowerEvent' object has no attribute 'exponential'
+  8366 INFO     toweragent   Initializing sensor 40109386
+  8367 INFO     toweragent   Drydown model analysis completed for 40187070: 1/2 events fitted
+  8368 INFO     toweragent   Finished with tower CN-Du3: 1/1 sensors analyzed
+  8369 INFO     toweragent   Separating events for sensor 40139490
+  8371 INFO     toweragent   Currently processing tower DE-Lkb
+  8371 INFO     toweragent   Separating events for sensor 40109386
+  8371 INFO     toweragent   Initalizing Tower DE-Lkb
+  8388 INFO     toweragent   Found 2 events for sensor 40139490
+  8388 INFO     toweragent   Fitting drydown models for sensor 40139490
+  8389 INFO     toweragent   Found 1 events for sensor 40109386
+  8390 DEBUG    DrydownModel Exception raised in the thread CN-Din, 40218497: `x0` is infeasible.
+  8390 INFO     toweragent   Fitting drydown models for sensor 40109386
+  8392 DEBUG    DrydownModel Exception raised in the thread CN-Din, 40218497: cannot unpack non-iterable NoneType object
+  8394 INFO     toweragent   Found 1 soil moisture columns for CN-Ha2 : ['SWC_F_MDS_1']
+  8395 INFO     toweragent   Initializing sensor 40220011
+  8401 INFO     toweragent   Drydown model analysis completed for 40109386: 1/1 events fitted
+  8402 INFO     toweragent   Initializing sensor 40109387
+  8403 INFO     toweragent   Separating events for sensor 40220011
+  8406 INFO     toweragent   Drydown model analysis completed for 40139490: 2/2 events fitted
+  8406 INFO     toweragent   Initializing sensor 40139491
+  8407 INFO     toweragent   Separating events for sensor 40109387
+  8408 WARNING  toweragent   No event drydown was detected for 40220011
+  8410 WARNING  toweragent   No drydown events detected for CN-Ha2
+  8410 INFO     toweragent   Separating events for sensor 40139491
+  8411 WARNING  toweragent   No event drydown was detected for 40109387
+  8412 INFO     toweragent   Finished with tower CH-Oe1: 3/3 sensors analyzed
+  8412 INFO     toweragent   Currently processing tower DE-Lnf
+  8412 DEBUG    DrydownModel Exception raised in the thread CN-Din, 40218497: 'TowerEvent' object has no attribute 'exponential'
+  8413 INFO     toweragent   Initalizing Tower DE-Lnf
+  8414 WARNING  toweragent   No event drydown was detected for 40139491
+  8415 INFO     toweragent   Drydown model analysis completed for 40218497: 5/6 events fitted
+  8415 INFO     toweragent   Initializing sensor 40139492
+  8415 INFO     toweragent   Finished with tower CN-Din: 1/1 sensors analyzed
+  8416 INFO     toweragent   Currently processing tower DE-Obe
+  8417 INFO     toweragent   Initalizing Tower DE-Obe
+  8419 INFO     toweragent   Currently processing tower DE-Seh
+  8420 INFO     toweragent   Initalizing Tower DE-Seh
+  8420 INFO     toweragent   Drydown model analysis completed for 40218803: 6/6 events fitted
+  8420 INFO     toweragent   Separating events for sensor 40139492
+  8422 INFO     toweragent   Finished with tower CN-Du2: 1/1 sensors analyzed
+  8425 WARNING  toweragent   No event drydown was detected for 40139492
+  8425 INFO     toweragent   Currently processing tower DE-Tha
+  8425 INFO     toweragent   Initalizing Tower DE-Tha
+  8425 INFO     toweragent   Finished with tower CH-Lae: 4/4 sensors analyzed
+  8429 INFO     toweragent   Currently processing tower DK-Eng
+  8430 INFO     toweragent   Initalizing Tower DK-Eng
+  8452 INFO     toweragent   Found 3 soil moisture columns for CH-Dav : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+  8453 INFO     toweragent   Initializing sensor 40123344
+  8453 INFO     toweragent   Drydown model analysis completed for 40141791: 31/31 events fitted
+  8455 INFO     toweragent   Finished with tower CA-TP1: 1/1 sensors analyzed
+  8457 INFO     toweragent   Separating events for sensor 40123344
+  8459 INFO     toweragent   Currently processing tower DK-Fou
+  8460 INFO     toweragent   Initalizing Tower DK-Fou
+  8462 WARNING  toweragent   No event drydown was detected for 40123344
+  8462 INFO     toweragent   Initializing sensor 40123345
+  8467 INFO     toweragent   Separating events for sensor 40123345
+  8469 INFO     toweragent   Found 4 soil moisture columns for CH-Oe2 : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+  8469 INFO     toweragent   Initializing sensor 40148996
+  8470 WARNING  toweragent   No event drydown was detected for 40123345
+  8471 INFO     toweragent   Initializing sensor 40123346
+  8475 INFO     toweragent   Separating events for sensor 40148996
+  8476 INFO     toweragent   Separating events for sensor 40123346
+  8479 WARNING  toweragent   No event drydown was detected for 40123346
+  8479 WARNING  toweragent   No drydown events detected for CH-Dav
+  8481 INFO     toweragent   Currently processing tower DK-Sor
+  8482 INFO     toweragent   Initalizing Tower DK-Sor
+  8499 INFO     toweragent   Found 8 events for sensor 40148996
+  8499 INFO     toweragent   Fitting drydown models for sensor 40148996
+  8546 DEBUG    DrydownModel Exception raised in the thread CA-TP3, 40093970: 'TowerEvent' object has no attribute 'exponential'
+  8547 DEBUG    DrydownModel Exception raised in the thread CA-TP4, 40144085: `x0` is infeasible.
+  8549 DEBUG    DrydownModel Exception raised in the thread CA-TP4, 40144085: cannot unpack non-iterable NoneType object
+  8550 INFO     toweragent   Drydown model analysis completed for 40093970: 35/36 events fitted
+  8551 INFO     toweragent   Finished with tower CA-TP3: 1/1 sensors analyzed
+  8551 DEBUG    DrydownModel Exception raised in the thread CA-TP4, 40144085: `x0` is infeasible.
+  8553 DEBUG    DrydownModel Exception raised in the thread CA-TP4, 40144085: cannot unpack non-iterable NoneType object
+  8555 INFO     toweragent   Currently processing tower ES-Amo
+  8556 INFO     toweragent   Initalizing Tower ES-Amo
+  8567 INFO     toweragent   Drydown model analysis completed for 40148996: 8/8 events fitted
+  8567 INFO     toweragent   Initializing sensor 40148997
+  8573 INFO     toweragent   Separating events for sensor 40148997
+  8576 WARNING  toweragent   No event drydown was detected for 40148997
+  8577 INFO     toweragent   Initializing sensor 40148998
+  8582 INFO     toweragent   Separating events for sensor 40148998
+  8585 WARNING  toweragent   No event drydown was detected for 40148998
+  8586 INFO     toweragent   Initializing sensor 40148999
+  8591 INFO     toweragent   Separating events for sensor 40148999
+  8595 WARNING  toweragent   No event drydown was detected for 40148999
+  8595 INFO     toweragent   Finished with tower CH-Oe2: 4/4 sensors analyzed
+  8599 INFO     toweragent   Currently processing tower ES-LgS
+  8599 INFO     toweragent   Initalizing Tower ES-LgS
+  8665 INFO     toweragent   Found 1 soil moisture columns for CN-HaM : ['SWC_F_MDS_1']
+  8665 INFO     toweragent   Initializing sensor 40107480
+  8671 INFO     toweragent   Separating events for sensor 40107480
+  8675 WARNING  toweragent   No event drydown was detected for 40107480
+  8675 WARNING  toweragent   No drydown events detected for CN-HaM
+  8677 INFO     toweragent   Currently processing tower ES-LJu
+  8678 DEBUG    DrydownModel Exception raised in the thread CA-TP4, 40144085: `x0` is infeasible.
+  8678 DEBUG    DrydownModel Exception raised in the thread CA-TP4, 40144085: cannot unpack non-iterable NoneType object
+  8678 INFO     toweragent   Initalizing Tower ES-LJu
+  8743 INFO     toweragent   Found 1 soil moisture columns for CN-Qia : ['SWC_F_MDS_1']
+  8744 INFO     toweragent   Initializing sensor 40214064
+  8747 INFO     toweragent   Separating events for sensor 40214064
+  8764 INFO     toweragent   Found 7 events for sensor 40214064
+  8765 INFO     toweragent   Fitting drydown models for sensor 40214064
+  8766 DEBUG    DrydownModel Exception raised in the thread CA-TP4, 40144085: 'TowerEvent' object has no attribute 'exponential'
+  8767 DEBUG    DrydownModel Exception raised in the thread CA-TP4, 40144085: 'TowerEvent' object has no attribute 'exponential'
+  8769 DEBUG    DrydownModel Exception raised in the thread CA-TP4, 40144085: 'TowerEvent' object has no attribute 'exponential'
+  8772 INFO     toweragent   Drydown model analysis completed for 40144085: 46/49 events fitted
+  8773 INFO     toweragent   Finished with tower CA-TP4: 1/1 sensors analyzed
+  8777 INFO     toweragent   Currently processing tower FI-Hyy
+  8777 INFO     toweragent   Initalizing Tower FI-Hyy
+  8823 INFO     toweragent   Drydown model analysis completed for 40214064: 7/7 events fitted
+  8824 INFO     toweragent   Finished with tower CN-Qia: 1/1 sensors analyzed
+  8827 INFO     toweragent   Currently processing tower FI-Jok
+  8828 INFO     toweragent   Initalizing Tower FI-Jok
+  9251 INFO     toweragent   Found 1 soil moisture columns for CN-Sw2 : ['SWC_F_MDS_1']
+  9252 INFO     toweragent   Initializing sensor 40179597
+  9260 INFO     toweragent   Separating events for sensor 40179597
+  9265 WARNING  toweragent   No event drydown was detected for 40179597
+  9265 WARNING  toweragent   No drydown events detected for CN-Sw2
+  9269 INFO     toweragent   Currently processing tower FI-Sod
+  9270 INFO     toweragent   Initalizing Tower FI-Sod
+  9482 INFO     toweragent   Found 1 soil moisture columns for DE-Lkb : ['SWC_F_MDS_1']
+  9482 INFO     toweragent   Initializing sensor 40144924
+  9486 INFO     toweragent   Separating events for sensor 40144924
+  9490 WARNING  toweragent   No event drydown was detected for 40144924
+  9490 WARNING  toweragent   No drydown events detected for DE-Lkb
+  9492 INFO     toweragent   Currently processing tower FR-Gri
+  9494 INFO     toweragent   Initalizing Tower FR-Gri
+  9511 INFO     toweragent   Found 2 soil moisture columns for CZ-BK2 : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+  9512 INFO     toweragent   Initializing sensor 40180239
+  9516 INFO     toweragent   Separating events for sensor 40180239
+  9519 WARNING  toweragent   No event drydown was detected for 40180239
+  9519 INFO     toweragent   Initializing sensor 40180240
+  9522 INFO     toweragent   Separating events for sensor 40180240
+  9525 WARNING  toweragent   No event drydown was detected for 40180240
+  9525 WARNING  toweragent   No drydown events detected for CZ-BK2
+  9527 INFO     toweragent   Currently processing tower FR-LBr
+  9528 INFO     toweragent   Initalizing Tower FR-LBr
+  9527 INFO     toweragent   Found 1 soil moisture columns for DK-Eng : ['SWC_F_MDS_1']
+  9528 INFO     toweragent   Initializing sensor 40156211
+  9535 INFO     toweragent   Separating events for sensor 40156211
+  9538 WARNING  toweragent   No event drydown was detected for 40156211
+  9538 WARNING  toweragent   No drydown events detected for DK-Eng
+  9540 INFO     toweragent   Currently processing tower GF-Guy
+  9542 INFO     toweragent   Initalizing Tower GF-Guy
+  9550 INFO     toweragent   Found 2 soil moisture columns for CZ-BK1 : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+  9550 INFO     toweragent   Initializing sensor 40125329
+  9555 INFO     toweragent   Separating events for sensor 40125329
+  9577 INFO     toweragent   Found 6 events for sensor 40125329
+  9577 INFO     toweragent   Fitting drydown models for sensor 40125329
+  9581 INFO     toweragent   Found 3 soil moisture columns for DE-Hai : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+  9581 INFO     toweragent   Initializing sensor 40213743
+  9586 INFO     toweragent   Found 3 soil moisture columns for DK-Fou : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+  9586 INFO     toweragent   Initializing sensor 40174072
+  9586 INFO     toweragent   Separating events for sensor 40213743
+  9596 INFO     toweragent   Separating events for sensor 40174072
+  9599 INFO     toweragent   Found 2 soil moisture columns for DE-Seh : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+  9599 INFO     toweragent   Initializing sensor 40219124
+  9600 WARNING  toweragent   No event drydown was detected for 40174072
+  9601 INFO     toweragent   Initializing sensor 40174073
+  9605 INFO     toweragent   Separating events for sensor 40219124
+  9606 INFO     toweragent   Separating events for sensor 40174073
+  9610 WARNING  toweragent   No event drydown was detected for 40174073
+  9610 INFO     toweragent   Found 1 soil moisture columns for ES-LgS : ['SWC_F_MDS_1']
+  9610 INFO     toweragent   Initializing sensor 40140813
+  9610 INFO     toweragent   Initializing sensor 40174074
+  9611 INFO     toweragent   Found 3 soil moisture columns for DE-Obe : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+  9613 INFO     toweragent   Initializing sensor 40141146
+  9616 INFO     toweragent   Separating events for sensor 40174074
+  9617 INFO     toweragent   Separating events for sensor 40140813
+  9619 INFO     toweragent   Found 4 events for sensor 40213743
+  9619 INFO     toweragent   Found 2 events for sensor 40219124
+  9620 WARNING  toweragent   No event drydown was detected for 40174074
+  9620 INFO     toweragent   Separating events for sensor 40141146
+  9621 INFO     toweragent   Fitting drydown models for sensor 40213743
+  9621 INFO     toweragent   Fitting drydown models for sensor 40219124
+  9621 WARNING  toweragent   No drydown events detected for DK-Fou
+  9624 INFO     toweragent   Currently processing tower GH-Ank
+  9625 INFO     toweragent   Initalizing Tower GH-Ank
+  9625 INFO     toweragent   Drydown model analysis completed for 40125329: 6/6 events fitted
+  9625 WARNING  toweragent   No event drydown was detected for 40141146
+  9627 INFO     toweragent   Initializing sensor 40125330
+  9627 INFO     toweragent   Initializing sensor 40141147
+  9629 INFO     toweragent   Found 4 soil moisture columns for DE-Lnf : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+  9631 INFO     toweragent   Found 1 events for sensor 40140813
+  9631 INFO     toweragent   Fitting drydown models for sensor 40140813
+  9631 INFO     toweragent   Initializing sensor 40157245
+  9633 INFO     toweragent   Separating events for sensor 40125330
+  9633 INFO     toweragent   Separating events for sensor 40141147
+  9637 INFO     toweragent   Separating events for sensor 40157245
+  9639 INFO     toweragent   Found 1 soil moisture columns for DE-Kli : ['SWC_F_MDS_1']
+  9639 INFO     toweragent   Initializing sensor 40215240
+  9640 INFO     toweragent   Drydown model analysis completed for 40219124: 2/2 events fitted
+  9641 INFO     toweragent   Initializing sensor 40219125
+  9643 INFO     toweragent   Drydown model analysis completed for 40140813: 1/1 events fitted
+  9643 INFO     toweragent   Finished with tower ES-LgS: 1/1 sensors analyzed
+  9645 INFO     toweragent   Separating events for sensor 40215240
+  9646 INFO     toweragent   Found 1 soil moisture columns for DE-Gri : ['SWC_F_MDS_1']
+  9646 INFO     toweragent   Initializing sensor 40103650
+  9647 INFO     toweragent   Separating events for sensor 40219125
+  9648 INFO     toweragent   Currently processing tower GL-ZaH
+  9649 WARNING  toweragent   No event drydown was detected for 40215240
+  9650 INFO     toweragent   Initalizing Tower GL-ZaH
+  9650 WARNING  toweragent   No drydown events detected for DE-Kli
+  9651 WARNING  toweragent   No event drydown was detected for 40219125
+  9652 INFO     toweragent   Finished with tower DE-Seh: 2/2 sensors analyzed
+  9652 INFO     toweragent   Found 1 events for sensor 40125330
+  9652 INFO     toweragent   Currently processing tower IT-BCi
+  9653 INFO     toweragent   Separating events for sensor 40103650
+  9654 INFO     toweragent   Fitting drydown models for sensor 40125330
+  9654 INFO     toweragent   Initalizing Tower IT-BCi
+  9655 INFO     toweragent   Found 1 events for sensor 40141147
+  9656 INFO     toweragent   Currently processing tower IT-CA1
+  9656 INFO     toweragent   Fitting drydown models for sensor 40141147
+  9658 INFO     toweragent   Initalizing Tower IT-CA1
+  9658 WARNING  toweragent   No event drydown was detected for 40103650
+  9660 INFO     toweragent   Found 2 events for sensor 40157245
+  9660 WARNING  toweragent   No drydown events detected for DE-Gri
+  9660 INFO     toweragent   Fitting drydown models for sensor 40157245
+  9663 INFO     toweragent   Currently processing tower IT-CA2
+  9663 INFO     toweragent   Initalizing Tower IT-CA2
+  9663 INFO     toweragent   Found 1 soil moisture columns for ES-Amo : ['SWC_F_MDS_1']
+  9664 INFO     toweragent   Initializing sensor 40101423
+  9665 INFO     toweragent   Drydown model analysis completed for 40125330: 1/1 events fitted
+  9666 INFO     toweragent   Finished with tower CZ-BK1: 2/2 sensors analyzed
+  9670 INFO     toweragent   Separating events for sensor 40101423
+  9670 INFO     toweragent   Currently processing tower IT-CA3
+  9670 INFO     toweragent   Initalizing Tower IT-CA3
+  9672 INFO     toweragent   Drydown model analysis completed for 40141147: 1/1 events fitted
+  9672 INFO     toweragent   Initializing sensor 40141148
+  9674 INFO     toweragent   Drydown model analysis completed for 40213743: 4/4 events fitted
+  9674 INFO     toweragent   Initializing sensor 40213744
+  9677 INFO     toweragent   Separating events for sensor 40141148
+  9679 INFO     toweragent   Drydown model analysis completed for 40157245: 2/2 events fitted
+  9680 INFO     toweragent   Initializing sensor 40157246
+  9680 INFO     toweragent   Separating events for sensor 40213744
+  9684 INFO     toweragent   Separating events for sensor 40157246
+  9686 INFO     toweragent   Found 1 events for sensor 40101423
+  9687 INFO     toweragent   Fitting drydown models for sensor 40101423
+  9688 WARNING  toweragent   No event drydown was detected for 40157246
+  9688 INFO     toweragent   Initializing sensor 40157247
+  9693 INFO     toweragent   Found 2 events for sensor 40141148
+  9694 INFO     toweragent   Fitting drydown models for sensor 40141148
+  9694 INFO     toweragent   Separating events for sensor 40157247
+  9699 WARNING  toweragent   No event drydown was detected for 40157247
+  9699 INFO     toweragent   Initializing sensor 40157248
+  9702 INFO     toweragent   Drydown model analysis completed for 40101423: 1/1 events fitted
+  9703 INFO     toweragent   Finished with tower ES-Amo: 1/1 sensors analyzed
+  9704 INFO     toweragent   Separating events for sensor 40157248
+  9706 INFO     toweragent   Found 6 events for sensor 40213744
+  9707 INFO     toweragent   Fitting drydown models for sensor 40213744
+  9707 INFO     toweragent   Currently processing tower IT-Col
+  9708 WARNING  toweragent   No event drydown was detected for 40157248
+  9708 INFO     toweragent   Initalizing Tower IT-Col
+  9708 INFO     toweragent   Finished with tower DE-Lnf: 4/4 sensors analyzed
+  9710 INFO     toweragent   Drydown model analysis completed for 40141148: 2/2 events fitted
+  9712 INFO     toweragent   Currently processing tower IT-Cp2
+  9712 INFO     toweragent   Finished with tower DE-Obe: 3/3 sensors analyzed
+  9713 INFO     toweragent   Initalizing Tower IT-Cp2
+  9715 INFO     toweragent   Currently processing tower IT-Cpz
+  9715 INFO     toweragent   Initalizing Tower IT-Cpz
+  9745 INFO     toweragent   Found 2 soil moisture columns for FI-Jok : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+  9745 INFO     toweragent   Initializing sensor 40166098
+  9749 INFO     toweragent   Found 1 soil moisture columns for ES-LJu : ['SWC_F_MDS_1']
+  9749 INFO     toweragent   Initializing sensor 40179905
+  9749 INFO     toweragent   Separating events for sensor 40166098
+  9754 INFO     toweragent   Separating events for sensor 40179905
+  9754 WARNING  toweragent   No event drydown was detected for 40166098
+  9754 INFO     toweragent   Drydown model analysis completed for 40213744: 6/6 events fitted
+  9755 INFO     toweragent   Initializing sensor 40166099
+  9756 INFO     toweragent   Initializing sensor 40213745
+  9759 INFO     toweragent   Separating events for sensor 40166099
+  9760 INFO     toweragent   Separating events for sensor 40213745
+  9762 WARNING  toweragent   No event drydown was detected for 40166099
+  9763 WARNING  toweragent   No drydown events detected for FI-Jok
+  9765 INFO     toweragent   Currently processing tower IT-Isp
+  9767 INFO     toweragent   Initalizing Tower IT-Isp
+  9772 INFO     toweragent   Found 2 events for sensor 40179905
+  9772 INFO     toweragent   Fitting drydown models for sensor 40179905
+  9782 INFO     toweragent   Found 1 events for sensor 40213745
+  9782 INFO     toweragent   Fitting drydown models for sensor 40213745
+  9792 INFO     toweragent   Drydown model analysis completed for 40213745: 1/1 events fitted
+  9793 INFO     toweragent   Finished with tower DE-Hai: 3/3 sensors analyzed
+  9797 INFO     toweragent   Drydown model analysis completed for 40179905: 2/2 events fitted
+  9797 INFO     toweragent   Finished with tower ES-LJu: 1/1 sensors analyzed
+  9797 INFO     toweragent   Currently processing tower IT-Lav
+  9798 INFO     toweragent   Initalizing Tower IT-Lav
+  9800 INFO     toweragent   Currently processing tower IT-MBo
+  9800 INFO     toweragent   Initalizing Tower IT-MBo
+  9808 INFO     toweragent   Found 1 soil moisture columns for DE-Tha : ['SWC_F_MDS_1']
+  9808 INFO     toweragent   Initializing sensor 40184855
+  9815 INFO     toweragent   Separating events for sensor 40184855
+  9841 INFO     toweragent   Found 2 events for sensor 40184855
+  9841 INFO     toweragent   Fitting drydown models for sensor 40184855
+  9847 INFO     toweragent   Found 6 soil moisture columns for DK-Sor : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4', 'SWC_F_MDS_5', 'SWC_F_MDS_6']
+  9847 INFO     toweragent   Initializing sensor 40185575
+  9853 INFO     toweragent   Separating events for sensor 40185575
+  9861 INFO     toweragent   Drydown model analysis completed for 40184855: 2/2 events fitted
+  9861 INFO     toweragent   Finished with tower DE-Tha: 1/1 sensors analyzed
+  9865 INFO     toweragent   Currently processing tower IT-Noe
+  9865 INFO     toweragent   Initalizing Tower IT-Noe
+  9881 INFO     toweragent   Found 1 events for sensor 40185575
+  9881 INFO     toweragent   Fitting drydown models for sensor 40185575
+  9892 INFO     toweragent   Drydown model analysis completed for 40185575: 1/1 events fitted
+  9892 INFO     toweragent   Initializing sensor 40185576
+  9896 INFO     toweragent   Separating events for sensor 40185576
+  9923 INFO     toweragent   Found 2 events for sensor 40185576
+  9923 INFO     toweragent   Fitting drydown models for sensor 40185576
+  9944 INFO     toweragent   Drydown model analysis completed for 40185576: 2/2 events fitted
+  9944 INFO     toweragent   Initializing sensor 40185577
+  9951 INFO     toweragent   Separating events for sensor 40185577
+  9954 WARNING  toweragent   No event drydown was detected for 40185577
+  9954 INFO     toweragent   Initializing sensor 40185578
+  9959 INFO     toweragent   Separating events for sensor 40185578
+  9962 WARNING  toweragent   No event drydown was detected for 40185578
+  9962 INFO     toweragent   Initializing sensor 40185579
+  9967 INFO     toweragent   Separating events for sensor 40185579
+  9970 WARNING  toweragent   No event drydown was detected for 40185579
+  9970 INFO     toweragent   Initializing sensor 40185580
+  9975 INFO     toweragent   Separating events for sensor 40185580
+  9978 WARNING  toweragent   No event drydown was detected for 40185580
+  9978 INFO     toweragent   Initializing sensor 40185581
+  9983 INFO     toweragent   Separating events for sensor 40185581
+  9986 WARNING  toweragent   No event drydown was detected for 40185581
+  9986 INFO     toweragent   Finished with tower DK-Sor: 7/6 sensors analyzed
+  9990 INFO     toweragent   Currently processing tower IT-PT1
+  9990 INFO     toweragent   Initalizing Tower IT-PT1
+ 10018 INFO     toweragent   Found 4 soil moisture columns for DE-Geb : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+ 10018 INFO     toweragent   Initializing sensor 40188366
+ 10027 INFO     toweragent   Separating events for sensor 40188366
+ 10044 INFO     toweragent   Found 5 soil moisture columns for FI-Hyy : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4', 'SWC_F_MDS_5']
+ 10044 INFO     toweragent   Initializing sensor 40177268
+ 10049 INFO     toweragent   Separating events for sensor 40177268
+ 10053 WARNING  toweragent   No event drydown was detected for 40177268
+ 10053 INFO     toweragent   Initializing sensor 40177269
+ 10058 INFO     toweragent   Separating events for sensor 40177269
+ 10061 WARNING  toweragent   No event drydown was detected for 40177269
+ 10061 INFO     toweragent   Initializing sensor 40177270
+ 10064 INFO     toweragent   Found 9 events for sensor 40188366
+ 10064 INFO     toweragent   Fitting drydown models for sensor 40188366
+ 10066 INFO     toweragent   Separating events for sensor 40177270
+ 10070 WARNING  toweragent   No event drydown was detected for 40177270
+ 10070 INFO     toweragent   Initializing sensor 40177271
+ 10075 INFO     toweragent   Separating events for sensor 40177271
+ 10078 WARNING  toweragent   No event drydown was detected for 40177271
+ 10078 INFO     toweragent   Initializing sensor 40177272
+ 10083 INFO     toweragent   Separating events for sensor 40177272
+ 10086 WARNING  toweragent   No event drydown was detected for 40177272
+ 10086 WARNING  toweragent   No drydown events detected for FI-Hyy
+ 10089 INFO     toweragent   Currently processing tower IT-Ren
+ 10090 INFO     toweragent   Initalizing Tower IT-Ren
+ 10161 INFO     toweragent   Drydown model analysis completed for 40188366: 9/9 events fitted
+ 10161 INFO     toweragent   Initializing sensor 40188367
+ 10166 INFO     toweragent   Separating events for sensor 40188367
+ 10187 INFO     toweragent   Found 1 events for sensor 40188367
+ 10187 INFO     toweragent   Fitting drydown models for sensor 40188367
+ 10196 INFO     toweragent   Drydown model analysis completed for 40188367: 1/1 events fitted
+ 10196 INFO     toweragent   Initializing sensor 40188368
+ 10201 INFO     toweragent   Separating events for sensor 40188368
+ 10204 WARNING  toweragent   No event drydown was detected for 40188368
+ 10205 INFO     toweragent   Initializing sensor 40188369
+ 10209 INFO     toweragent   Separating events for sensor 40188369
+ 10212 WARNING  toweragent   No event drydown was detected for 40188369
+ 10212 INFO     toweragent   Finished with tower DE-Geb: 4/4 sensors analyzed
+ 10223 INFO     toweragent   Currently processing tower IT-Ro1
+ 10223 INFO     toweragent   Initalizing Tower IT-Ro1
+ 10249 INFO     toweragent   Found 2 soil moisture columns for FI-Sod : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 10249 INFO     toweragent   Initializing sensor 40217990
+ 10254 INFO     toweragent   Separating events for sensor 40217990
+ 10276 INFO     toweragent   Found 3 events for sensor 40217990
+ 10276 INFO     toweragent   Fitting drydown models for sensor 40217990
+ 10305 INFO     toweragent   Drydown model analysis completed for 40217990: 3/3 events fitted
+ 10305 INFO     toweragent   Initializing sensor 40217991
+ 10308 INFO     toweragent   Separating events for sensor 40217991
+ 10329 INFO     toweragent   Found 3 events for sensor 40217991
+ 10330 INFO     toweragent   Fitting drydown models for sensor 40217991
+ 10369 INFO     toweragent   Drydown model analysis completed for 40217991: 3/3 events fitted
+ 10369 INFO     toweragent   Finished with tower FI-Sod: 2/2 sensors analyzed
+ 10371 INFO     toweragent   Currently processing tower IT-Ro2
+ 10372 INFO     toweragent   Initalizing Tower IT-Ro2
+ 10536 INFO     toweragent   Found 7 soil moisture columns for FR-Gri : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4', 'SWC_F_MDS_5', 'SWC_F_MDS_6', 'SWC_F_MDS_7']
+ 10536 INFO     toweragent   Initializing sensor 40128197
+ 10540 INFO     toweragent   Separating events for sensor 40128197
+ 10543 WARNING  toweragent   No event drydown was detected for 40128197
+ 10544 INFO     toweragent   Initializing sensor 40128198
+ 10546 INFO     toweragent   Separating events for sensor 40128198
+ 10549 WARNING  toweragent   No event drydown was detected for 40128198
+ 10549 INFO     toweragent   Initializing sensor 40128199
+ 10555 INFO     toweragent   Separating events for sensor 40128199
+ 10555 INFO     toweragent   Found 4 soil moisture columns for GF-Guy : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+ 10555 INFO     toweragent   Initializing sensor 40165778
+ 10559 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10561 INFO     toweragent   Separating events for sensor 40165778
+ 10561 INFO     toweragent   Initializing sensor 40165779
+ 10565 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10566 INFO     toweragent   Separating events for sensor 40165779
+ 10567 INFO     toweragent   Initializing sensor 40165780
+ 10570 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10572 INFO     toweragent   Found 1 events for sensor 40128199
+ 10572 INFO     toweragent   Separating events for sensor 40165780
+ 10572 INFO     toweragent   Fitting drydown models for sensor 40128199
+ 10572 INFO     toweragent   Initializing sensor 40165781
+ 10576 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10578 INFO     toweragent   Separating events for sensor 40165781
+ 10578 WARNING  toweragent   No drydown events detected for GF-Guy
+ 10580 INFO     toweragent   Currently processing tower IT-SR2
+ 10580 INFO     toweragent   Initalizing Tower IT-SR2
+ 10583 INFO     toweragent   Drydown model analysis completed for 40128199: 1/1 events fitted
+ 10583 INFO     toweragent   Initializing sensor 40128200
+ 10588 INFO     toweragent   Separating events for sensor 40128200
+ 10591 WARNING  toweragent   No event drydown was detected for 40128200
+ 10591 INFO     toweragent   Initializing sensor 40128201
+ 10596 INFO     toweragent   Separating events for sensor 40128201
+ 10599 WARNING  toweragent   No event drydown was detected for 40128201
+ 10599 INFO     toweragent   Initializing sensor 40128202
+ 10604 INFO     toweragent   Separating events for sensor 40128202
+ 10607 WARNING  toweragent   No event drydown was detected for 40128202
+ 10607 INFO     toweragent   Initializing sensor 40128203
+ 10612 INFO     toweragent   Separating events for sensor 40128203
+ 10614 INFO     toweragent   Found 6 soil moisture columns for FR-LBr : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4', 'SWC_F_MDS_5', 'SWC_F_MDS_6']
+ 10614 INFO     toweragent   Initializing sensor 40098779
+ 10615 WARNING  toweragent   No event drydown was detected for 40128203
+ 10616 INFO     toweragent   Initializing sensor 40128204
+ 10620 INFO     toweragent   Separating events for sensor 40098779
+ 10620 INFO     toweragent   Separating events for sensor 40128204
+ 10623 WARNING  toweragent   No event drydown was detected for 40098779
+ 10624 INFO     toweragent   Initializing sensor 40098780
+ 10625 WARNING  toweragent   No event drydown was detected for 40128204
+ 10625 INFO     toweragent   Initializing sensor 40128205
+ 10629 INFO     toweragent   Separating events for sensor 40098780
+ 10630 INFO     toweragent   Separating events for sensor 40128205
+ 10632 WARNING  toweragent   No event drydown was detected for 40098780
+ 10632 INFO     toweragent   Initializing sensor 40098781
+ 10633 WARNING  toweragent   No event drydown was detected for 40128205
+ 10634 INFO     toweragent   Initializing sensor 40128206
+ 10637 INFO     toweragent   Separating events for sensor 40098781
+ 10638 INFO     toweragent   Separating events for sensor 40128206
+ 10640 WARNING  toweragent   No event drydown was detected for 40098781
+ 10641 INFO     toweragent   Initializing sensor 40098782
+ 10642 WARNING  toweragent   No event drydown was detected for 40128206
+ 10643 INFO     toweragent   Initializing sensor 40128207
+ 10646 INFO     toweragent   Separating events for sensor 40098782
+ 10649 INFO     toweragent   Separating events for sensor 40128207
+ 10649 WARNING  toweragent   No event drydown was detected for 40098782
+ 10651 INFO     toweragent   Initializing sensor 40098783
+ 10652 WARNING  toweragent   No event drydown was detected for 40128207
+ 10653 INFO     toweragent   Initializing sensor 40128208
+ 10656 INFO     toweragent   Separating events for sensor 40098783
+ 10657 INFO     toweragent   Separating events for sensor 40128208
+ 10659 WARNING  toweragent   No event drydown was detected for 40098783
+ 10660 INFO     toweragent   Initializing sensor 40098784
+ 10661 WARNING  toweragent   No event drydown was detected for 40128208
+ 10662 INFO     toweragent   Initializing sensor 40128209
+ 10664 INFO     toweragent   Found 3 soil moisture columns for GH-Ank : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+ 10665 INFO     toweragent   Separating events for sensor 40098784
+ 10665 INFO     toweragent   Initializing sensor 40100340
+ 10667 INFO     toweragent   Separating events for sensor 40128209
+ 10668 WARNING  toweragent   No event drydown was detected for 40098784
+ 10669 WARNING  toweragent   No drydown events detected for FR-LBr
+ 10670 WARNING  toweragent   No event drydown was detected for 40128209
+ 10671 INFO     toweragent   Separating events for sensor 40100340
+ 10671 INFO     toweragent   Finished with tower FR-Gri: 13/7 sensors analyzed
+ 10672 INFO     toweragent   Currently processing tower IT-SRo
+ 10673 INFO     toweragent   Initalizing Tower IT-SRo
+ 10675 INFO     toweragent   Currently processing tower IT-Tor
+ 10676 INFO     toweragent   Initalizing Tower IT-Tor
+ 10685 INFO     toweragent   Found 3 events for sensor 40100340
+ 10685 INFO     toweragent   Fitting drydown models for sensor 40100340
+ 10687 INFO     toweragent   Found 3 soil moisture columns for IT-CA2 : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+ 10689 INFO     toweragent   Initializing sensor 40108849
+ 10692 INFO     toweragent   Separating events for sensor 40108849
+ 10696 WARNING  toweragent   No event drydown was detected for 40108849
+ 10696 INFO     toweragent   Initializing sensor 40108850
+ 10702 INFO     toweragent   Separating events for sensor 40108850
+ 10706 INFO     toweragent   Found 3 soil moisture columns for IT-Cp2 : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+ 10707 INFO     toweragent   Initializing sensor 40181560
+ 10712 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10713 INFO     toweragent   Drydown model analysis completed for 40100340: 3/3 events fitted
+ 10713 INFO     toweragent   Separating events for sensor 40181560
+ 10714 INFO     toweragent   Initializing sensor 40181561
+ 10714 INFO     toweragent   Initializing sensor 40100341
+ 10715 INFO     toweragent   Found 4 soil moisture columns for IT-Isp : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+ 10716 INFO     toweragent   Initializing sensor 40181348
+ 10717 INFO     toweragent   Found 1 events for sensor 40108850
+ 10718 INFO     toweragent   Fitting drydown models for sensor 40108850
+ 10718 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10719 INFO     toweragent   Separating events for sensor 40100341
+ 10721 INFO     toweragent   Separating events for sensor 40181561
+ 10721 INFO     toweragent   Initializing sensor 40181562
+ 10721 INFO     toweragent   Separating events for sensor 40181348
+ 10725 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10726 INFO     toweragent   Found 4 soil moisture columns for IT-CA3 : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+ 10726 WARNING  toweragent   No event drydown was detected for 40181348
+ 10727 INFO     toweragent   Separating events for sensor 40181562
+ 10727 INFO     toweragent   Initializing sensor 40096111
+ 10727 INFO     toweragent   Initializing sensor 40181349
+ 10727 WARNING  toweragent   No drydown events detected for IT-Cp2
+ 10729 INFO     toweragent   Drydown model analysis completed for 40108850: 1/1 events fitted
+ 10729 INFO     toweragent   Initializing sensor 40108851
+ 10730 INFO     toweragent   Currently processing tower JP-MBF
+ 10731 INFO     toweragent   Initalizing Tower JP-MBF
+ 10731 INFO     toweragent   Found 1 events for sensor 40100341
+ 10732 INFO     toweragent   Separating events for sensor 40096111
+ 10732 INFO     toweragent   Separating events for sensor 40181349
+ 10733 INFO     toweragent   Fitting drydown models for sensor 40100341
+ 10735 DEBUG    DrydownModel Exception raised in the thread GH-Ank, 40100341: Each lower bound must be strictly less than each upper bound.
+ 10735 INFO     toweragent   Separating events for sensor 40108851
+ 10736 WARNING  toweragent   No event drydown was detected for 40181349
+ 10736 DEBUG    DrydownModel Exception raised in the thread GH-Ank, 40100341: cannot unpack non-iterable NoneType object
+ 10736 WARNING  toweragent   No event drydown was detected for 40096111
+ 10737 INFO     toweragent   Initializing sensor 40181350
+ 10737 DEBUG    DrydownModel Exception raised in the thread GH-Ank, 40100341: 'TowerEvent' object has no attribute 'exponential'
+ 10737 INFO     toweragent   Initializing sensor 40096112
+ 10739 INFO     toweragent   Drydown model analysis completed for 40100341: 0/1 events fitted
+ 10739 WARNING  toweragent   No event drydown was detected for 40108851
+ 10740 INFO     toweragent   Initializing sensor 40100342
+ 10741 INFO     toweragent   Separating events for sensor 40181350
+ 10741 INFO     toweragent   Initializing sensor 40108852
+ 10743 INFO     toweragent   Separating events for sensor 40096112
+ 10745 WARNING  toweragent   No event drydown was detected for 40181350
+ 10746 INFO     toweragent   Separating events for sensor 40100342
+ 10746 INFO     toweragent   Initializing sensor 40181351
+ 10747 WARNING  toweragent   No event drydown was detected for 40096112
+ 10748 INFO     toweragent   Initializing sensor 40096113
+ 10749 WARNING  toweragent   No event drydown was detected for 40100342
+ 10750 INFO     toweragent   Finished with tower GH-Ank: 3/3 sensors analyzed
+ 10751 INFO     toweragent   Separating events for sensor 40181351
+ 10751 INFO     toweragent   Separating events for sensor 40108852
+ 10752 INFO     toweragent   Found 4 soil moisture columns for IT-CA1 : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+ 10753 INFO     toweragent   Separating events for sensor 40096113
+ 10753 INFO     toweragent   Currently processing tower JP-SMF
+ 10753 INFO     toweragent   Initializing sensor 40214710
+ 10754 INFO     toweragent   Initalizing Tower JP-SMF
+ 10754 WARNING  toweragent   No event drydown was detected for 40181351
+ 10755 WARNING  toweragent   No drydown events detected for IT-Isp
+ 10758 INFO     toweragent   Currently processing tower MY-PSO
+ 10758 INFO     toweragent   Separating events for sensor 40214710
+ 10759 WARNING  toweragent   No event drydown was detected for 40108852
+ 10759 INFO     toweragent   Initalizing Tower MY-PSO
+ 10759 INFO     toweragent   Finished with tower IT-CA2: 4/3 sensors analyzed
+ 10762 WARNING  toweragent   No event drydown was detected for 40214710
+ 10762 INFO     toweragent   Initializing sensor 40214711
+ 10765 INFO     toweragent   Currently processing tower NL-Loo
+ 10765 INFO     toweragent   Found 1 events for sensor 40096113
+ 10766 INFO     toweragent   Fitting drydown models for sensor 40096113
+ 10766 INFO     toweragent   Initalizing Tower NL-Loo
+ 10767 INFO     toweragent   Separating events for sensor 40214711
+ 10770 WARNING  toweragent   No event drydown was detected for 40214711
+ 10770 INFO     toweragent   Initializing sensor 40214712
+ 10775 INFO     toweragent   Separating events for sensor 40214712
+ 10778 WARNING  toweragent   No event drydown was detected for 40214712
+ 10779 INFO     toweragent   Initializing sensor 40214713
+ 10780 INFO     toweragent   Drydown model analysis completed for 40096113: 1/1 events fitted
+ 10781 INFO     toweragent   Initializing sensor 40096114
+ 10784 INFO     toweragent   Separating events for sensor 40214713
+ 10786 INFO     toweragent   Separating events for sensor 40096114
+ 10787 WARNING  toweragent   No event drydown was detected for 40214713
+ 10788 INFO     toweragent   Initializing sensor 40214714
+ 10789 WARNING  toweragent   No event drydown was detected for 40096114
+ 10790 INFO     toweragent   Initializing sensor 40096115
+ 10793 INFO     toweragent   Separating events for sensor 40214714
+ 10795 INFO     toweragent   Separating events for sensor 40096115
+ 10796 WARNING  toweragent   No event drydown was detected for 40214714
+ 10797 WARNING  toweragent   No drydown events detected for IT-CA1
+ 10799 INFO     toweragent   Currently processing tower PA-SPn
+ 10801 INFO     toweragent   Initalizing Tower PA-SPn
+ 10807 INFO     toweragent   Found 1 events for sensor 40096115
+ 10807 INFO     toweragent   Fitting drydown models for sensor 40096115
+ 10807 DEBUG    DrydownModel Exception raised in the thread IT-CA3, 40096115: Each lower bound must be strictly less than each upper bound.
+ 10808 DEBUG    DrydownModel Exception raised in the thread IT-CA3, 40096115: cannot unpack non-iterable NoneType object
+ 10809 DEBUG    DrydownModel Exception raised in the thread IT-CA3, 40096115: 'TowerEvent' object has no attribute 'exponential'
+ 10810 INFO     toweragent   Drydown model analysis completed for 40096115: 0/1 events fitted
+ 10811 INFO     toweragent   Finished with tower IT-CA3: 5/4 sensors analyzed
+ 10815 INFO     toweragent   Currently processing tower PA-SPs
+ 10815 INFO     toweragent   Initalizing Tower PA-SPs
+ 10822 INFO     toweragent   Found 1 soil moisture columns for GL-ZaH : ['SWC_F_MDS_1']
+ 10822 INFO     toweragent   Initializing sensor 40106459
+ 10827 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10828 INFO     toweragent   Separating events for sensor 40106459
+ 10829 WARNING  toweragent   No drydown events detected for GL-ZaH
+ 10831 INFO     toweragent   Currently processing tower RU-Fyo
+ 10831 INFO     toweragent   Initalizing Tower RU-Fyo
+ 10887 INFO     toweragent   Found 2 soil moisture columns for IT-Cpz : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 10887 INFO     toweragent   Initializing sensor 40148314
+ 10890 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10891 INFO     toweragent   Found 3 soil moisture columns for IT-Lav : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+ 10892 INFO     toweragent   Separating events for sensor 40148314
+ 10892 INFO     toweragent   Initializing sensor 40147984
+ 10892 INFO     toweragent   Initializing sensor 40148315
+ 10896 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10897 INFO     toweragent   Separating events for sensor 40148315
+ 10898 WARNING  toweragent   No drydown events detected for IT-Cpz
+ 10898 INFO     toweragent   Separating events for sensor 40147984
+ 10901 INFO     toweragent   Currently processing tower RU-Ha1
+ 10902 INFO     toweragent   Initalizing Tower RU-Ha1
+ 10904 WARNING  toweragent   No event drydown was detected for 40147984
+ 10905 INFO     toweragent   Initializing sensor 40147985
+ 10906 INFO     toweragent   Found 4 soil moisture columns for IT-BCi : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+ 10907 INFO     toweragent   Initializing sensor 40129974
+ 10910 INFO     toweragent   Separating events for sensor 40147985
+ 10911 INFO     toweragent   Found 2 soil moisture columns for IT-Noe : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 10912 INFO     toweragent   Initializing sensor 40214376
+ 10912 INFO     toweragent   Separating events for sensor 40129974
+ 10914 WARNING  toweragent   No event drydown was detected for 40147985
+ 10914 INFO     toweragent   Initializing sensor 40147986
+ 10915 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10918 INFO     toweragent   Separating events for sensor 40214376
+ 10918 INFO     toweragent   Initializing sensor 40214377
+ 10919 INFO     toweragent   Separating events for sensor 40147986
+ 10922 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 10923 WARNING  toweragent   No event drydown was detected for 40147986
+ 10924 INFO     toweragent   Separating events for sensor 40214377
+ 10924 WARNING  toweragent   No drydown events detected for IT-Lav
+ 10924 WARNING  toweragent   No drydown events detected for IT-Noe
+ 10927 INFO     toweragent   Currently processing tower SD-Dem
+ 10927 INFO     toweragent   Currently processing tower SJ-Blv
+ 10928 INFO     toweragent   Initalizing Tower SD-Dem
+ 10928 INFO     toweragent   Initalizing Tower SJ-Blv
+ 10932 INFO     toweragent   Found 2 soil moisture columns for IT-MBo : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 10932 INFO     toweragent   Initializing sensor 40186751
+ 10934 INFO     toweragent   Found 5 events for sensor 40129974
+ 10934 INFO     toweragent   Fitting drydown models for sensor 40129974
+ 10938 INFO     toweragent   Separating events for sensor 40186751
+ 10942 WARNING  toweragent   No event drydown was detected for 40186751
+ 10942 INFO     toweragent   Initializing sensor 40186752
+ 10945 INFO     toweragent   Found 2 soil moisture columns for IT-PT1 : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 10946 INFO     toweragent   Initializing sensor 40158954
+ 10947 INFO     toweragent   Separating events for sensor 40186752
+ 10951 WARNING  toweragent   No event drydown was detected for 40186752
+ 10951 INFO     toweragent   Separating events for sensor 40158954
+ 10951 WARNING  toweragent   No drydown events detected for IT-MBo
+ 10953 INFO     toweragent   Currently processing tower SN-Dhr
+ 10954 DEBUG    DrydownModel Exception raised in the thread IT-BCi, 40129974: Each lower bound must be strictly less than each upper bound.
+ 10955 DEBUG    DrydownModel Exception raised in the thread IT-BCi, 40129974: cannot unpack non-iterable NoneType object
+ 10955 INFO     toweragent   Initalizing Tower SN-Dhr
+ 10956 WARNING  toweragent   No event drydown was detected for 40158954
+ 10956 INFO     toweragent   Initializing sensor 40158955
+ 10961 INFO     toweragent   Separating events for sensor 40158955
+ 10972 INFO     toweragent   Found 1 events for sensor 40158955
+ 10972 INFO     toweragent   Fitting drydown models for sensor 40158955
+ 10973 DEBUG    DrydownModel Exception raised in the thread IT-PT1, 40158955: `x0` is infeasible.
+ 10973 DEBUG    DrydownModel Exception raised in the thread IT-PT1, 40158955: cannot unpack non-iterable NoneType object
+ 10973 DEBUG    DrydownModel Exception raised in the thread IT-PT1, 40158955: 'TowerEvent' object has no attribute 'exponential'
+ 10974 INFO     toweragent   Drydown model analysis completed for 40158955: 0/1 events fitted
+ 10974 INFO     toweragent   Finished with tower IT-PT1: 2/2 sensors analyzed
+ 10976 INFO     toweragent   Currently processing tower US-AR1
+ 10977 INFO     toweragent   Initalizing Tower US-AR1
+ 10976 DEBUG    DrydownModel Exception raised in the thread IT-BCi, 40129974: 'TowerEvent' object has no attribute 'exponential'
+ 10979 INFO     toweragent   Drydown model analysis completed for 40129974: 4/5 events fitted
+ 10980 INFO     toweragent   Initializing sensor 40129975
+ 10985 INFO     toweragent   Separating events for sensor 40129975
+ 11011 INFO     toweragent   Found 4 soil moisture columns for IT-Col : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+ 11011 INFO     toweragent   Initializing sensor 40162570
+ 11016 INFO     toweragent   Found 15 events for sensor 40129975
+ 11016 INFO     toweragent   Fitting drydown models for sensor 40129975
+ 11016 INFO     toweragent   Separating events for sensor 40162570
+ 11021 WARNING  toweragent   No event drydown was detected for 40162570
+ 11021 INFO     toweragent   Initializing sensor 40162571
+ 11026 INFO     toweragent   Separating events for sensor 40162571
+ 11029 WARNING  toweragent   No event drydown was detected for 40162571
+ 11029 INFO     toweragent   Initializing sensor 40162572
+ 11034 INFO     toweragent   Separating events for sensor 40162572
+ 11037 WARNING  toweragent   No event drydown was detected for 40162572
+ 11037 INFO     toweragent   Initializing sensor 40162573
+ 11042 INFO     toweragent   Separating events for sensor 40162573
+ 11045 WARNING  toweragent   No event drydown was detected for 40162573
+ 11046 WARNING  toweragent   No drydown events detected for IT-Col
+ 11048 INFO     toweragent   Currently processing tower US-AR2
+ 11049 INFO     toweragent   Initalizing Tower US-AR2
+ 11133 INFO     toweragent   Drydown model analysis completed for 40129975: 15/15 events fitted
+ 11133 INFO     toweragent   Initializing sensor 40129976
+ 11138 INFO     toweragent   Separating events for sensor 40129976
+ 11141 WARNING  toweragent   No event drydown was detected for 40129976
+ 11141 INFO     toweragent   Initializing sensor 40129977
+ 11145 INFO     toweragent   Separating events for sensor 40129977
+ 11162 INFO     toweragent   Found 1 events for sensor 40129977
+ 11162 INFO     toweragent   Fitting drydown models for sensor 40129977
+ 11173 INFO     toweragent   Drydown model analysis completed for 40129977: 1/1 events fitted
+ 11173 INFO     toweragent   Initializing sensor 40129978
+ 11179 INFO     toweragent   Separating events for sensor 40129978
+ 11180 INFO     toweragent   Found 2 soil moisture columns for IT-Ro1 : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 11182 INFO     toweragent   Initializing sensor 40176440
+ 11188 INFO     toweragent   Separating events for sensor 40176440
+ 11196 INFO     toweragent   Found 1 events for sensor 40129978
+ 11196 INFO     toweragent   Fitting drydown models for sensor 40129978
+ 11207 INFO     toweragent   Drydown model analysis completed for 40129978: 1/1 events fitted
+ 11207 INFO     toweragent   Initializing sensor 40129979
+ 11209 INFO     toweragent   Found 1 events for sensor 40176440
+ 11209 INFO     toweragent   Fitting drydown models for sensor 40176440
+ 11213 INFO     toweragent   Separating events for sensor 40129979
+ 11216 WARNING  toweragent   No event drydown was detected for 40129979
+ 11216 INFO     toweragent   Finished with tower IT-BCi: 6/4 sensors analyzed
+ 11218 INFO     toweragent   Found 2 soil moisture columns for IT-Ren : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 11220 INFO     toweragent   Initializing sensor 40159979
+ 11222 INFO     toweragent   Currently processing tower US-ARb
+ 11222 INFO     toweragent   Drydown model analysis completed for 40176440: 1/1 events fitted
+ 11223 INFO     toweragent   Initalizing Tower US-ARb
+ 11223 INFO     toweragent   Initializing sensor 40176441
+ 11226 INFO     toweragent   Separating events for sensor 40159979
+ 11228 INFO     toweragent   Separating events for sensor 40176441
+ 11230 WARNING  toweragent   No event drydown was detected for 40159979
+ 11230 INFO     toweragent   Initializing sensor 40159980
+ 11231 WARNING  toweragent   No event drydown was detected for 40176441
+ 11232 INFO     toweragent   Finished with tower IT-Ro1: 2/2 sensors analyzed
+ 11235 INFO     toweragent   Separating events for sensor 40159980
+ 11236 INFO     toweragent   Currently processing tower US-ARc
+ 11236 INFO     toweragent   Initalizing Tower US-ARc
+ 11239 WARNING  toweragent   No event drydown was detected for 40159980
+ 11239 WARNING  toweragent   No drydown events detected for IT-Ren
+ 11241 INFO     toweragent   Currently processing tower US-ARM
+ 11242 INFO     toweragent   Initalizing Tower US-ARM
+ 11330 INFO     toweragent   Found 4 soil moisture columns for IT-SR2 : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+ 11331 INFO     toweragent   Initializing sensor 40187598
+ 11335 INFO     toweragent   Separating events for sensor 40187598
+ 11348 INFO     toweragent   Found 3 events for sensor 40187598
+ 11348 INFO     toweragent   Fitting drydown models for sensor 40187598
+ 11358 DEBUG    DrydownModel Exception raised in the thread IT-SR2, 40187598: Each lower bound must be strictly less than each upper bound.
+ 11358 DEBUG    DrydownModel Exception raised in the thread IT-SR2, 40187598: cannot unpack non-iterable NoneType object
+ 11358 INFO     toweragent   Found 2 soil moisture columns for IT-Ro2 : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 11360 INFO     toweragent   Initializing sensor 40175602
+ 11365 INFO     toweragent   Separating events for sensor 40175602
+ 11369 WARNING  toweragent   No event drydown was detected for 40175602
+ 11369 INFO     toweragent   Initializing sensor 40175603
+ 11370 DEBUG    DrydownModel Exception raised in the thread IT-SR2, 40187598: 'TowerEvent' object has no attribute 'exponential'
+ 11372 INFO     toweragent   Drydown model analysis completed for 40187598: 2/3 events fitted
+ 11373 INFO     toweragent   Initializing sensor 40187599
+ 11374 INFO     toweragent   Separating events for sensor 40175603
+ 11377 WARNING  toweragent   No event drydown was detected for 40175603
+ 11377 WARNING  toweragent   No drydown events detected for IT-Ro2
+ 11378 INFO     toweragent   Separating events for sensor 40187599
+ 11380 INFO     toweragent   Currently processing tower US-Blo
+ 11381 INFO     toweragent   Initalizing Tower US-Blo
+ 11389 INFO     toweragent   Found 1 events for sensor 40187599
+ 11389 INFO     toweragent   Fitting drydown models for sensor 40187599
+ 11414 INFO     toweragent   Drydown model analysis completed for 40187599: 1/1 events fitted
+ 11415 INFO     toweragent   Initializing sensor 40187600
+ 11420 INFO     toweragent   Separating events for sensor 40187600
+ 11432 INFO     toweragent   Found 3 events for sensor 40187600
+ 11432 INFO     toweragent   Fitting drydown models for sensor 40187600
+ 11440 DEBUG    DrydownModel Exception raised in the thread IT-SR2, 40187600: `x0` is infeasible.
+ 11440 DEBUG    DrydownModel Exception raised in the thread IT-SR2, 40187600: cannot unpack non-iterable NoneType object
+ 11440 DEBUG    DrydownModel Exception raised in the thread IT-SR2, 40187600: `x0` is infeasible.
+ 11441 DEBUG    DrydownModel Exception raised in the thread IT-SR2, 40187600: cannot unpack non-iterable NoneType object
+ 11442 DEBUG    DrydownModel Exception raised in the thread IT-SR2, 40187600: 'TowerEvent' object has no attribute 'exponential'
+ 11443 DEBUG    DrydownModel Exception raised in the thread IT-SR2, 40187600: 'TowerEvent' object has no attribute 'exponential'
+ 11445 INFO     toweragent   Drydown model analysis completed for 40187600: 1/3 events fitted
+ 11446 INFO     toweragent   Initializing sensor 40187601
+ 11451 INFO     toweragent   Separating events for sensor 40187601
+ 11454 WARNING  toweragent   No event drydown was detected for 40187601
+ 11454 INFO     toweragent   Finished with tower IT-SR2: 4/4 sensors analyzed
+ 11458 INFO     toweragent   Currently processing tower US-Cop
+ 11458 INFO     toweragent   Initalizing Tower US-Cop
+ 11659 INFO     toweragent   Found 1 soil moisture columns for JP-MBF : ['SWC_F_MDS_1']
+ 11659 INFO     toweragent   Initializing sensor 40092116
+ 11663 INFO     toweragent   Separating events for sensor 40092116
+ 11666 WARNING  toweragent   No event drydown was detected for 40092116
+ 11666 WARNING  toweragent   No drydown events detected for JP-MBF
+ 11668 INFO     toweragent   Currently processing tower US-CRT
+ 11668 INFO     toweragent   Initalizing Tower US-CRT
+ 11695 INFO     toweragent   Found 2 soil moisture columns for IT-Tor : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 11695 INFO     toweragent   Initializing sensor 40097154
+ 11699 INFO     toweragent   Separating events for sensor 40097154
+ 11702 WARNING  toweragent   No event drydown was detected for 40097154
+ 11702 INFO     toweragent   Initializing sensor 40097155
+ 11706 INFO     toweragent   Separating events for sensor 40097155
+ 11709 WARNING  toweragent   No event drydown was detected for 40097155
+ 11709 WARNING  toweragent   No drydown events detected for IT-Tor
+ 11711 INFO     toweragent   Currently processing tower US-GLE
+ 11713 INFO     toweragent   Initalizing Tower US-GLE
+ 11762 INFO     toweragent   Found 1 soil moisture columns for JP-SMF : ['SWC_F_MDS_1']
+ 11762 INFO     toweragent   Found 2 soil moisture columns for PA-SPn : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 11762 INFO     toweragent   Initializing sensor 40141473
+ 11762 INFO     toweragent   Initializing sensor 40145891
+ 11766 INFO     toweragent   Separating events for sensor 40145891
+ 11766 INFO     toweragent   Separating events for sensor 40141473
+ 11769 WARNING  toweragent   No event drydown was detected for 40145891
+ 11769 INFO     toweragent   Initializing sensor 40145892
+ 11774 INFO     toweragent   Separating events for sensor 40145892
+ 11777 WARNING  toweragent   No event drydown was detected for 40145892
+ 11777 WARNING  toweragent   No drydown events detected for PA-SPn
+ 11780 INFO     toweragent   Currently processing tower US-Goo
+ 11781 INFO     toweragent   Initalizing Tower US-Goo
+ 11781 INFO     toweragent   Found 3 soil moisture columns for IT-SRo : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+ 11781 INFO     toweragent   Initializing sensor 40094692
+ 11786 INFO     toweragent   Separating events for sensor 40094692
+ 11789 INFO     toweragent   Found 2 soil moisture columns for PA-SPs : ['SWC_F_MDS_1', 'SWC_F_MDS_2']
+ 11789 INFO     toweragent   Initializing sensor 40170806
+ 11789 WARNING  toweragent   No event drydown was detected for 40094692
+ 11790 INFO     toweragent   Found 13 events for sensor 40141473
+ 11791 INFO     toweragent   Fitting drydown models for sensor 40141473
+ 11791 INFO     toweragent   Initializing sensor 40094693
+ 11794 INFO     toweragent   Separating events for sensor 40170806
+ 11795 INFO     toweragent   Separating events for sensor 40094693
+ 11797 WARNING  toweragent   No event drydown was detected for 40170806
+ 11798 INFO     toweragent   Initializing sensor 40170807
+ 11799 INFO     toweragent   Found 1 soil moisture columns for MY-PSO : ['SWC_F_MDS_1']
+ 11800 INFO     toweragent   Initializing sensor 40186097
+ 11803 INFO     toweragent   Separating events for sensor 40170807
+ 11805 INFO     toweragent   Separating events for sensor 40186097
+ 11806 WARNING  toweragent   No event drydown was detected for 40170807
+ 11807 WARNING  toweragent   No drydown events detected for PA-SPs
+ 11808 WARNING  toweragent   No event drydown was detected for 40186097
+ 11808 WARNING  toweragent   No drydown events detected for MY-PSO
+ 11809 INFO     toweragent   Currently processing tower US-IB2
+ 11810 INFO     toweragent   Initalizing Tower US-IB2
+ 11810 INFO     toweragent   Currently processing tower US-KS1
+ 11812 INFO     toweragent   Initalizing Tower US-KS1
+ 11814 INFO     toweragent   Found 1 events for sensor 40094693
+ 11815 INFO     toweragent   Fitting drydown models for sensor 40094693
+ 11826 INFO     toweragent   Drydown model analysis completed for 40094693: 1/1 events fitted
+ 11827 INFO     toweragent   Initializing sensor 40094694
+ 11832 INFO     toweragent   Separating events for sensor 40094694
+ 11870 INFO     toweragent   Found 1 soil moisture columns for RU-Ha1 : ['SWC_F_MDS_1']
+ 11870 INFO     toweragent   Initializing sensor 40127831
+ 11874 INFO     toweragent   Separating events for sensor 40127831
+ 11874 INFO     toweragent   Found 26 events for sensor 40094694
+ 11875 INFO     toweragent   Fitting drydown models for sensor 40094694
+ 11885 INFO     toweragent   Found 1 events for sensor 40127831
+ 11885 INFO     toweragent   Fitting drydown models for sensor 40127831
+ 11897 INFO     toweragent   Drydown model analysis completed for 40127831: 1/1 events fitted
+ 11898 INFO     toweragent   Finished with tower RU-Ha1: 1/1 sensors analyzed
+ 11901 INFO     toweragent   Found 1 soil moisture columns for SJ-Blv : ['SWC_F_MDS_1']
+ 11901 INFO     toweragent   Currently processing tower US-KS2
+ 11901 INFO     toweragent   Initializing sensor 40217304
+ 11903 INFO     toweragent   Initalizing Tower US-KS2
+ 11913 INFO     toweragent   Separating events for sensor 40217304
+ 11916 INFO     toweragent   Drydown model analysis completed for 40141473: 13/13 events fitted
+ 11916 INFO     toweragent   Finished with tower JP-SMF: 1/1 sensors analyzed
+ 11919 INFO     toweragent   Currently processing tower US-Lin
+ 11920 INFO     toweragent   Initalizing Tower US-Lin
+ 11932 INFO     toweragent   Found 1 events for sensor 40217304
+ 11932 INFO     toweragent   Fitting drydown models for sensor 40217304
+ 11939 DEBUG    DrydownModel Exception raised in the thread SJ-Blv, 40217304: float division by zero
+ 11939 DEBUG    DrydownModel Exception raised in the thread SJ-Blv, 40217304: 'TowerEvent' object has no attribute 'q'
+ 11941 INFO     toweragent   Drydown model analysis completed for 40217304: 0/1 events fitted
+ 11941 INFO     toweragent   Finished with tower SJ-Blv: 1/1 sensors analyzed
+ 11944 INFO     toweragent   Currently processing tower US-LWW
+ 11944 INFO     toweragent   Initalizing Tower US-LWW
+ 11948 INFO     toweragent   Found 7 soil moisture columns for SD-Dem : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4', 'SWC_F_MDS_5', 'SWC_F_MDS_6', 'SWC_F_MDS_7']
+ 11948 INFO     toweragent   Initializing sensor 40166750
+ 11954 INFO     toweragent   Separating events for sensor 40166750
+ 11967 INFO     toweragent   Found 1 events for sensor 40166750
+ 11967 INFO     toweragent   Fitting drydown models for sensor 40166750
+ 11970 DEBUG    DrydownModel Exception raised in the thread SD-Dem, 40166750: `x0` is infeasible.
+ 11971 DEBUG    DrydownModel Exception raised in the thread SD-Dem, 40166750: cannot unpack non-iterable NoneType object
+ 11972 DEBUG    DrydownModel Exception raised in the thread SD-Dem, 40166750: 'TowerEvent' object has no attribute 'exponential'
+ 11974 INFO     toweragent   Drydown model analysis completed for 40166750: 0/1 events fitted
+ 11975 INFO     toweragent   Initializing sensor 40166751
+ 11978 INFO     toweragent   Found 1 soil moisture columns for US-AR1 : ['SWC_F_MDS_1']
+ 11979 INFO     toweragent   Initializing sensor 40138647
+ 11980 INFO     toweragent   Separating events for sensor 40166751
+ 11980 INFO     toweragent   Found 3 soil moisture columns for RU-Fyo : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+ 11982 INFO     toweragent   Initializing sensor 40160875
+ 11984 INFO     toweragent   Separating events for sensor 40138647
+ 11987 INFO     toweragent   Found 4 soil moisture columns for SN-Dhr : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3', 'SWC_F_MDS_4']
+ 11987 INFO     toweragent   Initializing sensor 40220321
+ 11988 INFO     toweragent   Separating events for sensor 40160875
+ 11992 WARNING  toweragent   No event drydown was detected for 40160875
+ 11992 INFO     toweragent   Initializing sensor 40160876
+ 11993 INFO     toweragent   Found 1 events for sensor 40166751
+ 11993 INFO     toweragent   Separating events for sensor 40220321
+ 11995 INFO     toweragent   Fitting drydown models for sensor 40166751
+ 11997 DEBUG    DrydownModel Exception raised in the thread SD-Dem, 40166751: `x0` is infeasible.
+ 11998 INFO     toweragent   Separating events for sensor 40160876
+ 11998 DEBUG    DrydownModel Exception raised in the thread SD-Dem, 40166751: cannot unpack non-iterable NoneType object
+ 11999 DEBUG    DrydownModel Exception raised in the thread SD-Dem, 40166751: 'TowerEvent' object has no attribute 'exponential'
+ 12000 INFO     toweragent   Found 3 events for sensor 40138647
+ 12001 INFO     toweragent   Fitting drydown models for sensor 40138647
+ 12001 INFO     toweragent   Drydown model analysis completed for 40166751: 0/1 events fitted
+ 12001 WARNING  toweragent   No event drydown was detected for 40160876
+ 12002 INFO     toweragent   Initializing sensor 40160877
+ 12002 INFO     toweragent   Initializing sensor 40166752
+ 12006 INFO     toweragent   Separating events for sensor 40160877
+ 12006 INFO     toweragent   Separating events for sensor 40166752
+ 12009 WARNING  toweragent   No event drydown was detected for 40160877
+ 12009 WARNING  toweragent   No drydown events detected for RU-Fyo
+ 12011 INFO     toweragent   Currently processing tower US-Me1
+ 12011 INFO     toweragent   Initalizing Tower US-Me1
+ 12018 INFO     toweragent   Found 1 events for sensor 40166752
+ 12019 INFO     toweragent   Fitting drydown models for sensor 40166752
+ 12023 INFO     toweragent   Found 1 soil moisture columns for US-AR2 : ['SWC_F_MDS_1']
+ 12024 INFO     toweragent   Initializing sensor 40168313
+ 12030 INFO     toweragent   Found 24 events for sensor 40220321
+ 12030 INFO     toweragent   Fitting drydown models for sensor 40220321
+ 12030 INFO     toweragent   Separating events for sensor 40168313
+ 12031 INFO     toweragent   Drydown model analysis completed for 40166752: 1/1 events fitted
+ 12032 INFO     toweragent   Initializing sensor 40166753
+ 12033 INFO     toweragent   Drydown model analysis completed for 40138647: 3/3 events fitted
+ 12034 INFO     toweragent   Finished with tower US-AR1: 1/1 sensors analyzed
+ 12037 INFO     toweragent   Separating events for sensor 40166753
+ 12037 INFO     toweragent   Currently processing tower US-Me2
+ 12037 INFO     toweragent   Initalizing Tower US-Me2
+ 12040 WARNING  toweragent   No event drydown was detected for 40166753
+ 12041 INFO     toweragent   Initializing sensor 40166754
+ 12041 INFO     toweragent   Found 3 soil moisture columns for NL-Loo : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+ 12042 INFO     toweragent   Initializing sensor 40101760
+ 12046 INFO     toweragent   Separating events for sensor 40166754
+ 12048 INFO     toweragent   Separating events for sensor 40101760
+ 12051 INFO     toweragent   Found 6 events for sensor 40168313
+ 12051 INFO     toweragent   Fitting drydown models for sensor 40168313
+ 12051 DEBUG    DrydownModel Exception raised in the thread SN-Dhr, 40220321: Each lower bound must be strictly less than each upper bound.
+ 12051 WARNING  toweragent   No event drydown was detected for 40101760
+ 12053 DEBUG    DrydownModel Exception raised in the thread SN-Dhr, 40220321: cannot unpack non-iterable NoneType object
+ 12053 INFO     toweragent   Initializing sensor 40101761
+ 12059 INFO     toweragent   Separating events for sensor 40101761
+ 12059 INFO     toweragent   Found 2 events for sensor 40166754
+ 12061 INFO     toweragent   Fitting drydown models for sensor 40166754
+ 12063 DEBUG    DrydownModel Exception raised in the thread SD-Dem, 40166754: `x0` is infeasible.
+ 12065 DEBUG    DrydownModel Exception raised in the thread SD-Dem, 40166754: cannot unpack non-iterable NoneType object
+ 12078 DEBUG    DrydownModel Exception raised in the thread SD-Dem, 40166754: 'TowerEvent' object has no attribute 'exponential'
+ 12079 INFO     toweragent   Drydown model analysis completed for 40166754: 1/2 events fitted
+ 12080 INFO     toweragent   Initializing sensor 40166755
+ 12085 INFO     toweragent   Separating events for sensor 40166755
+ 12088 WARNING  toweragent   No event drydown was detected for 40166755
+ 12088 INFO     toweragent   Initializing sensor 40166756
+ 12093 INFO     toweragent   Found 8 events for sensor 40101761
+ 12093 INFO     toweragent   Fitting drydown models for sensor 40101761
+ 12094 INFO     toweragent   Separating events for sensor 40166756
+ 12098 WARNING  toweragent   No event drydown was detected for 40166756
+ 12098 INFO     toweragent   Finished with tower SD-Dem: 7/7 sensors analyzed
+ 12102 INFO     toweragent   Currently processing tower US-Me3
+ 12102 INFO     toweragent   Initalizing Tower US-Me3
+ 12105 INFO     toweragent   Found 1 soil moisture columns for US-ARb : ['SWC_F_MDS_1']
+ 12106 INFO     toweragent   Initializing sensor 40147167
+ 12111 INFO     toweragent   Separating events for sensor 40147167
+ 12112 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101761: `x0` is infeasible.
+ 12112 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101761: cannot unpack non-iterable NoneType object
+ 12125 INFO     toweragent   Found 5 events for sensor 40147167
+ 12125 INFO     toweragent   Fitting drydown models for sensor 40147167
+ 12134 INFO     toweragent   Drydown model analysis completed for 40094694: 26/26 events fitted
+ 12134 INFO     toweragent   Initializing sensor 40094695
+ 12138 INFO     toweragent   Found 1 soil moisture columns for US-ARc : ['SWC_F_MDS_1']
+ 12138 INFO     toweragent   Initializing sensor 40140611
+ 12139 INFO     toweragent   Separating events for sensor 40094695
+ 12143 WARNING  toweragent   No event drydown was detected for 40094695
+ 12143 INFO     toweragent   Finished with tower IT-SRo: 4/3 sensors analyzed
+ 12143 INFO     toweragent   Separating events for sensor 40140611
+ 12143 INFO     toweragent   Drydown model analysis completed for 40168313: 6/6 events fitted
+ 12145 INFO     toweragent   Finished with tower US-AR2: 1/1 sensors analyzed
+ 12148 INFO     toweragent   Currently processing tower US-Me4
+ 12148 INFO     toweragent   Initalizing Tower US-Me4
+ 12149 INFO     toweragent   Currently processing tower US-Me5
+ 12151 INFO     toweragent   Initalizing Tower US-Me5
+ 12153 DEBUG    DrydownModel Exception raised in the thread US-ARb, 40147167: Each lower bound must be strictly less than each upper bound.
+ 12153 DEBUG    DrydownModel Exception raised in the thread US-ARb, 40147167: cannot unpack non-iterable NoneType object
+ 12154 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101761: 'TowerEvent' object has no attribute 'exponential'
+ 12157 INFO     toweragent   Drydown model analysis completed for 40101761: 7/8 events fitted
+ 12157 INFO     toweragent   Initializing sensor 40101762
+ 12162 INFO     toweragent   Separating events for sensor 40101762
+ 12164 DEBUG    DrydownModel Exception raised in the thread US-ARb, 40147167: 'TowerEvent' object has no attribute 'exponential'
+ 12166 WARNING  toweragent   No event drydown was detected for 40101762
+ 12166 INFO     toweragent   Drydown model analysis completed for 40147167: 4/5 events fitted
+ 12166 INFO     toweragent   Found 13 events for sensor 40140611
+ 12166 INFO     toweragent   Initializing sensor 40101763
+ 12166 INFO     toweragent   Fitting drydown models for sensor 40140611
+ 12167 INFO     toweragent   Finished with tower US-ARb: 1/1 sensors analyzed
+ 12170 INFO     toweragent   Currently processing tower US-Me6
+ 12170 INFO     toweragent   Initalizing Tower US-Me6
+ 12171 INFO     toweragent   Separating events for sensor 40101763
+ 12193 DEBUG    DrydownModel Exception raised in the thread SN-Dhr, 40220321: `x0` is infeasible.
+ 12193 DEBUG    DrydownModel Exception raised in the thread SN-Dhr, 40220321: cannot unpack non-iterable NoneType object
+ 12212 INFO     toweragent   Found 19 events for sensor 40101763
+ 12212 INFO     toweragent   Fitting drydown models for sensor 40101763
+ 12223 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: `x0` is infeasible.
+ 12223 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: cannot unpack non-iterable NoneType object
+ 12234 DEBUG    DrydownModel Exception raised in the thread SN-Dhr, 40220321: 'TowerEvent' object has no attribute 'exponential'
+ 12235 DEBUG    DrydownModel Exception raised in the thread SN-Dhr, 40220321: 'TowerEvent' object has no attribute 'exponential'
+ 12238 INFO     toweragent   Drydown model analysis completed for 40220321: 22/24 events fitted
+ 12238 INFO     toweragent   Initializing sensor 40220322
+ 12244 INFO     toweragent   Separating events for sensor 40220322
+ 12259 DEBUG    DrydownModel Exception raised in the thread US-ARc, 40140611: Each lower bound must be strictly less than each upper bound.
+ 12259 DEBUG    DrydownModel Exception raised in the thread US-ARc, 40140611: cannot unpack non-iterable NoneType object
+ 12270 INFO     toweragent   Found 16 events for sensor 40220322
+ 12270 INFO     toweragent   Fitting drydown models for sensor 40220322
+ 12277 DEBUG    DrydownModel Exception raised in the thread US-ARc, 40140611: 'TowerEvent' object has no attribute 'exponential'
+ 12277 INFO     toweragent   Found 1 soil moisture columns for US-ARM : ['SWC_F_MDS_1']
+ 12279 INFO     toweragent   Drydown model analysis completed for 40140611: 12/13 events fitted
+ 12279 INFO     toweragent   Initializing sensor 40150487
+ 12279 INFO     toweragent   Finished with tower US-ARc: 1/1 sensors analyzed
+ 12283 INFO     toweragent   Currently processing tower US-MMS
+ 12283 INFO     toweragent   Initalizing Tower US-MMS
+ 12286 INFO     toweragent   Separating events for sensor 40150487
+ 12296 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: `x0` is infeasible.
+ 12296 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: cannot unpack non-iterable NoneType object
+ 12316 INFO     toweragent   Found 8 events for sensor 40150487
+ 12316 INFO     toweragent   Fitting drydown models for sensor 40150487
+ 12332 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: `x0` is infeasible.
+ 12332 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: cannot unpack non-iterable NoneType object
+ 12378 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: Each lower bound must be strictly less than each upper bound.
+ 12378 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: cannot unpack non-iterable NoneType object
+ 12396 INFO     toweragent   Found 1 soil moisture columns for US-Cop : ['SWC_F_MDS_2']
+ 12397 INFO     toweragent   Initializing sensor 40169261
+ 12397 INFO     toweragent   Drydown model analysis completed for 40150487: 8/8 events fitted
+ 12399 INFO     toweragent   Finished with tower US-ARM: 1/1 sensors analyzed
+ 12402 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: 'TowerEvent' object has no attribute 'exponential'
+ 12403 INFO     toweragent   Currently processing tower US-NR1
+ 12403 INFO     toweragent   Initalizing Tower US-NR1
+ 12404 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: 'TowerEvent' object has no attribute 'exponential'
+ 12403 INFO     toweragent   Separating events for sensor 40169261
+ 12404 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: 'TowerEvent' object has no attribute 'exponential'
+ 12405 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101763: 'TowerEvent' object has no attribute 'exponential'
+ 12408 INFO     toweragent   Drydown model analysis completed for 40101763: 15/19 events fitted
+ 12409 INFO     toweragent   Initializing sensor 40101764
+ 12413 INFO     toweragent   Separating events for sensor 40101764
+ 12424 INFO     toweragent   Found 2 events for sensor 40169261
+ 12424 INFO     toweragent   Fitting drydown models for sensor 40169261
+ 12430 DEBUG    DrydownModel Exception raised in the thread SN-Dhr, 40220322: `x0` is infeasible.
+ 12431 DEBUG    DrydownModel Exception raised in the thread SN-Dhr, 40220322: cannot unpack non-iterable NoneType object
+ 12438 INFO     toweragent   Found 1 events for sensor 40101764
+ 12438 INFO     toweragent   Fitting drydown models for sensor 40101764
+ 12441 DEBUG    DrydownModel Exception raised in the thread SN-Dhr, 40220322: 'TowerEvent' object has no attribute 'exponential'
+ 12444 INFO     toweragent   Drydown model analysis completed for 40220322: 15/16 events fitted
+ 12444 INFO     toweragent   Initializing sensor 40220323
+ 12449 INFO     toweragent   Separating events for sensor 40220323
+ 12451 INFO     toweragent   Drydown model analysis completed for 40101764: 1/1 events fitted
+ 12452 INFO     toweragent   Initializing sensor 40101765
+ 12452 INFO     toweragent   Drydown model analysis completed for 40169261: 2/2 events fitted
+ 12454 INFO     toweragent   Finished with tower US-Cop: 1/1 sensors analyzed
+ 12455 INFO     toweragent   Found 1 soil moisture columns for US-Blo : ['SWC_F_MDS_1']
+ 12456 INFO     toweragent   Initializing sensor 40164368
+ 12456 INFO     toweragent   Currently processing tower US-Oho
+ 12458 INFO     toweragent   Initalizing Tower US-Oho
+ 12462 INFO     toweragent   Separating events for sensor 40164368
+ 12463 INFO     toweragent   Separating events for sensor 40101765
+ 12465 WARNING  toweragent   No event drydown was detected for 40164368
+ 12466 WARNING  toweragent   No drydown events detected for US-Blo
+ 12466 INFO     toweragent   Found 6 events for sensor 40220323
+ 12467 INFO     toweragent   Fitting drydown models for sensor 40220323
+ 12468 INFO     toweragent   Currently processing tower US-PFa
+ 12469 INFO     toweragent   Initalizing Tower US-PFa
+ 12488 INFO     toweragent   Found 1 soil moisture columns for US-CRT : ['SWC_F_MDS_1']
+ 12488 INFO     toweragent   Initializing sensor 40170487
+ 12494 INFO     toweragent   Separating events for sensor 40170487
+ 12505 INFO     toweragent   Found 12 events for sensor 40101765
+ 12505 INFO     toweragent   Found 1 events for sensor 40170487
+ 12506 INFO     toweragent   Fitting drydown models for sensor 40101765
+ 12506 INFO     toweragent   Fitting drydown models for sensor 40170487
+ 12509 DEBUG    DrydownModel Exception raised in the thread US-CRT, 40170487: Each lower bound must be strictly less than each upper bound.
+ 12511 DEBUG    DrydownModel Exception raised in the thread US-CRT, 40170487: cannot unpack non-iterable NoneType object
+ 12512 DEBUG    DrydownModel Exception raised in the thread US-CRT, 40170487: 'TowerEvent' object has no attribute 'exponential'
+ 12513 INFO     toweragent   Drydown model analysis completed for 40170487: 0/1 events fitted
+ 12514 INFO     toweragent   Finished with tower US-CRT: 1/1 sensors analyzed
+ 12518 INFO     toweragent   Currently processing tower US-Prr
+ 12518 INFO     toweragent   Initalizing Tower US-Prr
+ 12522 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: `x0` is infeasible.
+ 12522 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: cannot unpack non-iterable NoneType object
+ 12547 INFO     toweragent   Drydown model analysis completed for 40220323: 6/6 events fitted
+ 12547 INFO     toweragent   Initializing sensor 40220324
+ 12552 INFO     toweragent   Separating events for sensor 40220324
+ 12554 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: Each lower bound must be strictly less than each upper bound.
+ 12554 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: cannot unpack non-iterable NoneType object
+ 12555 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: `x0` is infeasible.
+ 12556 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: cannot unpack non-iterable NoneType object
+ 12557 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: `x0` is infeasible.
+ 12558 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: cannot unpack non-iterable NoneType object
+ 12560 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: `x0` is infeasible.
+ 12561 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: cannot unpack non-iterable NoneType object
+ 12564 INFO     toweragent   Found 1 events for sensor 40220324
+ 12564 INFO     toweragent   Fitting drydown models for sensor 40220324
+ 12575 INFO     toweragent   Drydown model analysis completed for 40220324: 1/1 events fitted
+ 12575 INFO     toweragent   Finished with tower SN-Dhr: 4/4 sensors analyzed
+ 12581 INFO     toweragent   Currently processing tower US-SRC
+ 12581 INFO     toweragent   Initalizing Tower US-SRC
+ 12610 INFO     toweragent   Found 1 soil moisture columns for US-GLE : ['SWC_F_MDS_1']
+ 12610 INFO     toweragent   Initializing sensor 40114730
+ 12615 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: 'TowerEvent' object has no attribute 'exponential'
+ 12616 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: 'TowerEvent' object has no attribute 'exponential'
+ 12617 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: 'TowerEvent' object has no attribute 'exponential'
+ 12617 INFO     toweragent   Separating events for sensor 40114730
+ 12617 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: 'TowerEvent' object has no attribute 'exponential'
+ 12619 INFO     toweragent   Found 1 soil moisture columns for US-KS1 : ['SWC_F_MDS_1']
+ 12619 DEBUG    DrydownModel Exception raised in the thread NL-Loo, 40101765: 'TowerEvent' object has no attribute 'exponential'
+ 12619 INFO     toweragent   Initializing sensor 40167400
+ 12621 WARNING  toweragent   No event drydown was detected for 40114730
+ 12621 WARNING  toweragent   No drydown events detected for US-GLE
+ 12623 INFO     toweragent   Drydown model analysis completed for 40101765: 7/12 events fitted
+ 12623 INFO     toweragent   Finished with tower NL-Loo: 6/3 sensors analyzed
+ 12623 INFO     toweragent   Currently processing tower US-SRG
+ 12625 INFO     toweragent   Initalizing Tower US-SRG
+ 12625 INFO     toweragent   Separating events for sensor 40167400
+ 12628 INFO     toweragent   Currently processing tower US-SRM
+ 12628 INFO     toweragent   Initalizing Tower US-SRM
+ 12634 INFO     toweragent   Found 1 soil moisture columns for US-Goo : ['SWC_F_MDS_1']
+ 12634 INFO     toweragent   Initializing sensor 40178957
+ 12636 INFO     toweragent   Found 1 events for sensor 40167400
+ 12636 INFO     toweragent   Fitting drydown models for sensor 40167400
+ 12638 DEBUG    DrydownModel Exception raised in the thread US-KS1, 40167400: Each lower bound must be strictly less than each upper bound.
+ 12640 DEBUG    DrydownModel Exception raised in the thread US-KS1, 40167400: cannot unpack non-iterable NoneType object
+ 12640 DEBUG    DrydownModel Exception raised in the thread US-KS1, 40167400: 'TowerEvent' object has no attribute 'exponential'
+ 12640 INFO     toweragent   Separating events for sensor 40178957
+ 12642 INFO     toweragent   Drydown model analysis completed for 40167400: 0/1 events fitted
+ 12645 WARNING  toweragent   No event drydown was detected for 40178957
+ 12646 WARNING  toweragent   No drydown events detected for US-Goo
+ 12646 INFO     toweragent   Finished with tower US-KS1: 1/1 sensors analyzed
+ 12648 INFO     toweragent   Currently processing tower US-Sta
+ 12649 INFO     toweragent   Initalizing Tower US-Sta
+ 12649 INFO     toweragent   Currently processing tower US-Syv
+ 12651 INFO     toweragent   Initalizing Tower US-Syv
+ 12685 INFO     toweragent   Found 1 soil moisture columns for US-IB2 : ['SWC_F_MDS_1']
+ 12685 INFO     toweragent   Initializing sensor 40099680
+ 12690 INFO     toweragent   Separating events for sensor 40099680
+ 12709 INFO     toweragent   Found 6 events for sensor 40099680
+ 12709 INFO     toweragent   Fitting drydown models for sensor 40099680
+ 12726 DEBUG    DrydownModel Exception raised in the thread US-IB2, 40099680: Each lower bound must be strictly less than each upper bound.
+ 12726 DEBUG    DrydownModel Exception raised in the thread US-IB2, 40099680: cannot unpack non-iterable NoneType object
+ 12741 INFO     toweragent   Found 1 soil moisture columns for US-Lin : ['SWC_F_MDS_1']
+ 12741 INFO     toweragent   Initializing sensor 40156528
+ 12747 INFO     toweragent   Separating events for sensor 40156528
+ 12751 DEBUG    DrydownModel Exception raised in the thread US-IB2, 40099680: 'TowerEvent' object has no attribute 'exponential'
+ 12752 INFO     toweragent   Drydown model analysis completed for 40099680: 5/6 events fitted
+ 12753 INFO     toweragent   Finished with tower US-IB2: 1/1 sensors analyzed
+ 12756 INFO     toweragent   Currently processing tower US-Ton
+ 12756 INFO     toweragent   Initalizing Tower US-Ton
+ 12759 INFO     toweragent   Found 3 events for sensor 40156528
+ 12760 INFO     toweragent   Fitting drydown models for sensor 40156528
+ 12786 INFO     toweragent   Drydown model analysis completed for 40156528: 3/3 events fitted
+ 12786 INFO     toweragent   Finished with tower US-Lin: 1/1 sensors analyzed
+ 12788 INFO     toweragent   Currently processing tower US-Tw2
+ 12789 INFO     toweragent   Initalizing Tower US-Tw2
+ 12806 INFO     toweragent   Found 1 soil moisture columns for US-KS2 : ['SWC_F_MDS_1']
+ 12807 INFO     toweragent   Initializing sensor 40092429
+ 12809 INFO     toweragent   Found 1 soil moisture columns for US-LWW : ['SWC_F_MDS_1']
+ 12811 INFO     toweragent   Initializing sensor 40126363
+ 12812 INFO     towerdata    Texture 'nan' not found in soil database. Setting theta_fc to 0.3.
+ 12814 INFO     toweragent   Separating events for sensor 40092429
+ 12815 WARNING  toweragent   No drydown events detected for US-KS2
+ 12817 INFO     toweragent   Currently processing tower US-Tw3
+ 12817 INFO     toweragent   Separating events for sensor 40126363
+ 12818 INFO     toweragent   Initalizing Tower US-Tw3
+ 12836 INFO     toweragent   Found 9 events for sensor 40126363
+ 12836 INFO     toweragent   Fitting drydown models for sensor 40126363
+ 12840 INFO     toweragent   Found 1 soil moisture columns for US-Me1 : ['SWC_F_MDS_1']
+ 12841 INFO     toweragent   Initializing sensor 40109173
+ 12846 INFO     toweragent   Separating events for sensor 40109173
+ 12849 WARNING  toweragent   No event drydown was detected for 40109173
+ 12849 WARNING  toweragent   No drydown events detected for US-Me1
+ 12852 INFO     toweragent   Currently processing tower US-UMB
+ 12854 INFO     toweragent   Initalizing Tower US-UMB
+ 12868 DEBUG    DrydownModel Exception raised in the thread US-LWW, 40126363: Each lower bound must be strictly less than each upper bound.
+ 12868 DEBUG    DrydownModel Exception raised in the thread US-LWW, 40126363: cannot unpack non-iterable NoneType object
+ 12902 DEBUG    DrydownModel Exception raised in the thread US-LWW, 40126363: 'TowerEvent' object has no attribute 'exponential'
+ 12904 INFO     toweragent   Drydown model analysis completed for 40126363: 8/9 events fitted
+ 12905 INFO     toweragent   Finished with tower US-LWW: 1/1 sensors analyzed
+ 12908 INFO     toweragent   Currently processing tower US-UMd
+ 12908 INFO     toweragent   Initalizing Tower US-UMd
+ 13046 INFO     toweragent   Found 1 soil moisture columns for US-Me3 : ['SWC_F_MDS_1']
+ 13046 INFO     toweragent   Initializing sensor 40115253
+ 13050 INFO     toweragent   Separating events for sensor 40115253
+ 13053 WARNING  toweragent   No event drydown was detected for 40115253
+ 13053 WARNING  toweragent   No drydown events detected for US-Me3
+ 13056 INFO     toweragent   Currently processing tower US-Var
+ 13057 INFO     toweragent   Initalizing Tower US-Var
+ 13064 INFO     toweragent   Found 1 soil moisture columns for US-Me2 : ['SWC_F_MDS_1']
+ 13064 INFO     toweragent   Initializing sensor 40107161
+ 13069 INFO     toweragent   Separating events for sensor 40107161
+ 13073 WARNING  toweragent   No event drydown was detected for 40107161
+ 13073 WARNING  toweragent   No drydown events detected for US-Me2
+ 13074 INFO     toweragent   Currently processing tower US-WCr
+ 13075 INFO     toweragent   Initalizing Tower US-WCr
+ 13149 INFO     toweragent   Found 1 soil moisture columns for US-Me5 : ['SWC_F_MDS_1']
+ 13149 INFO     toweragent   Initializing sensor 40127507
+ 13153 INFO     toweragent   Separating events for sensor 40127507
+ 13156 WARNING  toweragent   No event drydown was detected for 40127507
+ 13156 WARNING  toweragent   No drydown events detected for US-Me5
+ 13159 INFO     toweragent   Currently processing tower US-Whs
+ 13160 INFO     toweragent   Initalizing Tower US-Whs
+ 13177 INFO     toweragent   Found 1 soil moisture columns for US-Me6 : ['SWC_F_MDS_1']
+ 13177 INFO     toweragent   Initializing sensor 40098441
+ 13181 INFO     toweragent   Separating events for sensor 40098441
+ 13196 INFO     toweragent   Found 1 events for sensor 40098441
+ 13197 INFO     toweragent   Fitting drydown models for sensor 40098441
+ 13210 INFO     toweragent   Drydown model analysis completed for 40098441: 1/1 events fitted
+ 13210 INFO     toweragent   Finished with tower US-Me6: 1/1 sensors analyzed
+ 13214 INFO     toweragent   Currently processing tower US-Wkg
+ 13214 INFO     toweragent   Initalizing Tower US-Wkg
+ 13226 INFO     toweragent   Found 1 soil moisture columns for US-Me4 : ['SWC_F_MDS_1']
+ 13226 INFO     toweragent   Initializing sensor 40152306
+ 13232 INFO     toweragent   Separating events for sensor 40152306
+ 13235 WARNING  toweragent   No event drydown was detected for 40152306
+ 13235 WARNING  toweragent   No drydown events detected for US-Me4
+ 13238 INFO     toweragent   Currently processing tower ZM-Mon
+ 13239 INFO     toweragent   Initalizing Tower ZM-Mon
+ 13429 INFO     toweragent   Found 1 soil moisture columns for US-MMS : ['SWC_F_MDS_1']
+ 13429 INFO     toweragent   Initializing sensor 40100005
+ 13434 INFO     toweragent   Separating events for sensor 40100005
+ 13438 WARNING  toweragent   No event drydown was detected for 40100005
+ 13438 WARNING  toweragent   No drydown events detected for US-MMS
+ 13586 INFO     toweragent   Found 1 soil moisture columns for US-Prr : ['SWC_F_MDS_2']
+ 13586 INFO     toweragent   Initializing sensor 40173213
+ 13590 INFO     toweragent   Separating events for sensor 40173213
+ 13593 WARNING  toweragent   No event drydown was detected for 40173213
+ 13593 WARNING  toweragent   No drydown events detected for US-Prr
+ 13595 INFO     toweragent   Found 1 soil moisture columns for US-NR1 : ['SWC_F_MDS_1']
+ 13596 INFO     toweragent   Initializing sensor 40220652
+ 13602 INFO     toweragent   Separating events for sensor 40220652
+ 13629 INFO     toweragent   Found 3 events for sensor 40220652
+ 13629 INFO     toweragent   Fitting drydown models for sensor 40220652
+ 13639 DEBUG    DrydownModel Exception raised in the thread US-NR1, 40220652: Each lower bound must be strictly less than each upper bound.
+ 13639 DEBUG    DrydownModel Exception raised in the thread US-NR1, 40220652: cannot unpack non-iterable NoneType object
+ 13639 INFO     toweragent   Found 1 soil moisture columns for US-Oho : ['SWC_F_MDS_1']
+ 13642 INFO     toweragent   Initializing sensor 40167610
+ 13648 INFO     toweragent   Separating events for sensor 40167610
+ 13650 DEBUG    DrydownModel Exception raised in the thread US-NR1, 40220652: 'TowerEvent' object has no attribute 'exponential'
+ 13652 INFO     toweragent   Drydown model analysis completed for 40220652: 2/3 events fitted
+ 13653 INFO     toweragent   Finished with tower US-NR1: 1/1 sensors analyzed
+ 13704 INFO     toweragent   Found 1 soil moisture columns for US-SRG : ['SWC_F_MDS_1']
+ 13705 INFO     toweragent   Initializing sensor 40169966
+ 13708 INFO     toweragent   Separating events for sensor 40169966
+ 13715 INFO     toweragent   Found 49 events for sensor 40167610
+ 13716 INFO     toweragent   Fitting drydown models for sensor 40167610
+ 13718 INFO     toweragent   Found 1 soil moisture columns for US-Sta : ['SWC_F_MDS_1']
+ 13720 INFO     toweragent   Initializing sensor 40178325
+ 13722 INFO     toweragent   Found 1 soil moisture columns for US-SRC : ['SWC_F_MDS_1']
+ 13723 INFO     toweragent   Initializing sensor 40095778
+ 13725 INFO     toweragent   Separating events for sensor 40178325
+ 13727 INFO     toweragent   Separating events for sensor 40095778
+ 13733 INFO     toweragent   Found 1 soil moisture columns for US-Tw2 : ['SWC_F_MDS_1']
+ 13733 INFO     toweragent   Initializing sensor 40151139
+ 13737 INFO     towerdata    Texture 'organic materials' not found in soil database. Setting theta_fc to 0.3.
+ 13738 INFO     toweragent   Separating events for sensor 40151139
+ 13739 WARNING  toweragent   No drydown events detected for US-Tw2
+ 13739 INFO     toweragent   Found 2 events for sensor 40178325
+ 13740 INFO     toweragent   Fitting drydown models for sensor 40178325
+ 13753 INFO     toweragent   Found 35 events for sensor 40169966
+ 13753 INFO     toweragent   Fitting drydown models for sensor 40169966
+ 13756 INFO     toweragent   Found 1 soil moisture columns for US-Tw3 : ['SWC_F_MDS_1']
+ 13757 INFO     toweragent   Initializing sensor 40138439
+ 13762 INFO     toweragent   Drydown model analysis completed for 40178325: 2/2 events fitted
+ 13762 INFO     towerdata    Texture 'organic materials' not found in soil database. Setting theta_fc to 0.3.
+ 13762 INFO     toweragent   Finished with tower US-Sta: 1/1 sensors analyzed
+ 13763 INFO     toweragent   Separating events for sensor 40138439
+ 13764 WARNING  toweragent   No drydown events detected for US-Tw3
+ 13776 DEBUG    DrydownModel Exception raised in the thread US-Oho, 40167610: `x0` is infeasible.
+ 13777 DEBUG    DrydownModel Exception raised in the thread US-Oho, 40167610: cannot unpack non-iterable NoneType object
+ 13792 INFO     toweragent   Found 1 soil moisture columns for US-PFa : ['SWC_F_MDS_1']
+ 13792 INFO     toweragent   Initializing sensor 40157572
+ 13793 INFO     toweragent   Found 1 soil moisture columns for US-Syv : ['SWC_F_MDS_1']
+ 13794 INFO     toweragent   Initializing sensor 40150812
+ 13797 INFO     toweragent   Found 37 events for sensor 40095778
+ 13797 INFO     toweragent   Fitting drydown models for sensor 40095778
+ 13799 INFO     toweragent   Separating events for sensor 40157572
+ 13799 INFO     toweragent   Separating events for sensor 40150812
+ 13802 WARNING  toweragent   No event drydown was detected for 40150812
+ 13802 WARNING  toweragent   No drydown events detected for US-Syv
+ 13807 INFO     toweragent   Found 1 soil moisture columns for US-SRM : ['SWC_F_MDS_1']
+ 13807 INFO     toweragent   Initializing sensor 40145570
+ 13813 INFO     toweragent   Separating events for sensor 40145570
+ 13824 INFO     toweragent   Found 1 events for sensor 40157572
+ 13824 INFO     toweragent   Fitting drydown models for sensor 40157572
+ 13834 INFO     toweragent   Drydown model analysis completed for 40157572: 1/1 events fitted
+ 13834 INFO     toweragent   Finished with tower US-PFa: 1/1 sensors analyzed
+ 13858 DEBUG    DrydownModel Exception raised in the thread US-SRC, 40095778: `x0` is infeasible.
+ 13858 DEBUG    DrydownModel Exception raised in the thread US-SRC, 40095778: cannot unpack non-iterable NoneType object
+ 13864 DEBUG    DrydownModel Exception raised in the thread US-SRG, 40169966: Each lower bound must be strictly less than each upper bound.
+ 13864 DEBUG    DrydownModel Exception raised in the thread US-SRG, 40169966: cannot unpack non-iterable NoneType object
+ 13878 INFO     toweragent   Found 1 soil moisture columns for US-Ton : ['SWC_F_MDS_1']
+ 13878 INFO     toweragent   Initializing sensor 40146850
+ 13884 INFO     toweragent   Separating events for sensor 40146850
+ 13886 INFO     toweragent   Found 55 events for sensor 40145570
+ 13886 INFO     toweragent   Fitting drydown models for sensor 40145570
+ 13887 WARNING  toweragent   No event drydown was detected for 40146850
+ 13888 WARNING  toweragent   No drydown events detected for US-Ton
+ 13889 INFO     toweragent   Found 1 soil moisture columns for US-UMd : ['SWC_F_MDS_1']
+ 13890 INFO     toweragent   Initializing sensor 40093659
+ 13895 INFO     toweragent   Separating events for sensor 40093659
+ 13924 INFO     toweragent   Found 1 soil moisture columns for US-UMB : ['SWC_F_MDS_1']
+ 13924 INFO     toweragent   Initializing sensor 40102476
+ 13928 INFO     toweragent   Separating events for sensor 40102476
+ 13929 INFO     toweragent   Found 19 events for sensor 40093659
+ 13930 INFO     toweragent   Fitting drydown models for sensor 40093659
+ 13957 INFO     toweragent   Found 13 events for sensor 40102476
+ 13957 INFO     toweragent   Fitting drydown models for sensor 40102476
+ 14013 DEBUG    DrydownModel Exception raised in the thread US-SRG, 40169966: 'TowerEvent' object has no attribute 'exponential'
+ 14015 INFO     toweragent   Drydown model analysis completed for 40169966: 34/35 events fitted
+ 14016 INFO     toweragent   Finished with tower US-SRG: 1/1 sensors analyzed
+ 14016 INFO     toweragent   Found 1 soil moisture columns for US-WCr : ['SWC_F_MDS_1']
+ 14018 INFO     toweragent   Initializing sensor 40104925
+ 14023 INFO     toweragent   Separating events for sensor 40104925
+ 14026 WARNING  toweragent   No event drydown was detected for 40104925
+ 14026 WARNING  toweragent   No drydown events detected for US-WCr
+ 14040 INFO     toweragent   Found 1 soil moisture columns for US-Var : ['SWC_F_MDS_1']
+ 14040 INFO     toweragent   Initializing sensor 40216972
+ 14042 INFO     toweragent   Found 3 soil moisture columns for ZM-Mon : ['SWC_F_MDS_1', 'SWC_F_MDS_2', 'SWC_F_MDS_3']
+ 14043 INFO     toweragent   Separating events for sensor 40216972
+ 14043 INFO     toweragent   Initializing sensor 40154699
+ 14046 INFO     toweragent   Drydown model analysis completed for 40102476: 13/13 events fitted
+ 14047 INFO     toweragent   Finished with tower US-UMB: 1/1 sensors analyzed
+ 14048 INFO     toweragent   Separating events for sensor 40154699
+ 14051 WARNING  toweragent   No event drydown was detected for 40154699
+ 14051 INFO     toweragent   Initializing sensor 40154700
+ 14056 INFO     toweragent   Separating events for sensor 40154700
+ 14059 WARNING  toweragent   No event drydown was detected for 40154700
+ 14059 INFO     toweragent   Initializing sensor 40154701
+ 14063 INFO     toweragent   Found 1 events for sensor 40216972
+ 14063 INFO     toweragent   Fitting drydown models for sensor 40216972
+ 14064 INFO     toweragent   Separating events for sensor 40154701
+ 14069 DEBUG    DrydownModel Exception raised in the thread US-Var, 40216972: float division by zero
+ 14070 DEBUG    DrydownModel Exception raised in the thread US-Var, 40216972: 'TowerEvent' object has no attribute 'q'
+ 14072 INFO     toweragent   Drydown model analysis completed for 40216972: 0/1 events fitted
+ 14074 INFO     toweragent   Finished with tower US-Var: 1/1 sensors analyzed
+ 14075 INFO     toweragent   Drydown model analysis completed for 40093659: 19/19 events fitted
+ 14076 INFO     toweragent   Finished with tower US-UMd: 1/1 sensors analyzed
+ 14080 INFO     toweragent   Found 1 events for sensor 40154701
+ 14080 INFO     toweragent   Fitting drydown models for sensor 40154701
+ 14092 INFO     toweragent   Drydown model analysis completed for 40154701: 1/1 events fitted
+ 14092 INFO     toweragent   Finished with tower ZM-Mon: 3/3 sensors analyzed
+ 14108 INFO     toweragent   Found 1 soil moisture columns for US-Whs : ['SWC_F_MDS_1']
+ 14108 INFO     toweragent   Initializing sensor 40155032
+ 14112 INFO     toweragent   Separating events for sensor 40155032
+ 14130 DEBUG    DrydownModel Exception raised in the thread US-SRC, 40095778: 'TowerEvent' object has no attribute 'exponential'
+ 14134 INFO     toweragent   Drydown model analysis completed for 40095778: 36/37 events fitted
+ 14134 INFO     toweragent   Finished with tower US-SRC: 1/1 sensors analyzed
+ 14165 INFO     toweragent   Found 44 events for sensor 40155032
+ 14165 INFO     toweragent   Fitting drydown models for sensor 40155032
+ 14179 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: Each lower bound must be strictly less than each upper bound.
+ 14180 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: cannot unpack non-iterable NoneType object
+ 14196 DEBUG    DrydownModel Exception raised in the thread US-Oho, 40167610: 'TowerEvent' object has no attribute 'exponential'
+ 14201 INFO     toweragent   Drydown model analysis completed for 40167610: 48/49 events fitted
+ 14202 INFO     toweragent   Finished with tower US-Oho: 1/1 sensors analyzed
+ 14219 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: Each lower bound must be strictly less than each upper bound.
+ 14219 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: cannot unpack non-iterable NoneType object
+ 14242 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: `x0` is infeasible.
+ 14243 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: cannot unpack non-iterable NoneType object
+ 14301 INFO     toweragent   Found 1 soil moisture columns for US-Wkg : ['SWC_F_MDS_1']
+ 14301 INFO     toweragent   Initializing sensor 40122825
+ 14305 INFO     toweragent   Separating events for sensor 40122825
+ 14346 INFO     toweragent   Found 27 events for sensor 40122825
+ 14347 INFO     toweragent   Fitting drydown models for sensor 40122825
+ 14354 INFO     toweragent   Drydown model analysis completed for 40145570: 55/55 events fitted
+ 14355 INFO     toweragent   Finished with tower US-SRM: 1/1 sensors analyzed
+ 14487 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: `x0` is infeasible.
+ 14487 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: cannot unpack non-iterable NoneType object
+ 14488 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: 'TowerEvent' object has no attribute 'exponential'
+ 14490 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: 'TowerEvent' object has no attribute 'exponential'
+ 14491 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: 'TowerEvent' object has no attribute 'exponential'
+ 14494 DEBUG    DrydownModel Exception raised in the thread US-Whs, 40155032: 'TowerEvent' object has no attribute 'exponential'
+ 14496 INFO     toweragent   Drydown model analysis completed for 40155032: 40/44 events fitted
+ 14496 INFO     toweragent   Finished with tower US-Whs: 1/1 sensors analyzed
+ 14566 INFO     toweragent   Drydown model analysis completed for 40122825: 27/27 events fitted
+ 14567 INFO     toweragent   Finished with tower US-Wkg: 1/1 sensors analyzed
+ 14672 INFO     __main__     --- Finished analysis ---
+ 14696 INFO     toweragent   Saving flx_results_04apr.csv to /home/waves/projects/ecohydro-regimes/outputs
+ 15125 INFO     toweragent   Saved flx_results_04apr.csv to /home/waves/projects/ecohydro-regimes/outputs
+ 15125 INFO     __main__     Run took : 11.930999 seconds
