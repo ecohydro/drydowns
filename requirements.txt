@@ -1,0 +1,8 @@
+# Packages
+numpy
+pandas
+scipy
+matplotlib
+
+# GitHub repos
+ecflux @ git+ssh://git@github.com/brynemorgan/ecflux.git@v0.0.1
