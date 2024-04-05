@@ -1,4 +1,4 @@
-# drydown
+# drydowns
 Code for identifying and characterizing drydown events from soil moisture data
 
 #### To run
