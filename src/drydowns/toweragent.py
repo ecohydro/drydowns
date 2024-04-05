@@ -1,9 +1,6 @@
 #-------------------------------------------------------------------------------
 # IMPORTS
 #-------------------------------------------------------------------------------
-from towerdata import SoilSensorData
-from model import DrydownModel
-from towerseparator import TowerEventSeparator
 # from SMAPgrid import SMAPgrid
 import warnings
 from datetime import datetime
@@ -12,9 +9,14 @@ import getpass
 import numpy as np
 import pandas as pd
 import logging
-from mylogger import getLogger
 
 import fluxtower
+
+from .towerdata import SoilSensorData
+from .model import DrydownModel
+from .towerseparator import TowerEventSeparator
+
+from .mylogger import getLogger
 
 # Create a logger
 log = getLogger(__name__)

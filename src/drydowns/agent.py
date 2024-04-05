@@ -1,14 +1,14 @@
-from data import Data
-from model import DrydownModel
-from separator import EventSeparator
-from SMAPgrid import SMAPgrid
+from .data import Data
+from .model import DrydownModel
+from .separator import EventSeparator
+from .SMAPgrid import SMAPgrid
 import warnings
 from datetime import datetime
 import os
 import getpass
 import pandas as pd
 import logging
-from mylogger import getLogger
+from .mylogger import getLogger
 
 # Create a logger
 log = getLogger(__name__)

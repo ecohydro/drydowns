@@ -2,13 +2,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-from event import Event
-from towerevent import TowerEvent
-from separator import EventSeparator
+from .event import Event
+from .towerevent import TowerEvent
+from .separator import EventSeparator
 
 import warnings
 import threading
-from mylogger import getLogger, modifyLogger
+from .mylogger import getLogger, modifyLogger
 import logging
 
 # Create a logger

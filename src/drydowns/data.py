@@ -4,7 +4,9 @@ from pathlib import Path
 from datetime import datetime
 import os
 import warnings
-from mylogger import getLogger
+
+
+from .mylogger import getLogger
 
 # Create a logger
 log = getLogger(__name__)

@@ -2,11 +2,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-from event import Event
 import warnings
 import threading
-from mylogger import getLogger, modifyLogger
 import logging
+
+from .event import Event
+
+from .mylogger import getLogger, modifyLogger
+
 
 # Create a logger
 log = getLogger(__name__)

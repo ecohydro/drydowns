@@ -3,13 +3,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from mylogger import getLogger
+from .mylogger import getLogger
 import threading
 from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
-from utils import is_true
+from .utils import is_true
 
-import model as model
+import .model as model
 
 # Create a logger
 log = getLogger(__name__)

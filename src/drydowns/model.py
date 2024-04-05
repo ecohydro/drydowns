@@ -3,14 +3,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from mylogger import getLogger
 import threading
 from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
-from utils import is_true
 
-from event import Event
-from towerevent import TowerEvent
+from .event import Event
+from .towerevent import TowerEvent
+
+from .utils import is_true
+from .mylogger import getLogger
 
 # Create a logger
 log = getLogger(__name__)

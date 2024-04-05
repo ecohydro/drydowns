@@ -8,13 +8,15 @@ from pathlib import Path
 from datetime import datetime
 import warnings
 import threading
-from mylogger import getLogger
 import logging
 
 import fluxtower
-from data import Data
-from towerevent import TowerEvent
-from soil import Soil, soils
+
+from .data import Data
+from .towerevent import TowerEvent
+from .soil import Soil, soils
+
+from .mylogger import getLogger
 
 # Create a logger
 log = getLogger(__name__)

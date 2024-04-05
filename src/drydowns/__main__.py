@@ -1,12 +1,13 @@
 import multiprocessing as mp
 from configparser import ConfigParser
-from config import Config
+from .config import Config
 import time
 
-from agent import Agent
-from toweragent import TowerAgent
-from mylogger import getLogger
-from utils import is_true
+from .agent import Agent
+from .toweragent import TowerAgent
+
+from .mylogger import getLogger
+from .utils import is_true
 
 # Create a logger
 log = getLogger(__name__)
