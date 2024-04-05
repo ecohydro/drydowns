@@ -3,9 +3,9 @@ from configparser import ConfigParser
 from config import Config
 import time
 
-from Agent import Agent
+from agent import Agent
 from toweragent import TowerAgent
-from MyLogger import getLogger
+from mylogger import getLogger
 from utils import is_true
 
 # Create a logger

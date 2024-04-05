@@ -1,6 +1,6 @@
-from Data import Data
-from DrydownModel import DrydownModel
-from EventSeparator import EventSeparator
+from data import Data
+from model import DrydownModel
+from separator import EventSeparator
 from SMAPgrid import SMAPgrid
 import warnings
 from datetime import datetime
@@ -8,7 +8,7 @@ import os
 import getpass
 import pandas as pd
 import logging
-from MyLogger import getLogger
+from mylogger import getLogger
 
 # Create a logger
 log = getLogger(__name__)

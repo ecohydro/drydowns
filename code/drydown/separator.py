@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-from Event import Event
+from event import Event
 import warnings
 import threading
-from MyLogger import getLogger, modifyLogger
+from mylogger import getLogger, modifyLogger
 import logging
 
 # Create a logger

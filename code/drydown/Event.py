@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-from MyLogger import getLogger
+from mylogger import getLogger
 
 # Create a logger
 log = getLogger(__name__)

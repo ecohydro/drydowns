@@ -3,19 +3,19 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from MyLogger import getLogger
+from mylogger import getLogger
 import threading
 from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
 from utils import is_true
 
-import DrydownModel
+import model as model
 
 # Create a logger
 log = getLogger(__name__)
 
 
-class TowerModel(DrydownModel.DrydownModel):
+class TowerModel(model.DrydownModel):
     def __init__(self, cfg, data, event):
         
         super().__init__(cfg, data, event)

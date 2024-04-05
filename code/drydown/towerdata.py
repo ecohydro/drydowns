@@ -8,11 +8,11 @@ from pathlib import Path
 from datetime import datetime
 import warnings
 import threading
-from MyLogger import getLogger
+from mylogger import getLogger
 import logging
 
 import fluxtower
-from Data import Data
+from data import Data
 from towerevent import TowerEvent
 from soil import Soil, soils
 

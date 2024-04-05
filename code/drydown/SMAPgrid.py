@@ -7,7 +7,7 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
 import pyproj
-from MyLogger import getLogger
+from mylogger import getLogger
 
 # Create a logger
 log = getLogger(__name__)

@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-from MyLogger import getLogger
-from Event import Event
+from mylogger import getLogger
+from event import Event
 
 # Create a logger
 log = getLogger(__name__)

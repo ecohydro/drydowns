@@ -2,7 +2,7 @@
 # IMPORTS
 #-------------------------------------------------------------------------------
 from towerdata import SoilSensorData
-from DrydownModel import DrydownModel
+from model import DrydownModel
 from towerseparator import TowerEventSeparator
 # from SMAPgrid import SMAPgrid
 import warnings
@@ -12,7 +12,7 @@ import getpass
 import numpy as np
 import pandas as pd
 import logging
-from MyLogger import getLogger
+from mylogger import getLogger
 
 import fluxtower
 
