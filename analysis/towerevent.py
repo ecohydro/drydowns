@@ -13,7 +13,7 @@ class TowerEvent(Event):
     def __init__(
         self, #event_dict
         start_date, end_date, soil_moisture, #norm_sm, min_sm, max_sm
-        theta_w, theta_star,
+        theta_w, theta_star, z,
         event_data=None
     ):
         self.start_date = start_date
@@ -23,7 +23,7 @@ class TowerEvent(Event):
         self.event_data = event_data
 
         self.pet = self.calc_pet() #np.nan
-
+        self.z = z
         # Model params        
         self.theta_star = theta_star
         self.theta_w = theta_w
@@ -58,11 +58,17 @@ class TowerEvent(Event):
         return precip
     
     def calc_pet(self, et_col='ET_F_MDS'):
+        if self.event_data.empty:
+            pet = np.nan
         pet = self.event_data[et_col].max() 
         # NOTE: Should be initial value (well, really should be calculated), 
         # but using this for now bc PET > AET, so if max value isn't initial, this
         # ensures highest AET value.
         return pet
+    
+    def get_et(self, et_col='ET_F_MDS'):
+        et = self.event_data[et_col].to_numpy()
+        return et
 
 
     def add_attributes(
@@ -76,6 +82,8 @@ class TowerEvent(Event):
                 "tau": popt[2],
                 "r_squared": r_squared,
                 "theta_opt": y_opt.tolist(),
+                "k" : (self.theta_star - popt[1]) / popt[2],
+                "ET_max" : (self.z * 1000) * ((self.theta_star - popt[1]) / popt[2])
             }
 
         if model_type == "q":
@@ -87,6 +95,7 @@ class TowerEvent(Event):
                     "theta_0" : popt[2] + self.theta_w,
                     "r_squared": r_squared,
                     "theta_opt": y_opt.tolist(),
+                    "ET_max" : (self.z * 1000) * popt[0]
                 }
             else:
                 self.q = {

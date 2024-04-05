@@ -249,7 +249,8 @@ class DrydownModel:
 
 
             if norm:
-                y_opt = y_opt * self.data.range_sm + self.data.min_sm
+                # y_opt = y_opt * self.data.range_sm + self.data.min_sm
+                y_opt = y_opt * (event.theta_star - event.theta_w) + event.theta_w
 
             # Calculate the residuals
             residuals = event.theta - y_opt #event.y - y_opt
@@ -323,6 +324,9 @@ class DrydownModel:
         max_k = np.inf
         # PET is in mm, z is in m
         ini_k = event.pet / (self.data.z*1000) #50
+        # max_k = ini_k #np.inf
+
+
 
         ### q ###
         min_q = 0.0
@@ -333,8 +337,8 @@ class DrydownModel:
         min_delta_theta = 0.0
         max_delta_theta = 1.0  # Equivalent of self.data.range_sm as the input theta values are normalized in this code
         # ini_delta_theta = event.subset_sm_range / self.data.range_sm
-        ini_delta_theta = event.event_range / self.data.range_sm
-
+        # ini_delta_theta = event.event_range / self.data.range_sm
+        ini_delta_theta = event.event_range / (event.theta_star - event.theta_w)
 
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
@@ -502,9 +506,19 @@ class DrydownModel:
                     # "min_sm": event.min_sm,
                     # "max_sm": event.max_sm,
                     "min_sm": event.theta_w,
-                    "max_sm": event.theta_star,
+                    "max_sm" : self.data.max_sm,
+                    "theta_fc": event.theta_star,
+
                     "pet": event.pet,
                 }
+                try:
+                    _results.update({
+                        'et' : event.get_et(),
+                        'total_et' : np.sum(event.get_et()),
+                        'precip' : event.calc_precip(),
+                    })
+                except:
+                    pass
                 if self._run_exponential:
                     _results.update({'exp_' + k : v for k, v in event.exponential.items()})
 

@@ -14,6 +14,7 @@ import logging
 import fluxtower
 from Data import Data
 from towerevent import TowerEvent
+from soil import Soil, soils
 
 # Create a logger
 log = getLogger(__name__)
@@ -101,11 +102,24 @@ class SoilSensorData(Data):
         # info about sensor
         self.info = self._tower.grp_info.get(sensor_grp).copy()
 
+        # soil info
+        self.soil_info = self._tower.soil_info.copy()
+        self.soil_texture = self.soil_info.get('texture')
+        self.n = self.soil_info.get('porosity')
+
         # z (depth of sensor) [m]
         self.z = float(self.info['HEIGHT']) * -1.
 
         # data
         self.df = self.get_sensor_data(sensor_grp)
+
+        # theta_fc
+        if self.soil_texture in soils.keys():
+            self.theta_fc = Soil(texture=self.soil_texture).theta_fc
+        else:
+            log.info(
+                f"Texture '{self.soil_texture}' not found in soil database. Setting theta_fc to 0.3."
+            )
 
         # min, max, range
         self.min_sm = self.df.SWC.min()
@@ -113,6 +127,8 @@ class SoilSensorData(Data):
             self.cfg['DATA'].getfloat('max_sm_frac', 1.0)
         )
         self.range_sm = self.max_sm - self.min_sm
+
+        # self.max_sm = self.theta_fc
 
         # Calculate diff + normalize values.
         self.calc_diff()
@@ -129,7 +145,8 @@ class SoilSensorData(Data):
         current_thread.name = ( f"{self.id[0]}, {self.id[1]}" )
         self.thread_name = current_thread.name
 
-
+    def describe(self):
+        return {k : v for k,v in self.__dict__.items() if isinstance(v,(str,float,int))}
 
     # def get_sensor_data(self, sensor_col):
     def get_sensor_data(self, sensor_grp):
@@ -186,7 +203,7 @@ class SoilSensorData(Data):
         """
         Get the parameters for event separation
         """
-        _noise_thresh = (self.max_sm - self.min_sm) * self.cfg.getfloat(
+        _noise_thresh = (self.range_sm) * self.cfg.getfloat(
             "EVENT_SEPARATION", "frac_range_thresh"
         )
         
@@ -207,7 +224,8 @@ class SoilSensorData(Data):
 
     def separate_events(self, cols=['P_F', 'ET_F_MDS']):
 
-        self.mask_values(self.df, 'SWC', self.max_sm)
+        # self.mask_values(self.df, 'SWC', self.max_sm)
+        self.mask_values(self.df, 'SWC', self.theta_fc)
         self.calc_dsdt(self.df, 'SWC_masked')
 
         events = self.find_events()
@@ -316,7 +334,9 @@ class SoilSensorData(Data):
             TowerEvent(
                 **row.to_dict(),
                 theta_w = self.min_sm,
-                theta_star = self.max_sm,
+                # theta_star = self.max_sm,
+                theta_star = self.theta_fc,
+                z = self.z, 
                 event_data = self.get_event_data(row.start_date, row.end_date)
             )
             for i, row in events_df[['start_date','end_date','soil_moisture']].iterrows()

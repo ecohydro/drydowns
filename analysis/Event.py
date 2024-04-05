@@ -18,6 +18,7 @@ class Event:
         
         norm_sm = np.asarray(event_dict["normalized_sm"])
         self.pet = np.average(event_dict["PET"])
+        self.z = 0.05
 
         # self.min_sm = event_dict["min_sm"]
         # self.max_sm = event_dict["max_sm"]
@@ -48,6 +49,8 @@ class Event:
                 "tau": popt[2],
                 "r_squared": r_squared,
                 "y_opt": y_opt.tolist(),
+                "k" : (self.theta_star - popt[1]) / popt[2],
+                "ET_max" : (self.z * 1000) * ((self.theta_star - popt[1]) / popt[2])
             }
 
         if model_type == "q":
@@ -59,6 +62,7 @@ class Event:
                     "theta_0" : popt[2] + self.theta_w,
                     "r_squared": r_squared,
                     "y_opt": y_opt.tolist(),
+                    "ET_max" : (self.z * 1000) * popt[0]
                 }
             else:
                 self.q = {
