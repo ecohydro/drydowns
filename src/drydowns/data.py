@@ -42,13 +42,15 @@ class Data:
         self.z = 0.05
 
         # Get the directory name
-        self.data_dir = cfg["PATHS"]["data_dir"]
-        self.datarods_dir = cfg["PATHS"]["datarods_dir"]
+        self.data_dir = cfg.get('data_dir')  # cfg["PATHS"]["data_dir"]
+        self.datarods_dir = cfg.get('datarods_dir')  #cfg["PATHS"]["datarods_dir"]
 
         # Get the start and end time of the analysis
         date_format = "%Y-%m-%d"
-        self.start_date = datetime.strptime(cfg["EXTENT"]["start_date"], date_format)
-        self.end_date = datetime.strptime(cfg["EXTENT"]["end_date"], date_format)
+        # self.start_date = datetime.strptime(cfg["EXTENT"]["start_date"], date_format)
+        # self.end_date = datetime.strptime(cfg["EXTENT"]["end_date"], date_format)
+        self.start_date = datetime.strptime(self.cfg.get('start_date'), date_format)
+        self.end_date = datetime.strptime(self.cfg.get('end_date'), date_format)
 
         # _______________________________________________________________________________
         # Datasets

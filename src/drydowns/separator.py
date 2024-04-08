@@ -28,7 +28,8 @@ class ThreadNameHandler(logging.StreamHandler):
 class EventSeparator:
     def __init__(self, cfg, data):
         self.cfg = cfg
-        self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
+        # self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
+        self.verbose = cfg["verbose"].lower() in ["true", "yes", "1"]
         self.data = data
         self.init_params()
 
@@ -45,16 +46,26 @@ class EventSeparator:
         # log = modifyLogger(name=__name__, custom_handler=custom_handler)
 
     def init_params(self):
-        self.precip_thresh = self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh")
-        self.target_rmsd = self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd")
+        # self.precip_thresh = self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh")
+        # self.target_rmsd = self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd")
+        # _noise_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
+        #     "EVENT_SEPARATION", "frac_range_thresh"
+        # )
+        # self.noise_thresh = np.minimum(_noise_thresh, self.target_rmsd * 2)
+        # self.min_duration = self.cfg.getint(
+        #     "EVENT_SEPARATION", "min_duration"
+        # )
+        # self.plot = self.cfg["MODEL"]["plot_results"].lower() in ["true", "yes", "1"]
+        self.precip_thresh = self.cfg.getfloat("precip_thresh")
+        self.target_rmsd = self.cfg.getfloat("target_rmsd")
         _noise_thresh = (self.data.max_sm - self.data.min_sm) * self.cfg.getfloat(
-            "EVENT_SEPARATION", "frac_range_thresh"
+            "frac_range_thresh"
         )
         self.noise_thresh = np.minimum(_noise_thresh, self.target_rmsd * 2)
-        self.min_duration = self.cfg.getint(
-            "EVENT_SEPARATION", "min_duration"
-        )
-        self.plot = self.cfg["MODEL"]["plot_results"].lower() in ["true", "yes", "1"]
+        self.min_duration = self.cfg.getint("min_duration")
+        self.plot = self.cfg["plot_results"].lower() in ["true", "yes", "1"]
+
+
 
     def separate_events(self, output_dir):
         """Separate soil moisture timeseries into events"""

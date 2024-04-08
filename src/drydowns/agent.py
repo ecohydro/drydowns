@@ -28,12 +28,15 @@ class Agent:
     def __init__(self, cfg=None, logger=None):
         self.cfg = cfg
         self.logger = logger
-        self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
+        # self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
+        self.verbose = cfg.get("verbose").lower() in ["true", "yes", "1"]
         
         self._smapgrid = SMAPgrid(cfg=self.cfg)
         self.data_ids = self._smapgrid.get_EASE_index_subset()
         
-        self.output_dir = create_output_dir(parent_dir=cfg["PATHS"]["output_dir"])
+        # self.output_dir = create_output_dir(parent_dir=cfg["PATHS"]["output_dir"])
+        self.output_dir = create_output_dir(parent_dir=cfg.get("output_dir"))
+
 
     def initialize(self):
         None

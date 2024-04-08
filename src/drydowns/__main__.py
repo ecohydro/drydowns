@@ -22,12 +22,15 @@ def main():
     # Read config
     # cfg = ConfigParser()
     # cfg.read("config.ini")
-    cfg = Config('config.ini').config
+    config = Config('config.ini').config
+    cfg = config[config.get('RUN','type')]
 
-    cfg_model = cfg["MODEL"]
+    # cfg_model = cfg["MODEL"]
 
     # Initiate agent
-    if cfg['DATA']['data_type'] != 'SMAP':
+    # if cfg['DATA']['data_type'] != 'SMAP':
+    # TODO: Get object type from config
+    if cfg.name != 'SMAP':
         agent = TowerAgent(cfg=cfg)
     else:
         agent = Agent(cfg=cfg)
@@ -35,7 +38,8 @@ def main():
 
     # _______________________________________________________________________________________________
     # Define serial/parallel mode
-    run_mode = cfg["MODEL"]["run_mode"]
+    # run_mode = cfg["MODEL"]["run_mode"]
+    run_mode = cfg["run_mode"]
     log.info(f"--- Analysis started with {run_mode} mode ---")
 
     # _______________________________________________________________________________________________
@@ -48,7 +52,7 @@ def main():
     # if is_true(cfg["MODEL"]["sigmoid_model"]):
     #     log.info(f"Sigmoid model")
     for mod_name in ['exponential_model', 'q_model', 'sigmoid_model']:
-        if cfg_model.getboolean(mod_name):
+        if cfg.getboolean(mod_name):
             log.info(f"{mod_name}")
     # [m for m in ['exponential_model', 'q_model', 'sigmoid_model'] if cfg_model.getboolean(m)]
 
@@ -58,7 +62,8 @@ def main():
     
     elif run_mode == "parallel":
         # nprocess = int(cfg["MULTIPROCESSING"]["nprocess"])
-        nprocess = cfg.getint("MULTIPROCESSING", "nprocess")
+        # nprocess = cfg.getint("MULTIPROCESSING", "nprocess")
+        nprocess = cfg.getint("nprocess")
         with mp.Pool(nprocess) as pool:
             results = list(pool.imap(agent.run, agent.data_ids))
         pool.close()

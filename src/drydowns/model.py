@@ -121,23 +121,23 @@ class DrydownModel:
         self.data = data
         self.events = events
 
-        self.cfg_model = cfg["MODEL"]
+        # self.cfg_model = cfg["MODEL"]
 
         # self.plot_results = is_true(cfg["MODEL"]["plot_results"])
         # self.force_PET = is_true(cfg["MODEL"]["force_PET"])
-        self._force_PET = self.cfg_model.getboolean("force_PET")
+        self._force_PET = self.cfg.getboolean("force_PET")
 
 
         # TODO: pull out models into subclasses
         # self.run_exponential_model = is_true(cfg["MODEL"]["exponential_model"])
         # self.run_q_model = is_true(cfg["MODEL"]["q_model"])
         # self.run_sigmoid_model = is_true(cfg["MODEL"]["sigmoid_model"])
-        self._run_exponential = self.cfg_model.getboolean("exponential_model")
-        self._run_q = self.cfg_model.getboolean("q_model")
-        self._run_sigmoid = self.cfg_model.getboolean("sigmoid_model")
+        self._run_exponential = self.cfg.getboolean("exponential_model")
+        self._run_q = self.cfg.getboolean("q_model")
+        self._run_sigmoid = self.cfg.getboolean("sigmoid_model")
 
 
-        if self.cfg_model["run_mode"] == "parallel":
+        if self.cfg["run_mode"] == "parallel":
             current_thread = threading.current_thread()
             current_thread.name = (
                 # f"[{self.data.EASE_row_index},{self.data.EASE_column_index}]"
@@ -161,7 +161,7 @@ class DrydownModel:
             except Exception as e:
                 log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
-        if self.cfg_model.getboolean('plot_results'):
+        if self.cfg.getboolean('plot_results'):
             self.plot_drydown_models_in_timesreies()
 
     def fit_event(self, event):

@@ -87,14 +87,16 @@ class TowerAgent:
         self._filenames = sorted(os.listdir(cfg["PATHS"]["data_dir"]))
 
         # verbose
-        self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
+        # self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
+        self.verbose = cfg.get("verbose").lower() in ["true", "yes", "1"]
 
         # output_dir
         if output_dir:
             self._output_dir = output_dir
         else:
             # self._output_dir = create_output_dir(parent_dir=cfg["PATHS"]["output_dir"])
-            self._output_dir = cfg.get('PATHS', 'output_dir')
+            # self._output_dir = cfg.get('PATHS', 'output_dir')
+            self._output_dir = cfg.get('output_dir')
 
     def initialize(self):
         None
@@ -210,7 +212,8 @@ class TowerAgent:
         """Initialize a tower object from the Site ID (str)"""
         filename = next((t for t in self._filenames if tid in t),None)
         
-        tower = fluxtower.FluxNetTower(os.path.join(self.cfg["PATHS"]["data_dir"], filename))
+        # tower = fluxtower.FluxNetTower(os.path.join(self.cfg["PATHS"]["data_dir"], filename))
+        tower = fluxtower.FluxNetTower(os.path.join(self.cfg.get("data_dir"), filename))
         tower.add_vp_cols()
         tower.add_et_cols()
 

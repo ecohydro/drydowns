@@ -126,7 +126,8 @@ class SoilSensorData(Data):
         # min, max, range
         self.min_sm = self.df.SWC.min()
         self.max_sm = self.df.SWC.quantile(
-            self.cfg['DATA'].getfloat('max_sm_frac', 1.0)
+            # self.cfg['DATA'].getfloat('max_sm_frac', 1.0)
+            self.cfg.getfloat('max_sm_frac', 1.0)
         )
         self.range_sm = self.max_sm - self.min_sm
 
@@ -205,21 +206,29 @@ class SoilSensorData(Data):
         """
         Get the parameters for event separation
         """
-        _noise_thresh = (self.range_sm) * self.cfg.getfloat(
-            "EVENT_SEPARATION", "frac_range_thresh"
-        )
+        # _noise_thresh = (self.range_sm) * self.cfg.getfloat(
+        #     "EVENT_SEPARATION", "frac_range_thresh"
+        # )
         
+        # params = {
+        #     'precip_thresh': self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh"),
+        #     # 'target_rmsd': self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd"),
+        #     # 'start_diff' : self.cfg.getfloat("EVENT_SEPARATION", "start_thresh"),
+        #     # 'end_diff' : np.minimum(
+        #     #     noise_thresh, self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd") * 2
+        #     # ),
+        #     'noise_thresh' : np.minimum(
+        #         _noise_thresh, self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd") * 2
+        #     ),
+        #     'duration' : self.cfg.getint("EVENT_SEPARATION", "min_duration"),
+        # }
+        _noise_thresh = (self.range_sm) * self.cfg.getfloat("frac_range_thresh")
         params = {
-            'precip_thresh': self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh"),
-            # 'target_rmsd': self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd"),
-            # 'start_diff' : self.cfg.getfloat("EVENT_SEPARATION", "start_thresh"),
-            # 'end_diff' : np.minimum(
-            #     noise_thresh, self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd") * 2
-            # ),
+            'precip_thresh': self.cfg.getfloat("precip_thresh"),
             'noise_thresh' : np.minimum(
-                _noise_thresh, self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd") * 2
+                _noise_thresh, self.cfg.getfloat("target_rmsd") * 2
             ),
-            'duration' : self.cfg.getint("EVENT_SEPARATION", "min_duration"),
+            'duration' : self.cfg.getint("min_duration"),
         }
         return params
 
