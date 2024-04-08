@@ -136,6 +136,40 @@ soils = {
     }
 }
 
+
+def get_soil_texture(sand, silt, clay):
+    # Convert inputs to arrays if they are not already
+    sand_frac = np.asarray(sand).copy()
+    silt_frac = np.asarray(silt).copy()
+    clay_frac = np.asarray(clay).copy()
+
+    # Check if inputs are percentages (between 0 and 100) or fractions (between 0 and 1)
+    if np.any((sand_frac > 1) | (silt_frac > 1) | (clay_frac > 1)):
+        # If inputs are greater than 1, assume they are percentages and convert them to fractions
+        sand_frac /= 100.0
+        silt_frac /= 100.0
+        clay_frac /= 100.0
+
+    # Define texture classes
+    textures = np.empty_like(sand, dtype=object)
+
+    # Assign texture based on criteria
+    textures[(sand_frac <= 0.45) & (silt_frac <= 0.40) & (clay_frac >= 0.40)] = "Clay"
+    textures[(sand_frac <= 0.65) & (sand_frac >= 0.45) & (silt_frac <= 0.20) & (clay_frac >= 0.35) & (clay_frac <= 0.55)] = "Sandy Clay"
+    textures[(sand_frac <= 0.20) & (silt_frac >= 0.40) & (silt_frac <= 0.60) & (clay_frac >= 0.40) & (clay_frac <= 0.60)] = "Silty Clay"
+    textures[(sand_frac >= 0.45) & (sand_frac <= 0.80) & (silt_frac <= 0.28) & (clay_frac >= 0.20) & (clay_frac <= 0.35)] = "Sandy Clay Loam"
+    textures[(sand_frac >= 0.20) & (sand_frac <= 0.45) & (silt_frac >= 0.15) & (silt_frac <= 0.53) & (clay_frac >= 0.27) & (clay_frac <= 0.40)] = "Clay Loam"
+    textures[(sand_frac <= 0.20) & (silt_frac >= 0.40) & (silt_frac <= 0.73) & (clay_frac >= 0.27) & (clay_frac <= 0.40)] = "Silty Clay Loam"
+    textures[(sand_frac >= 0.43) & (sand_frac <= 0.85) & (silt_frac <= 0.50) & (clay_frac <= 0.20)] = "Sandy Loam"
+    textures[(sand_frac >= 0.23) & (sand_frac <= 0.52) & (silt_frac >= 0.28) & (silt_frac <= 0.50) & (clay_frac >= 0.07) & (clay_frac <= 0.27)] = "Loam"
+    textures[(sand_frac <= 0.50) & (silt_frac >= 0.50) & (silt_frac <= 0.88) & (clay_frac <= 0.27)] = "Silt Loam"
+    textures[(sand_frac <= 0.20) & (silt_frac >= 0.80) & (clay_frac <= 0.12)] = "Silt"
+    textures[(sand_frac >= 0.70) & (sand_frac <= 0.90) & (silt_frac <= 0.30) & (clay_frac <= 0.15)] = "Loamy Sand"
+    textures[(sand_frac >= 0.85) & (silt_frac <= 0.15) & (clay_frac <= 0.10)] = "Sand"
+    textures[(sand_frac < 0) | (silt_frac < 0) | (clay_frac < 0) | (sand_frac > 1) | (silt_frac > 1) | (clay_frac > 1)] = "Not Available"
+
+    return textures
+
 # SOIL CLASS
 
 class Soil():
