@@ -60,8 +60,9 @@ class TowerEvent(Event):
     
     def calc_pet(self, et_col='ET_F_MDS'):
         # TODO: Check for ET col + set default if DNE
-        if self.event_data.empty:
-            pet = np.nan
+        if self.event_data.empty or et_col not in self.event_data.columns:
+            # pet = np.nan
+            pet = 5.0
         pet = self.event_data[et_col].max() 
         # NOTE: Should be initial value (well, really should be calculated), 
         # but using this for now bc PET > AET, so if max value isn't initial, this

@@ -5,6 +5,7 @@ from .toweragent import TowerAgent
 
 from .data import Data
 from .towerdata import SoilSensorData
+from .ismndata import ISMNSoilData
 
 from .event import Event
 from .towerevent import TowerEvent
