@@ -124,7 +124,7 @@ class ISMNSoilData(SoilSensorData):
 
     def add_data_cols(self, cols):
         # self.df = pd.concat([self.df, cols], axis=1)
-        self.df = self.df.join(self._station.daily.set_index('TIMESTAMP')[cols])
+        self.df = self.df.join(self._station.daily[cols])
 
     def calc_diff(self):
         self.df['SWC_diff'] = self.df['SWC'].diff() #/ df['TIMESTAMP'].diff().dt.days
@@ -255,7 +255,7 @@ class ISMNSoilData(SoilSensorData):
         return events
 
     def get_event_data(self, start, end, cols=['P_F', 'ET_F_MDS']):
-        new_cols = [col for col in cols if col not in self.df.columns]
+        new_cols = [col for col in cols if col not in self.df.columns and col in self._station.daily.columns]
         if new_cols:
             self.add_data_cols(new_cols)
         

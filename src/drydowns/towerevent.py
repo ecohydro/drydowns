@@ -63,7 +63,8 @@ class TowerEvent(Event):
         if self.event_data.empty or et_col not in self.event_data.columns:
             # pet = np.nan
             pet = 5.0
-        pet = self.event_data[et_col].max() 
+        else:
+            pet = self.event_data[et_col].max() 
         # NOTE: Should be initial value (well, really should be calculated), 
         # but using this for now bc PET > AET, so if max value isn't initial, this
         # ensures highest AET value.
