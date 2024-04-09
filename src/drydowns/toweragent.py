@@ -84,7 +84,8 @@ class TowerAgent:
             self.data_ids = meta[meta.DATAVALUE.str.contains('SWC_')].SITE_ID.unique()
 
         # filenames
-        self._filenames = sorted(os.listdir(cfg["PATHS"]["data_dir"]))
+        # self._filenames = sorted(os.listdir(cfg["PATHS"]["data_dir"]))
+        self._filenames = sorted(os.listdir(cfg["data_dir"]))
 
         # verbose
         # self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]

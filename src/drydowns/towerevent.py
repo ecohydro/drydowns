@@ -59,6 +59,7 @@ class TowerEvent(Event):
         return precip
     
     def calc_pet(self, et_col='ET_F_MDS'):
+        # TODO: Check for ET col + set default if DNE
         if self.event_data.empty:
             pet = np.nan
         pet = self.event_data[et_col].max() 
