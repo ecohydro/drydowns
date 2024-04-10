@@ -126,6 +126,7 @@ class DrydownModel:
         # self.plot_results = is_true(cfg["MODEL"]["plot_results"])
         # self.force_PET = is_true(cfg["MODEL"]["force_PET"])
         self._force_PET = self.cfg.getboolean("force_PET")
+        self._fit_theta_star = self.cfg.getboolean("fit_theta_star")
 
 
         # TODO: pull out models into subclasses
@@ -343,23 +344,37 @@ class DrydownModel:
 
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
+        # TODO: Clean this up significantly...
+        if self._fit_theta_star:
+            max_delta_theta = np.minimum(self.data.range_sm, self.data.theta_fc - self.data.min_sm)
+            ini_delta_theta = event.event_range
+            
+            min_theta_star = 0.0
+            max_theta_star = self.data.theta_fc
+            ini_theta_star = event.theta_star
+            
+            bounds = [(min_k, min_q, min_delta_theta, min_theta_star), (max_k, max_q, max_delta_theta, max_theta_star)]
+            p0 = [ini_k, ini_q, ini_delta_theta, ini_theta_star]
+            mod = lambda t, k, q, delta_theta, theta_star: q_model(t, k, q, delta_theta, theta_star, self.data.min_sm)
+            norm = False
+        else:
+            norm = True
+            if not self._force_PET:
+                bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
+                p0 = [ini_k, ini_q, ini_delta_theta]
+                mod = lambda t, k, q, delta_theta: q_model(t, k, q, delta_theta, 1.0, 0.0)
 
-        if not self._force_PET:
-            bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
-            p0 = [ini_k, ini_q, ini_delta_theta]
-            mod = lambda t, k, q, delta_theta: q_model(t, k, q, delta_theta, 1.0, 0.0)
-        
-        elif self._force_PET:
-            bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
-            p0 = [ini_q, ini_delta_theta]
-            mod = lambda t, q, delta_theta: q_model(t, event.pet, q, delta_theta, 1.0, 0.0)
-        
+            elif self._force_PET:
+                bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
+                p0 = [ini_q, ini_delta_theta]
+                mod = lambda t, q, delta_theta: q_model(t, event.pet, q, delta_theta, 1.0, 0.0)
+            
         mod_fit = self.fit_model(
             event=event,
             model=mod,
             bounds=bounds,
             p0=p0,
-            norm=True,
+            norm=norm,
         )
 
         return mod_fit

@@ -40,7 +40,7 @@ class Event:
         self.theta_norm = norm_sm[~np.isnan(self.soil_moisture)]
 
     def add_attributes(
-        self, model_type="", popt=[], r_squared=np.nan, y_opt=[], force_PET=False
+        self, model_type="", popt=[], r_squared=np.nan, y_opt=[], force_PET=False, fit_theta_star=False
     ):
         if model_type == "exponential":
             self.exponential = {
@@ -55,7 +55,7 @@ class Event:
             }
 
         if model_type == "q":
-            if not force_PET:
+            if fit_theta_star:
                 self.q = {
                     "k": popt[0],
                     "q": popt[1],
@@ -66,13 +66,24 @@ class Event:
                     "ET_max" : (self.z * 1000) * popt[0]
                 }
             else:
-                self.q = {
-                    "q": popt[0],
-                    "delta_theta": popt[1],
-                    "theta_0" : popt[1] + self.theta_w,
-                    "r_squared": r_squared,
-                    "y_opt": y_opt.tolist(),
-                }
+                if not force_PET:
+                    self.q = {
+                        "k": popt[0],
+                        "q": popt[1],
+                        "delta_theta": popt[2],
+                        "theta_0" : popt[2] + self.theta_w,
+                        "r_squared": r_squared,
+                        "y_opt": y_opt.tolist(),
+                        "ET_max" : (self.z * 1000) * popt[0]
+                    }
+                else:
+                    self.q = {
+                        "q": popt[0],
+                        "delta_theta": popt[1],
+                        "theta_0" : popt[1] + self.theta_w,
+                        "r_squared": r_squared,
+                        "y_opt": y_opt.tolist(),
+                    }
 
         if model_type == "sigmoid":
             self.sigmoid = {
