@@ -38,7 +38,8 @@ def exponential_model(t, delta_theta, theta_w, tau):
     return delta_theta * np.exp(-t / tau) + theta_w
 
 
-def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
+# def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
+def q_model(t, delta_theta, k, q, theta_star=1.0, theta_w=0.0):
     """
     Calculate the drydown curve for soil moisture over time using non-linear plant stress model.
 
@@ -253,6 +254,8 @@ class DrydownModel:
             if norm:
                 # y_opt = y_opt * self.data.range_sm + self.data.min_sm
                 y_opt = y_opt * (event.theta_star - event.theta_w) + event.theta_w
+                # first arg to both is now delta_theta, so this can be de-normalized here
+                popt[0] = popt[0] * (event.theta_star - event.theta_w) #+ event.theta_w (I think?)
 
             # Calculate the residuals
             residuals = event.theta - y_opt #event.y - y_opt
@@ -353,21 +356,30 @@ class DrydownModel:
             max_theta_star = self.data.theta_fc
             ini_theta_star = event.theta_star
             
-            bounds = [(min_k, min_q, min_delta_theta, min_theta_star), (max_k, max_q, max_delta_theta, max_theta_star)]
-            p0 = [ini_k, ini_q, ini_delta_theta, ini_theta_star]
-            mod = lambda t, k, q, delta_theta, theta_star: q_model(t, k, q, delta_theta, theta_star, self.data.min_sm)
+            bounds = [
+                (min_delta_theta, min_k, min_q, min_theta_star), 
+                (max_delta_theta, max_k, max_q, max_theta_star)
+            ]
+            p0 = [ini_delta_theta, ini_k, ini_q, ini_theta_star]
+            mod = lambda t, delta_theta, k, q, theta_star: q_model(
+                t, delta_theta, k, q, theta_star, self.data.min_sm
+            )
             norm = False
         else:
             norm = True
             if not self._force_PET:
-                bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
-                p0 = [ini_k, ini_q, ini_delta_theta]
-                mod = lambda t, k, q, delta_theta: q_model(t, k, q, delta_theta, 1.0, 0.0)
+                # bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
+                # p0 = [ini_k, ini_q, ini_delta_theta]
+                # mod = lambda t, delta_theta, k, q: q_model(t, delta_theta, k, q, 1.0, 0.0)
+                bounds = [(min_delta_theta, min_k, min_q), (max_delta_theta, max_k, max_q)]
+                p0 = [ini_delta_theta, ini_k, ini_q]
+                mod = lambda t, delta_theta, k, q: q_model(t, delta_theta, k, q, 1.0, 0.0)
 
             elif self._force_PET:
-                bounds = [(min_q, min_delta_theta), (max_q, max_delta_theta)]
-                p0 = [ini_q, ini_delta_theta]
-                mod = lambda t, q, delta_theta: q_model(t, event.pet, q, delta_theta, 1.0, 0.0)
+                bounds = [(min_delta_theta, min_q), (max_delta_theta, max_q)]
+                p0 = [ini_delta_theta, ini_q]
+                # TODO: Check this... shouldn't event.pet be divided by z?
+                mod = lambda t, delta_theta, q: q_model(t, delta_theta, event.pet, q, 1.0, 0.0)
             
         mod_fit = self.fit_model(
             event=event,
