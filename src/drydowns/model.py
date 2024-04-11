@@ -191,7 +191,7 @@ class DrydownModel:
         if self._run_q:
             try:
                 popt, r_squared, y_opt = self.fit_q_model(event)
-                event.add_attributes("q", popt, r_squared, y_opt, self._force_PET)
+                event.add_attributes("q", popt, r_squared, y_opt, self._force_PET, self._fit_theta_star)
             except Exception as e:
                 log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
                 return None
@@ -326,9 +326,10 @@ class DrydownModel:
 
         ### k (should be close to PET/z ###
         min_k = 0
-        max_k = np.inf
+        max_k = 100. #/ (self.data.z*1000) #np.inf
         # PET is in mm, z is in m
-        ini_k = event.pet / (self.data.z*1000) #50
+        # ini_k = event.pet / (self.data.z*1000) #50
+        ini_k = (event.theta_star - event.theta_w) #/ (self.data.z*1000)
         # max_k = ini_k #np.inf
 
 
