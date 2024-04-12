@@ -80,7 +80,8 @@ class Event:
                     self.q = {
                         "delta_theta" : popt[0],
                         # "theta_0" : popt[0] + self.theta_w,
-                        "k": popt[1], #popt[0],
+                        # Multiplying by (theta_star - theta_w) denormalizes k
+                        "k": popt[1] * (self.theta_star - self.theta_w), #popt[0],
                         "q": popt[2], #popt[1],
                         # "delta_theta": popt[2],
                         # "theta_0" : popt[2] + self.theta_w,
