@@ -35,7 +35,8 @@ class Agent:
         self.data_ids = self._smapgrid.get_EASE_index_subset()
         
         # self.output_dir = create_output_dir(parent_dir=cfg["PATHS"]["output_dir"])
-        self.output_dir = create_output_dir(parent_dir=cfg.get("output_dir"))
+        # self.output_dir = create_output_dir(parent_dir=cfg.get("output_dir"))
+        self.output_dir = cfg.get("output_dir")
 
 
     def initialize(self):
@@ -101,17 +102,33 @@ class Agent:
             print(f"Error in thread: {did}")
             print(f"Error message: {str(e)}")
 
+    # def finalize(self, results):
+    #     """Finalize the analysis from all the pixels
+
+    #     Args:
+    #         results (list): concatenated results returned from serial/multi-threadding analysis
+    #     """
+    #     df_results = self.save_to_csv(results)
+    #     # self.smapgrid.remap_results(df_results)
+    #     # self.smapgrid.plot_remapped_results(da)
+
+    # def save_to_csv(self, results):
+    #     if len(results) > 1:
+    #         try:
+    #             df = pd.concat(results)
+    #         except:
+    #             df = results
+    #     else:
+    #         df = results
+    #     df.to_csv(os.path.join(self.output_dir, "all_results.csv"))
+    #     return df
+
     def finalize(self, results):
         """Finalize the analysis from all the pixels
 
         Args:
-            results (list): concatinated results returned from serial/multi-threadding analysis
+            results (list): concatenated results returned from serial/multi-threadding analysis
         """
-        df_results = self.save_to_csv(results)
-        # self.smapgrid.remap_results(df_results)
-        # self.smapgrid.plot_remapped_results(da)
-
-    def save_to_csv(self, results):
         if len(results) > 1:
             try:
                 df = pd.concat(results)
@@ -119,5 +136,22 @@ class Agent:
                 df = results
         else:
             df = results
-        df.to_csv(os.path.join(self.output_dir, "all_results.csv"))
-        return df
+
+        # date = datetime.now().strftime("%Y-%m-%d")
+        date = datetime.now().strftime('%d%b').lower()
+        out_bn = self.cfg.get(
+            'output_fid',
+            'ismn_results'
+        )
+        fid = f"{out_bn}_{date}"
+
+        self.save(df, fid=fid)
+
+
+    def save(self, df, fid='smap_results'):
+        """Save the results to a csv file"""
+        filename = f"{fid}.csv"
+        log.info(f"Saving {filename} to {self._output_dir}")
+        df.to_csv(os.path.join(self._output_dir, filename), index=False)
+        log.info(f"Saved {filename} to {self._output_dir}")
+
