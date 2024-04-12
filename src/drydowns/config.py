@@ -38,7 +38,7 @@ config_type = os.getenv('CONFIG', 'default')
 
 
 class Config:
-    def __init__(self, ini_file=None):
+    def __init__(self, ini_file='config.ini'):
         if ini_file:
             self.config = Config.create_config(ini_file=ini_file)
             self.config_file = ini_file

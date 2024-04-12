@@ -22,7 +22,7 @@ def main():
     # Read config
     # cfg = ConfigParser()
     # cfg.read("config.ini")
-    config = Config('config.ini').config
+    config = Config().config
     cfg = config[config.get('RUN','type')]
 
     # cfg_model = cfg["MODEL"]
