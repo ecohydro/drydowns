@@ -19,11 +19,15 @@ class SMAPgrid:
 
     def __init__(self, cfg=None):
         self.cfg = cfg
-        self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
+        # self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
+        self.verbose = cfg.get("verbose").lower() in ["true", "yes", "1"]
 
-        self.data_dir = cfg["PATHS"]["data_dir"]
-        self.datarods_dir = cfg["PATHS"]["datarods_dir"]
-        self.output_dir = cfg["PATHS"]["output_dir"]
+        # self.data_dir = cfg["PATHS"]["data_dir"]
+        # self.datarods_dir = cfg["PATHS"]["datarods_dir"]
+        # self.output_dir = cfg["PATHS"]["output_dir"]
+        self.data_dir = cfg.get("data_dir")
+        self.datarods_dir = cfg.get("datarods_dir")
+        self.output_dir = cfg.get("output_dir")
 
         self.get_attributes()
         self.coord_info = self.get_coordinates()
@@ -34,10 +38,14 @@ class SMAPgrid:
     def get_attributes(self):
         """Get attributes of the 36km resolution EASEgrid used for SMAPL3 data"""
         self.epsg = "4326"
-        self.min_lon = self.cfg.getfloat("EXTENT", "min_lon")
-        self.min_lat = self.cfg.getfloat("EXTENT", "min_lat")
-        self.max_lon = self.cfg.getfloat("EXTENT", "max_lon")
-        self.max_lat = self.cfg.getfloat("EXTENT", "max_lat")
+        # self.min_lon = self.cfg.getfloat("EXTENT", "min_lon")
+        # self.min_lat = self.cfg.getfloat("EXTENT", "min_lat")
+        # self.max_lon = self.cfg.getfloat("EXTENT", "max_lon")
+        # self.max_lat = self.cfg.getfloat("EXTENT", "max_lat")
+        self.min_lon = self.cfg.getfloat("min_lon")
+        self.min_lat = self.cfg.getfloat("min_lat")
+        self.max_lon = self.cfg.getfloat("max_lon")
+        self.max_lat = self.cfg.getfloat("max_lat")
 
         if not ((self.min_lon < self.max_lon) and (self.min_lat < self.max_lat)):
             # If the condition is not met, issue a warning
