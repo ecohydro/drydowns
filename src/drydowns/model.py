@@ -326,10 +326,10 @@ class DrydownModel:
 
         ### k (should be close to PET/z ###
         min_k = 0
-        max_k = 100. #/ (self.data.z*1000) #np.inf
+        max_k = 100. / (self.data.z*1000) #np.inf
         # PET is in mm, z is in m
-        # ini_k = event.pet / (self.data.z*1000) #50
-        ini_k = (event.theta_star - event.theta_w) #/ (self.data.z*1000)
+        ini_k = event.pet / (self.data.z*1000) #50
+        # ini_k = (event.theta_star - event.theta_w) / (self.data.z*1000)
         # max_k = ini_k #np.inf
 
 
