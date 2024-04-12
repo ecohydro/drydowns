@@ -34,9 +34,9 @@ class Agent:
         self._smapgrid = SMAPgrid(cfg=self.cfg)
         self.data_ids = self._smapgrid.get_EASE_index_subset()
         
-        # self.output_dir = create_output_dir(parent_dir=cfg["PATHS"]["output_dir"])
-        # self.output_dir = create_output_dir(parent_dir=cfg.get("output_dir"))
-        self.output_dir = cfg.get("output_dir")
+        # self._output_dir = create_output_dir(parent_dir=cfg["PATHS"]["output_dir"])
+        # self._output_dir = create_output_dir(parent_dir=cfg.get("output_dir"))
+        self._output_dir = cfg.get("output_dir")
 
 
     def initialize(self):
@@ -73,7 +73,7 @@ class Agent:
             # _______________________________________________________________________________________________
             # Run the stormevent separation
             separator = EventSeparator(self.cfg, data)
-            events = separator.separate_events(output_dir=self.output_dir)
+            events = separator.separate_events(output_dir=self._output_dir)
 
             # If there is no drydown event detected for the pixel, skip the analysis
             # Check if there is SM data
@@ -88,7 +88,7 @@ class Agent:
             # _______________________________________________________________________________________________
             # Execute the main analysis --- fit drydown models
             drydown_model = DrydownModel(self.cfg, data, events)
-            drydown_model.fit_models(output_dir=self.output_dir)
+            drydown_model.fit_models(output_dir=self._output_dir)
 
             results_df = drydown_model.return_result_df()
 
@@ -120,7 +120,7 @@ class Agent:
     #             df = results
     #     else:
     #         df = results
-    #     df.to_csv(os.path.join(self.output_dir, "all_results.csv"))
+    #     df.to_csv(os.path.join(self._output_dir, "all_results.csv"))
     #     return df
 
     def finalize(self, results):
@@ -141,7 +141,7 @@ class Agent:
         date = datetime.now().strftime('%d%b').lower()
         out_bn = self.cfg.get(
             'output_fid',
-            'ismn_results'
+            'smap_results'
         )
         fid = f"{out_bn}_{date}"
 
