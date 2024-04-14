@@ -7,9 +7,12 @@ import threading
 from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
 
-from .event import Event
-from .towerevent import TowerEvent
+from .smapdata import SMAPData
+from .sensordata import SensorData
+# from .event import Event
+# from .towerevent import SensorEvent
 
+from . import utils
 from .utils import is_true
 from .mylogger import getLogger
 
@@ -282,28 +285,56 @@ class DrydownModel:
         # ___________________________________________________________________________________
         # Define the boundary condition for optimizing the exponential_model(t, delta_theta, theta_w, tau)
 
-        ### Delta_theta ###
-        min_delta_theta = 0
-        max_delta_theta = self.data.range_sm
-        # ini_delta_theta = event.subset_sm_range
-        ini_delta_theta = event.event_range
+        # ### Delta_theta ###
+        # min_delta_theta = 0
+        # max_delta_theta = self.data.range_sm
+        # # ini_delta_theta = event.subset_sm_range
+        # ini_delta_theta = event.event_range
 
-        ### Theta_w ###
-        min_theta_w = self.data.min_sm
-        # max_theta_w = event.subset_min_sm
-        max_theta_w = event.event_min
-        ini_theta_w = (min_theta_w + max_theta_w) / 2
+        # ### Theta_w ###
+        # min_theta_w = self.data.min_sm
+        # # max_theta_w = event.subset_min_sm
+        # max_theta_w = event.event_min
+        # ini_theta_w = (min_theta_w + max_theta_w) / 2
 
-        ### Tau ###
-        min_tau = 0
-        max_tau = np.inf
-        ini_tau = 1
+        # ### Tau ###
+        # min_tau = 0
+        # max_tau = np.inf
+        # ini_tau = 1
+
+        # bounds = [
+        #     (min_delta_theta, min_theta_w, min_tau),
+        #     (max_delta_theta, max_theta_w, max_tau),
+        # ]
+        # p0 = [ini_delta_theta, ini_theta_w, ini_tau]
+
+        theta_0 = np.array([
+            event.theta_w,  # min_theta_0
+            # event.theta_star, # max_theta_0
+            np.minimum(event.theta_star, self.data.theta_fc), # max_theta_0
+            event.event_range + event.theta_w # ini_theta_0
+        ])
+
+        delta_theta = theta_0 - event.theta_w
+
+        theta_w = np.array([
+            self.data.min_sm, # min_theta_w
+            event.event_min, # max_theta_w
+            (self.data.min_sm + event.event_min) / 2 # ini_theta_w
+        ])
+
+        tau = np.array([
+            0., # min_tau
+            np.inf, # max_tau
+            1.0 # ini_tau
+        ])
 
         bounds = [
-            (min_delta_theta, min_theta_w, min_tau),
-            (max_delta_theta, max_theta_w, max_tau),
+            (delta_theta[0], theta_w[0], tau[0]),
+            (delta_theta[1], theta_w[1], tau[1]),
         ]
-        p0 = [ini_delta_theta, ini_theta_w, ini_tau]
+        p0 = [delta_theta[2], theta_w[2], tau[2]]
+
 
         # ______________________________________________________________________________________
         # Execute the event fit
@@ -325,55 +356,111 @@ class DrydownModel:
         # Define the boundary condition for optimizing q_model(t, k, q, delta_theta)
 
         ### k (should be close to PET/z ###
-        min_k = 0
-        max_k = 100. / (self.data.z*1000) #np.inf
-        # PET is in mm, z is in m
-        ini_k = event.pet / (self.data.z*1000) #50
-        # ini_k = (event.theta_star - event.theta_w) / (self.data.z*1000)
-        # max_k = ini_k #np.inf
+        # min_k = 0
+        # max_k = 100. / (self.data.z*1000) #np.inf
+        # # PET is in mm, z is in m
+        # ini_k = event.pet / (self.data.z*1000) #50
+        # # ini_k = (event.theta_star - event.theta_w) / (self.data.z*1000)
+        # # max_k = ini_k #np.inf
 
 
 
-        ### q ###
-        min_q = 0.0
-        max_q = np.inf
-        ini_q = 1.0 + 1.0e-03
+        # ### q ###
+        # min_q = 0.0
+        # max_q = np.inf
+        # ini_q = 1.0 + 1.0e-03
 
-        ### delta_theta ###
-        min_delta_theta = 0.0
-        max_delta_theta = 1.0  # Equivalent of self.data.range_sm as the input theta values are normalized in this code
-        # ini_delta_theta = event.subset_sm_range / self.data.range_sm
-        # ini_delta_theta = event.event_range / self.data.range_sm
-        ini_delta_theta = event.event_range / (event.theta_star - event.theta_w)
+        # ### delta_theta ###
+        # min_delta_theta = 0.0
+        # max_delta_theta = 1.0  # Equivalent of self.data.range_sm as the input theta values are normalized in this code
+        # # ini_delta_theta = event.subset_sm_range / self.data.range_sm
+        # # ini_delta_theta = event.event_range / self.data.range_sm
+        # ini_delta_theta = event.event_range / (event.theta_star - event.theta_w)
+
+        q = np.array([
+            0.,             # min_q
+            np.inf,         # max_q
+            1.0 + 1.0e-03   # ini_q
+        ])
+
+        et_max = np.array([
+            0.,             # min_ET_max
+            100.,           # max_ET_max
+            event.pet       # ini_ET_max
+        ])
+
+        theta_0 = np.array([
+            event.theta_w,  # min_theta_0
+            # event.theta_star, # max_theta_0
+            np.minimum(event.theta_star, self.data.theta_fc), # max_theta_0
+            event.event_range + event.theta_w # ini_theta_0
+        ])
+
+        theta_star = np.array([
+                0.0,            # min_theta_star
+                self.data.theta_fc, # max_theta_star
+                event.theta_star # ini_theta_star
+            ])
+
+        theta_w = event.theta_w
+
+        k = et_max / (self.data.z*1000)
+        delta_theta = theta_0 - event.theta_w
+
+        # min_k = min_ET_max / (self.data.z*1000)
+        # max_k = max_ET_max / (self.data.z*1000)
+        # ini_k = ini_ET_max / (self.data.z*1000)
+
+        # min_delta_theta = min_theta_0 - event.theta_w
+        # max_delta_theta = max_theta_0 - event.theta_w
+        # ini_delta_theta = ini_theta_0 - event.theta_w #+ event.theta_w
+
 
         # ______________________________________________________________________________________
         # Execute the event fit for the normalized timeseries between 0 and 1
         # TODO: Clean this up significantly...
         if self._fit_theta_star:
-            max_delta_theta = np.minimum(self.data.range_sm, self.data.theta_fc - self.data.min_sm)
-            ini_delta_theta = event.event_range
-            
-            min_theta_star = 0.0
-            max_theta_star = self.data.theta_fc
-            ini_theta_star = event.theta_star
-            
-            bounds = [
-                (min_delta_theta, min_k, min_q, min_theta_star), 
-                (max_delta_theta, max_k, max_q, max_theta_star)
-            ]
-            p0 = [ini_delta_theta, ini_k, ini_q, ini_theta_star]
-            mod = lambda t, delta_theta, k, q, theta_star: q_model(
-                t, delta_theta, k, q, theta_star, self.data.min_sm
-            )
             norm = False
+            # max_delta_theta = np.minimum(self.data.range_sm, self.data.theta_fc - self.data.min_sm)
+            # ini_delta_theta = event.event_range
+            # min_theta_star = 0.0
+            # max_theta_star = self.data.theta_fc
+            # ini_theta_star = event.theta_star
+            
+            # bounds = [
+            #     (min_delta_theta, min_k, min_q, min_theta_star), 
+            #     (max_delta_theta, max_k, max_q, max_theta_star)
+            # ]
+            # p0 = [ini_delta_theta, ini_k, ini_q, ini_theta_star]
+
+            bounds = [
+                (delta_theta[0], k[0], q[0], theta_star[0]),
+                (delta_theta[1], k[1], q[1], theta_star[1])
+            ]
+            p0 = [delta_theta[2], k[2], q[2], theta_star[2]]
+
+            mod = lambda t, delta_theta, k, q, theta_star: q_model(
+                t, delta_theta, k, q, theta_star, theta_w
+            )
         else:
             norm = True
+            if norm:
+                theta_0 = utils.normalize(theta_0, y_min=self.theta_w, y_max=self.theta_star) # adds theta_w to numerator
+                et_max = utils.normalize_param(et_max, y_min=self.theta_w, y_max=self.theta_star)
+
+                k = utils.normalize_param(k, y_min=self.theta_w, y_max=self.theta_star)
+                delta_theta = utils.normalize_param(delta_theta, y_min=self.theta_w, y_max=self.theta_star)
+
+                theta_w, theta_star = (0.0, 1.0)
+
             if not self._force_PET:
                 # bounds = [(min_k, min_q, min_delta_theta), (max_k, max_q, max_delta_theta)]
                 # p0 = [ini_k, ini_q, ini_delta_theta]
                 # mod = lambda t, delta_theta, k, q: q_model(t, delta_theta, k, q, 1.0, 0.0)
-                bounds = [(min_delta_theta, min_k, min_q), (max_delta_theta, max_k, max_q)]
-                p0 = [ini_delta_theta, ini_k, ini_q]
+                # bounds = [(min_delta_theta, min_k, min_q), (max_delta_theta, max_k, max_q)]
+                # p0 = [ini_delta_theta, ini_k, ini_q]
+                bounds = [(delta_theta[0], k[0], q[0]), (delta_theta[1], k[1], q[1])]
+                p0 = [delta_theta[2], k[2], q[2]]
                 mod = lambda t, delta_theta, k, q: q_model(t, delta_theta, k, q, 1.0, 0.0)
 
             elif self._force_PET:
@@ -514,9 +601,9 @@ class DrydownModel:
         results = []
         for event in self.events:
             try:
-                if isinstance(event, TowerEvent):
+                if isinstance(self.data, SensorData):
                     col_ids = ("SITE_ID", "Sensor_ID")
-                elif isinstance(event, Event):
+                elif isinstance(self.data, SMAPData):
                     col_ids = ("EASE_row_index", "EASE_column_index")
 
                 _results = {
