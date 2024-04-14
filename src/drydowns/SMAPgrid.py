@@ -25,8 +25,8 @@ class SMAPgrid:
         # self.data_dir = cfg["PATHS"]["data_dir"]
         # self.datarods_dir = cfg["PATHS"]["datarods_dir"]
         # self.output_dir = cfg["PATHS"]["output_dir"]
-        self.data_dir = cfg.get("data_dir")
-        self.datarods_dir = cfg.get("datarods_dir")
+        # self.data_dir = cfg.get("data_dir")
+        # self.datarods_dir = cfg.get("datarods_dir")
         self.output_dir = cfg.get("output_dir")
 
         self.get_attributes()
@@ -55,7 +55,7 @@ class SMAPgrid:
 
     def get_coordinates(self):
         """Get the information on the coordinate-index pair"""
-        file_path = os.path.join(self.data_dir, self.datarods_dir, "coord_info.csv")
+        file_path = os.path.join(self.cfg.get('data_dir'), "coord_info.csv")
         coord_info = pd.read_csv(file_path)
         return coord_info
 
@@ -84,7 +84,7 @@ class SMAPgrid:
     def mask_by_openwater(self, _subset):
         """Mask the coordinate if they are on the openwater"""
         file_path = os.path.join(
-            self.data_dir, self.datarods_dir, "coord_open_water.csv"
+            self.cfg.get('data_dir'), "coord_open_water.csv"
         )
         coord_open_water = pd.read_csv(file_path)
         subset = (

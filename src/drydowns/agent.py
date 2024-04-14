@@ -1,4 +1,4 @@
-from .data import Data
+from .smapdata import SMAPData
 from .model import DrydownModel
 from .separator import EventSeparator
 from .SMAPgrid import SMAPgrid
@@ -61,10 +61,11 @@ class Agent:
 
             # _______________________________________________________________________________________________
             # Read dataset for a pixel
-            data = Data(self.cfg, did)
+            data = SMAPData(self.cfg, did)
 
             # If there is no soil moisture data available for the pixel, skip the analysis
-            if data.df["soil_moisture_daily"].isna().all():
+            # if data.df["soil_moisture_daily"].isna().all():
+            if data.df["SWC"].isna().all():
                 warnings.warn(
                     f"No soil moisture data at the EASE pixel {did}"
                 )
@@ -72,28 +73,30 @@ class Agent:
 
             # _______________________________________________________________________________________________
             # Run the stormevent separation
-            separator = EventSeparator(self.cfg, data)
-            events = separator.separate_events(output_dir=self._output_dir)
+            # separator = EventSeparator(self.cfg, data)
+            # events = separator.separate_events(output_dir=self._output_dir)
+            log.info(f"Separating events for pixel {did}")
+            data.separate_events()
 
             # If there is no drydown event detected for the pixel, skip the analysis
             # Check if there is SM data
-            if not events:
+            if not data.events:
                 log.warning(f"No event drydown was detected at {did}")
                 return None
 
             log.info(
-                f"Event separation success at {did}: {len(events)} events detected"
+                f"Event separation success at {did}: {len(data.events)} events detected"
             )
 
             # _______________________________________________________________________________________________
             # Execute the main analysis --- fit drydown models
-            drydown_model = DrydownModel(self.cfg, data, events)
+            drydown_model = DrydownModel(self.cfg, data, data.events)
             drydown_model.fit_models(output_dir=self._output_dir)
 
             results_df = drydown_model.return_result_df()
 
             log.info(
-                f"Drydown model analysis completed at {did}: {len(results_df)}/{len(events)} events fitted"
+                f"Drydown model analysis completed at {did}: {len(results_df)}/{len(data.events)} events fitted"
             )
 
             return results_df

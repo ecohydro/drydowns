@@ -12,8 +12,8 @@ import logging
 
 import fluxtower
 
-from .data import Data
-from .towerevent import TowerEvent
+from .smapdata import SMAPData
+from .event import Event
 from .soil import Soil, soils
 
 from .mylogger import getLogger
@@ -90,7 +90,7 @@ class ThreadNameHandler(logging.StreamHandler):
             self.handleError(record)
 
 
-class SoilSensorData(Data):
+class SoilSensorData:
 
     def __init__(self, cfg, tower, sensor_grp,):
         # cfg
@@ -104,16 +104,18 @@ class SoilSensorData(Data):
         # info about sensor
         self.info = self._tower.grp_info.get(sensor_grp).copy()
 
-        # soil info
-        self.soil_info = self._tower.soil_info.copy()
-        self.soil_texture = self.soil_info.get('texture')
-        self.n = self.soil_info.get('porosity')
-
         # z (depth of sensor) [m]
         self.z = float(self.info['HEIGHT']) * -1.
 
         # data
         self.df = self.get_sensor_data(sensor_grp)
+
+        # soil info
+        # self.soil_info = self._tower.soil_info.copy()
+        # self.soil_texture = self.soil_info.get('texture')
+        # self.n = self.soil_info.get('porosity')
+        self.soil_texture = self._tower.soil_info.get('soil_texture')
+        self.n = self._tower.soil_info.get('porosity')
 
         # theta_fc
         if self.soil_texture in soils.keys():
@@ -156,8 +158,8 @@ class SoilSensorData(Data):
         # Copy soil moisture data
         sensor_col = self._tower.grp_info.get(sensor_grp).get('VARNAME')
 
-        start = self._tower.grp_info.get(sensor_grp).get('DATE')
-        end = self._get_end_date(sensor_grp, sensor_col)
+        start = self._tower.grp_info.get(sensor_grp).get('DATE') # self.info.get('DATE')
+        end = self._get_end_date(sensor_grp, sensor_col)         # 
 
         df = self._tower.data.loc[
             (self._tower.data.TIMESTAMP >= start) & (self._tower.data.TIMESTAMP < end),
@@ -342,7 +344,7 @@ class SoilSensorData(Data):
 
     def create_events(self, events_df):
         events = [
-            TowerEvent(
+            Event(
                 **row.to_dict(),
                 theta_w = self.min_sm,
                 # theta_star = self.max_sm,

@@ -12,9 +12,9 @@ import logging
 
 import fluxtower
 
-from .towerdata import SoilSensorData
+from .towerdata import TowerSensorData
 from .model import DrydownModel
-from .towerseparator import TowerEventSeparator
+# from .towerseparator import TowerEventSeparator
 
 from .mylogger import getLogger
 
@@ -173,7 +173,7 @@ class TowerAgent:
             
             # 1. Initialize sensor data object
             log.info(f"Initializing sensor {grp}")
-            data = SoilSensorData(self.cfg, tower, grp)
+            data = TowerSensorData(self.cfg, tower=tower, sensor_grp=grp)
 
             # 2. Separate events
             log.info(f"Separating events for sensor {grp}")

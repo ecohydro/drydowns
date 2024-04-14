@@ -80,7 +80,7 @@ class EventSeparator:
             return None
 
         self.filter_events(self.min_duration)
-        self.events = self.create_event_instances(self.events_df)
+        self.events = self.create_events(self.events_df)
 
         # if self.plot:
         #     self.plot_events()
@@ -92,7 +92,7 @@ class EventSeparator:
         # The event starts where negative increment of soil mositure follows the positive increment of soil moisture
         negative_increments = self.data.df.dSdt < 0
         positive_increments = self.data.df.dSdt > (self.target_rmsd * 2)
-        self.data.df["event_start"] = negative_increments.values & np.concatenate(
+        self.data.df['start_date'] = negative_increments.values & np.concatenate(
             ([False], positive_increments[:-1])
         )
 
@@ -103,7 +103,7 @@ class EventSeparator:
         """
 
         # Get the event start dates
-        event_start_idx = self.data.df["event_start"][self.data.df["event_start"]].index
+        event_start_idx = self.data.df['start_date'][self.data.df['start_date']].index
 
         # Loop for event start dates
         for i, event_start_date in enumerate(event_start_idx):
@@ -143,8 +143,8 @@ class EventSeparator:
                     break
 
             # Update the startdate timestep
-            self.data.df.loc[event_start_date, "event_start"] = False
-            self.data.df.loc[update_date, "event_start"] = True
+            self.data.df.loc[event_start_date, 'start_date'] = False
+            self.data.df.loc[update_date, 'start_date'] = True
 
     def adjust_event_starts_2(self):
         """
@@ -155,7 +155,7 @@ class EventSeparator:
         # Get the event start dates
         event_start_idx_2 = pd.isna(
             self.data.df["soil_moisture_daily_before_masking"][
-                self.data.df["event_start"]
+                self.data.df['start_date']
             ]
         ).index
 
@@ -176,16 +176,16 @@ class EventSeparator:
                     update_date = current_date
                     break
 
-            self.data.df.loc[event_start_date, "event_start"] = False
-            self.data.df.loc[update_date, "event_start"] = True
+            self.data.df.loc[event_start_date, 'start_date'] = False
+            self.data.df.loc[update_date, 'start_date'] = True
 
     def identify_event_ends(self):
         """Detect the end of a storm event"""
 
         # Initialize
         num_events = self.data.df.shape[0]
-        self.data.df["event_end"] = np.zeros(len(self.data.df), dtype=bool)
-        event_start_idx = self.data.df["event_start"][self.data.df["event_start"]].index
+        self.data.df['end_date'] = np.zeros(len(self.data.df), dtype=bool)
+        event_start_idx = self.data.df['start_date'][self.data.df['start_date']].index
         for i, event_start_date in enumerate(event_start_idx):
             for j in range(1, len(self.data.df)):
                 current_date = event_start_date + pd.Timedelta(days=j)
@@ -203,7 +203,7 @@ class EventSeparator:
                     or (self.data.df.loc[current_date].precip > self.precip_thresh)
                 ) or self.data.df.loc[current_date].event_start:
                     # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded (if there is not precipitation) if it would otherwise truncate a drydown.
-                    self.data.df.loc[current_date, "event_end"] = True
+                    self.data.df.loc[current_date, 'end_date'] = True
                     break
                 else:
                     continue
@@ -212,19 +212,19 @@ class EventSeparator:
         self.data.df["dSdt(t-1)"] = self.data.df.dSdt.shift(+1)
 
     def create_event_dataframe(self):
-        start_indices = self.data.df[self.data.df["event_start"]].index
-        end_indices = self.data.df[self.data.df["event_end"]].index
+        start_indices = self.data.df[self.data.df['start_date']].index
+        end_indices = self.data.df[self.data.df['end_date']].index
 
         # Create a new DataFrame with each row containing a list of soil moisture values between each pair of event_start and event_end
         event_data = [
             {
-                "event_start": start_index,
-                "event_end": end_index,
+                'start_date': start_index,
+                'end_date': end_index,
                 "min_sm": self.data.min_sm,
                 "max_sm": self.data.max_sm,
-                "soil_moisture_daily": list(
+                'soil_moisture': list(
                     self.data.df.loc[
-                        start_index:end_index, "soil_moisture_daily"
+                        start_index:end_index, 'soil_moisture'
                     ].values
                 ),
                 "soil_moisture_daily_before_masking": list(
@@ -247,15 +247,24 @@ class EventSeparator:
 
     def filter_events(self, min_consecutive_days=5):
         self.events_df = self.events_df[
-            self.events_df["soil_moisture_daily"].apply(lambda x: pd.notna(x).sum())
+            self.events_df['soil_moisture'].apply(lambda x: pd.notna(x).sum())
             >= min_consecutive_days
         ].copy()
         self.events_df.reset_index(drop=True, inplace=True)
 
-    def create_event_instances(self, events_df):
+    def create_events(self, events_df):
         """Create a list of Event instances for easier handling of data for DrydownModel class"""
         event_instances = [
-            Event(index, row.to_dict()) for index, row in events_df.iterrows()
+            Event(
+                index, 
+                row.to_dict(),
+                # **row.to_dict(),
+                # theta_w = self.min_sm,
+                # theta_star = self.max_sm,
+                # z = self.z,
+
+
+            ) for index, row in events_df.iterrows()
         ]
         return event_instances
 
@@ -265,20 +274,20 @@ class EventSeparator:
         self.data.df.soil_moisture_daily_before_masking.plot(ax=ax11, alpha=0.5)
         ax11.scatter(
             self.data.df.soil_moisture_daily_before_masking[
-                self.data.df["event_start"]
+                self.data.df['start_date']
             ].index,
             self.data.df.soil_moisture_daily_before_masking[
-                self.data.df["event_start"]
+                self.data.df['start_date']
             ].values,
             color="orange",
             alpha=0.5,
         )
         ax11.scatter(
             self.data.df.soil_moisture_daily_before_masking[
-                self.data.df["event_end"]
+                self.data.df['end_date']
             ].index,
             self.data.df.soil_moisture_daily_before_masking[
-                self.data.df["event_end"]
+                self.data.df['end_date']
             ].values,
             color="orange",
             marker="x",

@@ -12,9 +12,10 @@ import logging
 
 import fluxtower
 
-from .data import Data
+from .smapdata import SMAPData
 from .towerdata import SoilSensorData
-from .towerevent import TowerEvent
+# from .towerevent import SensorEvent
+from .event import Event
 from .soil import Soil, soils
 
 from .mylogger import getLogger
@@ -39,16 +40,15 @@ class ISMNSoilData(SoilSensorData):
         # info about sensor
         self.info = sensor.meta
 
-        # soil info
-        self.soil_texture = self.info.get('soil_texture')
-        # self.n = self.soil_info.get('porosity')
-
         # z (depth of sensor) [m]
-        # self.z = float(self.info['HEIGHT']) * -1.
         self.z = float(self.info.get('depth_to'))
 
         # data
         self.df = self.get_sensor_data()
+
+        # soil info
+        self.soil_texture = self.info.get('soil_texture')
+        # self.n = self.soil_info.get('porosity')
 
         # theta_fc
         if self.soil_texture.lower() in soils.keys():
@@ -277,7 +277,7 @@ class ISMNSoilData(SoilSensorData):
 
     def create_events(self, events_df):
         events = [
-            TowerEvent(
+            Event(
                 **row.to_dict(),
                 theta_w = self.min_sm,
                 # theta_star = self.max_sm,
