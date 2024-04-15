@@ -22,6 +22,17 @@ from .mylogger import getLogger
 log = getLogger(__name__)
 
 
+# col_map = {
+#     'P_F': 'precip',
+#     'ET_F_MDS': 'ET',
+# }
+col_dict = {
+    'precip' : 'P_F',
+    'PET' : 'ET_F_MDS',
+}
+
+col_map = dict((v,k) for k,v in col_dict.items())
+
 # class ThreadNameHandler(logging.StreamHandler):
 #     def emit(self, record):
 #         try:
@@ -56,16 +67,16 @@ class SensorData(Data):
         self.soil_texture = self.info.get('soil_texture')
 
         # soil, theta_fc, porosity (n)
-        if self.soil_texture.lower() in soils.keys():
-            self._soil = Soil(texture=self.soil_texture)
-            self.theta_fc = self._soil.theta_fc
-            self.n = self._soil.n
-        else:
-            # Eventually, need to go get soil texture...
-            log.info(
-                f"Texture '{self.soil_texture}' not found in soil database. "
-            )
-            self._soil = None
+        # if self.soil_texture.lower() in soils.keys():
+        #     self._soil = Soil(texture=self.soil_texture)
+        #     # self.theta_fc = self._soil.theta_fc
+        #     # self.n = self._soil.n
+        # else:
+        #     # Eventually, need to go get soil texture...
+        #     log.info(
+        #         f"Texture '{self.soil_texture}' not found in soil database. "
+        #     )
+        #     self._soil = None
 
         # data
         # self.df = self.get_data()
@@ -93,8 +104,7 @@ class SensorData(Data):
         # current_thread = threading.current_thread()
         # current_thread.name = ( f"{self.id[0]}, {self.id[1]}" )
         # self.thread_name = current_thread.name
-
-
+    
     def _get_sensor_meta(self, sensor_id):
         # raise NotImplementedError
         return None
@@ -107,8 +117,8 @@ class SensorData(Data):
         # self.df = pd.concat([self.df, cols], axis=1)
         raise NotImplementedError
 
-    def calc_diff(self):
-        self.df['SWC_diff'] = self.df['SWC'].diff() #/ df['TIMESTAMP'].diff().dt.days
+    # def calc_diff(self):
+    #     self.df['SWC_diff'] = self.df['SWC'].diff() #/ df['TIMESTAMP'].diff().dt.days
 
 
 #-------------------------------------------------------------------------------
@@ -145,7 +155,7 @@ class SensorData(Data):
     #     return params
 
 
-    def separate_events(self, cols=['P_F', 'ET_F_MDS']):
+    def separate_events(self): #, cols=['P_F', 'ET_F_MDS']):
 
         # self.mask_values(self.df, 'SWC', self.max_sm)
         self.mask_values(self.df, 'SWC', self.theta_fc)
@@ -162,6 +172,7 @@ class SensorData(Data):
         # events[['min_sm', 'max_sm']] = self.df.groupby('Event')['SWC'].agg(['min', 'max'])
         # events['range_sm'] = events.max_sm - events.min_sm
 
+        self.filter_events()
         # self.filter_events(self.min_duration)
         self.events = self.create_events(self.events_df)
 
@@ -231,40 +242,40 @@ class SensorData(Data):
 
     #     return events
 
-    def get_event_data(self, start, end, cols=['P_F', 'ET_F_MDS']):
-        new_cols = [col for col in cols if col not in self.df.columns]
-        if new_cols:
-            self.add_data_cols(new_cols)
+    # def get_event_data(self, start, end, cols=['P_F', 'ET_F_MDS']):
+    #     new_cols = [col for col in cols if col not in self.df.columns]
+    #     if new_cols:
+    #         self.add_data_cols(new_cols)
         
-        return self.df.loc[start:end]
+    #     return self.df.loc[start:end]
 
-    def get_precip(self, p_col='P_F',):
-        if p_col not in self.df.columns:
-            self.add_data_cols([p_col])
-        return self.df[p_col]
+    # def get_precip(self, p_col='P_F',):
+    #     if p_col not in self.df.columns:
+    #         self.add_data_cols([p_col])
+    #     return self.df[p_col]
     
-    def get_et(self, et_col='ET_F_MDS',):
-        if et_col not in self.df.columns:
-            self.add_data_cols([et_col])
-        return self.df[et_col]
+    # def get_et(self, et_col='ET_F_MDS',):
+    #     if et_col not in self.df.columns:
+    #         self.add_data_cols([et_col])
+    #     return self.df[et_col]
 
-    def filter_events(self):
-        # raise NotImplementedError
-        pass
+    # def filter_events(self):
+    #     # raise NotImplementedError
+    #     pass
 
-    def create_events(self, events_df):
-        events = [
-            Event(
-                **row.to_dict(),
-                theta_w = self.min_sm,
-                # theta_star = self.max_sm,
-                theta_star = self.theta_fc,
-                z = self.z, 
-                event_data = self.get_event_data(row.start_date, row.end_date)
-            )
-            for i, row in events_df[['start_date','end_date','soil_moisture']].iterrows()
-        ]
-        return events
+    # def create_events(self, events_df):
+    #     events = [
+    #         Event(
+    #             **row.to_dict(),
+    #             theta_w = self.min_sm,
+    #             # theta_star = self.max_sm,
+    #             theta_star = self.theta_fc,
+    #             z = self.z, 
+    #             event_data = self.get_event_data(row.start_date, row.end_date)
+    #         )
+    #         for i, row in events_df[['start_date','end_date','soil_moisture']].iterrows()
+    #     ]
+    #     return events
 
     def plot_event(self):
         raise NotImplementedError
@@ -290,19 +301,17 @@ class TowerSensorData(SensorData):
         # soil_info
         # self.soil_info = self._tower.soil_info
         # self.soil_texture = self.soil_info.get('soil_texture')
-        # self.n = self.soil_info.get('porosity')
-        self.soil_texture = self._tower.soil_info.get('soil_texture')
+        self.n = self.info.get('porosity', self._soil.n)
+        # self.soil_texture = self._tower.soil_info.get('soil_texture')
 
         # data
         # self.df = self.get_data()
 
     def _get_sensor_meta(self, sensor_id):
-        return self._tower.grp_info.get(sensor_id).copy()
-
-
-    def add_data_cols(self, cols):
-        # self.df = pd.concat([self.df, cols], axis=1)
-        self.df = self.df.join(self._tower.data.set_index('TIMESTAMP')[cols])
+        meta = self._tower.grp_info.get(sensor_id).copy()
+        meta.update(self._tower.soil_info)
+        return meta
+        # return self._tower.grp_info.get(sensor_id).copy()
 
     def get_data(self, sensor_id):
         # Copy soil moisture data
@@ -329,6 +338,29 @@ class TowerSensorData(SensorData):
         self.info.update({'unit': 'm3 m-3'})
 
         return df
+
+    def get_precip(self, p_col='precip',):
+        if p_col not in self.df.columns:
+            self.add_data_cols([p_col])
+        return self.df[p_col]
+    
+    def get_et(self, et_col='PET',):
+        if et_col not in self.df.columns:
+            self.add_data_cols([et_col])
+        return self.df[et_col]
+
+    def add_data_cols(self, cols):
+        col_names = [col_dict.get(col) for col in cols]
+        # self.df = pd.concat([self.df, cols], axis=1)
+        self.df = self.df.join(self._tower.data.set_index('TIMESTAMP')[col_names])
+        self.df.rename(columns=col_map, inplace=True)
+
+    # def get_event_data(self, start, end, cols=['precip', 'PET']):
+    #     new_cols = [col for col in cols if col not in self.df.columns]
+    #     if new_cols:
+    #         self.add_data_cols(new_cols)
+        
+    #     return self.df.loc[start:end]
 
     def _get_end_date(self, grp, col):
         try:
@@ -364,20 +396,20 @@ class ISMNSensorData(SensorData):
         self.df = self.get_data(sensor_name)
 
         # theta_fc
-        if self.soil_texture.lower() in soils.keys():
-            self.theta_fc = Soil(texture=self.soil_texture).theta_fc
-        else:
-            log.info(
-                f"Texture '{self.soil_texture}' not found in soil database. Setting theta_fc to 0.3."
-            )
+        # if self.soil_texture.lower() in soils.keys():
+        #     self.theta_fc = Soil(texture=self.soil_texture).theta_fc
+        # else:
+        #     log.info(
+        #         f"Texture '{self.soil_texture}' not found in soil database. Setting theta_fc to 0.3."
+        #     )
 
         # min, max, range
-        self.min_sm = self.df.SWC.min()
-        self.max_sm = self.df.SWC.quantile(
-            # self.cfg['DATA'].getfloat('max_sm_frac', 1.0)
-            self.cfg.getfloat('max_sm_frac', 1.0)
-        )
-        self.range_sm = self.max_sm - self.min_sm
+        # self.min_sm = self.df.SWC.min()
+        # self.max_sm = self.df.SWC.quantile(
+        #     # self.cfg['DATA'].getfloat('max_sm_frac', 1.0)
+        #     self.cfg.getfloat('max_sm_frac', 1.0)
+        # )
+        # self.range_sm = self.max_sm - self.min_sm
 
         # self.max_sm = self.theta_fc
 
@@ -426,15 +458,16 @@ class ISMNSensorData(SensorData):
 
 
     def add_data_cols(self, cols):
+        cols = [col for col in cols if col in self._station.daily.columns]
         # self.df = pd.concat([self.df, cols], axis=1)
         self.df = self.df.join(self._station.daily[cols])
 
 
-    def get_event_data(self, start, end, cols=['P_F', 'ET_F_MDS']):
-        new_cols = [
-            col for col in cols if col not in self.df.columns and col in self._station.daily.columns
-        ]
-        if new_cols:
-            self.add_data_cols(new_cols)
+    # def get_event_data(self, start, end, cols=['precip', 'PET']):
+    #     new_cols = [
+    #         col for col in cols if col not in self.df.columns #and col in self._station.daily.columns
+    #     ]
+    #     if new_cols:
+    #         self.add_data_cols(new_cols)
         
-        return self.df.loc[start:end]
+    #     return self.df.loc[start:end]

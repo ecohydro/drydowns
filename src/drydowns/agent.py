@@ -1,5 +1,6 @@
 from .smapdata import SMAPData
-from .model import DrydownModel
+# from .model import DrydownModel
+from .handler import DrydownModelHandler
 from .separator import EventSeparator
 from .SMAPgrid import SMAPgrid
 import warnings
@@ -90,16 +91,19 @@ class Agent:
 
             # _______________________________________________________________________________________________
             # Execute the main analysis --- fit drydown models
-            drydown_model = DrydownModel(self.cfg, data, data.events)
-            drydown_model.fit_models(output_dir=self._output_dir)
+            # drydown_model = DrydownModel(self.cfg, data, data.events)
+            # drydown_model.fit_models(output_dir=self._output_dir)
+            # results_df = drydown_model.return_result_df()
 
-            results_df = drydown_model.return_result_df()
+            mod_handler = DrydownModelHandler(self.cfg, data, data.events)
+            mod_handler.fit_events()
+            results = mod_handler.get_results()
 
             log.info(
-                f"Drydown model analysis completed at {did}: {len(results_df)}/{len(data.events)} events fitted"
+                f"Drydown model analysis completed at {did}: {len(results)}/{len(data.events)} events fitted"
             )
 
-            return results_df
+            return results
 
         except Exception as e:
             print(f"Error in thread: {did}")

@@ -49,16 +49,29 @@ class Event:
         self.theta = self.soil_moisture[~np.isnan(self.soil_moisture)]
         self.theta_norm = norm_sm[~np.isnan(self.soil_moisture)]
 
+    def describe(self):
+        return {
+            'z_m' : self.z,
+            'event_start': self.start_date,
+            'event_end': self.end_date,
+            'duration': (self.end_date - self.start_date).days,
+            'time': self.t,
+            'theta': self.theta,
+            # 'event_min': self.event_min,
+            # 'event_max': self.event_max,
+            # 'event_range': self.event_range,
+            # 'pet': self.pet,
+        }
 
     def normalize(self):
         norm_sm = (self.soil_moisture - self.theta_w) / (self.theta_star - self.theta_w)
         return norm_sm
 
-    def calc_precip(self, p_col='P_F'):
+    def calc_precip(self, p_col='precip'):
         precip = self.event_data[p_col].sum()
         return precip
     
-    def calc_pet(self, et_col='ET_F_MDS'):
+    def calc_pet(self, et_col='PET'):
         # TODO: Check for ET col + set default if DNE
         if self.event_data.empty or et_col not in self.event_data.columns:
             # pet = np.nan
@@ -70,13 +83,42 @@ class Event:
         # ensures highest AET value.
         return pet
     
-    def get_et(self, et_col='ET_F_MDS'):
+    def get_et(self, et_col='PET'):
         et = self.event_data[et_col].to_numpy()
         return et
 
+    @property
+    def exponential(self):
+        return self._exponential
+    
+    @exponential.setter
+    def exponential(self, value):
+        self._exponential = value
+
+    @property
+    def q(self):
+        return self._q
+    
+    @q.setter
+    def q(self, value):
+        self._q = value
+    
+    @property
+    def sigmoid(self):
+        return self._sigmoid
+    
+    @sigmoid.setter
+    def sigmoid(self, value):
+        self._sigmoid = value
+
+    # def add_results(self, model):
+    def add_results(self, mod_type, results):
+        setattr(self, mod_type, results)
+    
 
     def add_attributes(
-        self, model_type="", popt=[], r_squared=np.nan, y_opt=[], force_PET=False, fit_theta_star=False
+        self, model_type="", popt=[], r_squared=np.nan, y_opt=[], 
+        force_PET=False, fit_theta_star=False
     ):
         if model_type == "exponential":
             self.exponential = {

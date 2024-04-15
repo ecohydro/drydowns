@@ -15,6 +15,7 @@ from .separator import EventSeparator
 # from .towerseparator import TowerEventSeparator
 
 from .model import DrydownModel
+from .handler import DrydownModelHandler
 
 
 from . import soil

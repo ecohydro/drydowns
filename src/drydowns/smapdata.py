@@ -19,16 +19,33 @@ from .mylogger import getLogger
 log = getLogger(__name__)
 
 
+anc_dict = {
+    'precip' : 'SPL4SMGP',
+    'PET' : 'PET',
+}
+
+
+col_map = {
+    'precipitation_total_surface_flux': 'precip',
+    'pet': 'PET',
+    'Soil_Moisture_Retrieval_Data_AM_soil_moisture': 'SWC_AM',
+    'Soil_Moisture_Retrieval_Data_PM_soil_moisture_pm': 'SWC_PM',
+    'Soil_Moisture_Retrieval_Data_AM_retrieval_qual_flag': 'SWC_AM_QC',
+    'Soil_Moisture_Retrieval_Data_PM_retrieval_qual_flag_pm': 'SWC_PM_QC',
+    'Soil_Moisture_Retrieval_Data_AM_surface_flag': 'SWC_AM_surf_QC',
+    'Soil_Moisture_Retrieval_Data_PM_surface_flag_pm': 'SWC_PM_surf_QC',
+}
+
 def get_filename(varname, EASE_row_index, EASE_column_index):
     """Get the filename of the datarod"""
     filename = f"{varname}_{EASE_row_index:03d}_{EASE_column_index:03d}.csv"
     return filename
 
 
-def set_time_index(df, index_name="time"):
-    """Set the datetime index to the pandas dataframe"""
-    df[index_name] = pd.to_datetime(df[index_name])
-    return df.set_index("time")
+# def set_time_index(df, index_name="time"):
+#     """Set the datetime index to the pandas dataframe"""
+#     df[index_name] = pd.to_datetime(df[index_name])
+#     return df.set_index("time")
 
 
 class SMAPData(Data):
@@ -60,6 +77,10 @@ class SMAPData(Data):
         self._start_date = datetime.strptime(self.cfg.get('start_date'), date_format)
         self._end_date = datetime.strptime(self.cfg.get('end_date'), date_format)
 
+        # TODO: Update to get soil texture + field capacity
+        # self.soil_texture = None
+        # self.theta_fc = self.max_sm
+        # self.n = np.nan
         # _______________________________________________________________________________
         # Datasets
         # _df = self.get_concat_datasets()
@@ -125,6 +146,9 @@ class SMAPData(Data):
             ]
         ].mean(axis=1, skipna=True)
 
+        # Rename columns
+        df.rename(columns=col_map, inplace=True)
+
         # # Get max and min values
         # self.min_sm = df.SWC.min(skipna=True)
         # # Instead of actual max values, take the 95% percentile as max_sm # df.SWC.max(skipna=True)
@@ -162,30 +186,39 @@ class SMAPData(Data):
 
         return df[start_date : end_date]
 
-    def get_pet(self, varname='PET'):
+    def get_pet(self, col='PET'):
         # df = self.read_datarod(varname=varname)
         # # Drop unnecessary columns
         # df = df.drop(columns=['x', 'y'])
         # # Resample to regular time intervals
         # return df.resample('D').asfreq()
-        if varname not in self.df.columns:
-            self.add_data_cols('PET')
-        return self.df[varname]
+        if col not in self.df.columns:
+            self._add_data_col(
+                'PET', col_map={'pet': 'PET'}
+            )
+        return self.df[col]
     
-    def get_precip(self, varname='SPL4SMGP'):
+    # def get_precip(self, varname='SPL4SMGP'):
+    def get_precip(self, col='precip'):
         # df = self.read_datarod(varname=varname)
         # # Drop unnecessary columns
         # df = df.drop(columns=['x', 'y'])
-        if 'precip' not in self.df.columns:
-            self.add_data_cols(
-                var='SPL4SMGP', col_map={'precipitation_total_surface_flux': 'precip'}
+        if col not in self.df.columns:
+            self._add_data_col(
+                col=col, col_map={'precipitation_total_surface_flux': 'precip'}
             )
             # Convert precipitation from kg/m2/s to mm/day -> 1 kg/m2/s = 86400 mm/day
             self.df.precip = self.df.precip * 86400
-        return self.df['precip']
+        return self.df[col]
 
 
-    def add_data_cols(self, var, col_map=None):
+    def add_data_cols(self, cols, col_map=col_map):
+        for col in cols:
+            self._add_data_col(col)
+
+    def _add_data_col(self, col, col_map=col_map):
+        if col in anc_dict.keys():
+            var = anc_dict[col]
         # Read data
         df = self.read_datarod(varname=var)
         # Drop unnecessary columns
@@ -198,8 +231,6 @@ class SMAPData(Data):
         # Merge the data
         self.df = self.df.join(df, how='outer')
         # self.df = self.df.merge(df, how='outer', left_index=True, right_index=True)
-
-
 
 
 #-------------------------------------------------------------------------------
@@ -289,7 +320,8 @@ class SMAPData(Data):
     def calc_dsdt(self, df, col='SWC_unmasked'):
         """Calculate d(Soil Moisture)/dt"""
 
-        # Allow detecting soil moisture increment even if there is no SM data in between before/after rainfall event
+        # Allow detecting soil moisture increment even if there is no SM data in 
+        # between before/after rainfall event
         sm = df[col].ffill()
 
         # Calculate ds
@@ -297,7 +329,7 @@ class SMAPData(Data):
             sm.notnull().shift(periods=+1)
         ))
 
-        # Drop the ds where  (precipitation is present) && (soil moisture record does not exist)
+        # Drop the ds where (precipitation is present) & (soil moisture record does not exist)
         df["ds"] = df["ds"].where((df["ds"] > -1) & (df["ds"] < 1))
 
         # Calculate dt
@@ -329,8 +361,8 @@ class SMAPData(Data):
 
     def find_starts(self, diff_col='ds_dt', col='SWC_unmasked', threshold=None):
         start_dates = self._find_starts(diff_col=diff_col, threshold=threshold)
-        adjusted = self.look_back(start_dates, col=col)
-        adjusted = self.look_ahead(adjusted, col=col)
+        adjusted = self._look_back(start_dates, col=col)
+        adjusted = self._look_ahead(adjusted, col=col)
 
         return adjusted
 
@@ -346,16 +378,17 @@ class SMAPData(Data):
         return start_dates
     
 
-    def look_back(self, start_dates, col='SWC_unmasked'):
+    def _look_back(self, start_dates, col='SWC_unmasked'):
         adjusted = []
         # Loop for event start dates
         for i, start_date in enumerate(start_dates):
-            for j in range(0, 6):  # Look back up to 6 timesteps to seek for sm value which is not nan
+            # Look back up to 6 timesteps to seek for sm value which is not nan
+            for j in range(0, 6):  
                 current_date = start_date - pd.Timedelta(days=j)
 
                 # If rainfall exceeds threshold, stop there
                 if self.df.loc[current_date].precip > self._params['precip_thresh']:
-                    # If SM value IS NOT nap.nan, update the event start date value to this timestep
+                    # If SM value IS NOT nap.nan, update the event start date to this timestep
                     if not np.isnan(self.df.loc[current_date, col]):
                         update_date = current_date
                     # If SM value IS nap.nan, don't update the event start date value
@@ -376,14 +409,15 @@ class SMAPData(Data):
             adjusted.append(update_date)
         return adjusted
     
-    def look_ahead(self, start_dates, col='SWC_unmasked'):
+    def _look_ahead(self, start_dates, col='SWC_unmasked'):
 
         nan_dates = self.df.loc[start_dates].index[self.df.loc[start_dates, col].isna()]
 
         adjusted = start_dates.copy()
         for i, start_date in enumerate(nan_dates):
             update_date = start_date
-            # Look ahead up to 6 timesteps to seek for sm value which is not nan, or start of the precip event
+            # Look ahead up to 6 timesteps to seek for sm value which is not nan, 
+            # or start of the precip event
             for j in range(0, 6):  
                 current_date = start_date + pd.Timedelta(days=j)
                 # If Non-nan SM value is detected, update start date value to this timstep
@@ -442,73 +476,40 @@ class SMAPData(Data):
         self.events_df.reset_index(drop=True, inplace=True)
 
 
-    def create_event_dataframe(self):
-        start_indices = self.df[self.df['start_date']].index
-        end_indices = self.df[self.df['end_date']].index
-
-        # Create a new DataFrame with each row containing a list of soil moisture values between each pair of event_start and event_end
-        event_data = [
-            {
-                'start_date': start_index,
-                'end_date': end_index,
-                "min_sm": self.min_sm,
-                "max_sm": self.max_sm,
-                'soil_moisture': list(
-                    self.df.loc[
-                        start_index:end_index, 'SWC' # soil_moisture_daily
-                    ].values
-                ),
-                "SWC": list(
-                    self.df.loc[
-                        start_index:end_index, "SWC"
-                    ].values
-                ),
-                "normalized_sm": list(
-                    self.df.loc[start_index:end_index, "normalized_sm"].values
-                ),
-                "precip": list(
-                    self.df.loc[start_index:end_index, "precip"].values
-                ),
-                "PET": list(self.df.loc[start_index:end_index, "pet"].values),
-                "delta_theta": self.df.loc[start_index, "ds_dt(t-1)"],
-            }
-            for start_index, end_index in zip(start_indices, end_indices)
-        ]
-        return pd.DataFrame(event_data)
-
-    def create_events(self, events_df):
-        events = [
-            Event(
-                **row.to_dict(),
-                theta_w = self.min_sm,
-                theta_star = self.max_sm,
-                z = self.z,
-                event_data = self.get_event_data(row.start_date, row.end_date)
-            ) 
-            for i, row in events_df[['start_date','end_date','soil_moisture']].iterrows()
-        ]
-        return events
-
-    def get_event_data(self, start, end, cols=[]):
-        new_cols = [col for col in cols if col not in self.df.columns]
-        if new_cols:
-            self.add_data_cols(new_cols)
-        return self.df.loc[start:end]
-
     # def create_events(self, events_df):
-    #     """Create a list of Event instances for easier handling of data for DrydownModel class"""
-    #     event_instances = [
+    #     events = [
     #         Event(
-    #             index, 
-    #             row.to_dict(),
-    #             # **row.to_dict(),
-    #             # theta_w = self.min_sm,
-    #             # theta_star = self.max_sm,
-    #             # z = self.z,
-
-    #         ) for index, row in events_df.iterrows()
+    #             **row.to_dict(),
+    #             theta_w = self.min_sm,
+    #             theta_star = self.max_sm, # TODO: Get this from config, mask if > fc
+    #             z = self.z,
+    #             event_data = self.get_event_data(row.start_date, row.end_date)
+    #         ) 
+    #         for i, row in events_df[['start_date','end_date','soil_moisture']].iterrows()
     #     ]
-    #     return event_instances
+    #     return events
+
+    # def get_event_data(self, start, end, cols=['precip','PET']):
+    #     new_cols = [col for col in cols if col not in self.df.columns]
+    #     if new_cols:
+    #         self.add_data_cols(new_cols)
+    #     return self.df.loc[start:end]
+
+
+    # def _get_theta_star(self):
+    #     if self.cfg.get('theta_star').lower() in ['theta_fc', 'fc', 'field capacity']:
+    #         theta_star = self.theta_fc
+    #     elif self.cfg.get('theta_star').lower() in ['max_sm', 'maximum', 'max']:
+    #         theta_star = self.max_sm
+    #     else:
+    #         log.info(
+    #             f"Unknown theta_star value: {self.cfg.get('theta_star')}. 
+    #             Setting to 95th percentile value"
+    #         )
+    #         theta_star = self.max_sm
+    #     return theta_star
+
+
 
     def plot_events(self):
         fig, (ax11, ax12) = plt.subplots(2, 1, figsize=(20, 5))

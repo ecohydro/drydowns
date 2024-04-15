@@ -8,8 +8,9 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime
 
-
+from .event import Event
 from .mylogger import getLogger
+from .soil import Soil, soils
 
 # Create a logger
 log = getLogger(__name__)
@@ -60,10 +61,82 @@ class Data:
         # custom_handler = ThreadNameHandler()
         # log = modifyLogger(name=__name__, custom_handler=custom_handler)
 
+    @property
+    def _soil(self):
+        if not hasattr(self, '__soil'):
+            self.__soil = self._init_soil()
+        return self.__soil
+    
+    def _init_soil(self):
+        if self.soil_texture.lower() in soils.keys():
+            return Soil(texture=self.soil_texture)
+        else:
+            log.info(
+                f"Texture '{self.soil_texture}' not found in soil database. "
+            )
+            return None
+
+    # def _set_soil_properties(self):
+    #     if self.soil_texture.lower() in soils.keys():
+    #         self._soil = Soil(texture=self.soil_texture)
+    #         self.theta_fc = self._soil.theta_fc
+    #         self.n = self._soil.n
+    #     else:
+    #         # Eventually, need to go get soil texture...
+    #         log.info(
+    #             f"Texture '{self.soil_texture}' not found in soil database. "
+    #         )
+    #         self._soil = None
+    #         self.theta_fc = self.max_sm
+    #         self.n = np.nan
+    
+    @property
+    def theta_fc(self):
+        if not hasattr(self, '_theta_fc'):
+            try:
+                self._theta_fc = self._soil.theta_fc
+            except:
+                self._theta_fc = self.max_sm
+        return self._theta_fc
+    
+    @theta_fc.setter
+    def theta_fc(self, value):
+        # if not hasattr(self, '_theta_fc'):
+        #     try:
+        #         self._theta_fc = self._soil.theta_fc
+        #     except:
+        #         self._theta_fc = self.max_sm
+        # else:
+        self._theta_fc = value
+
+    @property
+    def n(self):
+        if not hasattr(self, '_n'):
+            try:
+                self._n = self._soil.n
+            except:
+                self._n = np.nan
+        return self._n
+
+    @n.setter
+    def n(self, value):
+        # if not hasattr(self, '_n'):
+        #     try:
+        #         self._n = self._soil.n
+        #     except:
+        #         self._n = np.nan
+        # else:
+        self._n = value
+
+
     def get_data(self, **kwargs):
         return None
         # raise NotImplementedError
     
+    def calc_diff(self):
+        self.df['SWC_diff'] = self.df['SWC'].diff() #/ df['TIMESTAMP'].diff().dt.days
+
+
     def normalize(self):
         self.df['norm_sm'] = (self.df['SWC'] - self.min_sm) / self.range_sm
 
@@ -103,6 +176,19 @@ class Data:
         }
         return params
     
+    def separate_events(self):
+        raise NotImplementedError
+
+    def find_events(self):
+        raise NotImplementedError
+
+    def find_starts(self):
+        raise NotImplementedError
+
+    def find_ends(self):
+        raise NotImplementedError
+
+
     def label_events(self, event_dates):
         self.df['Event'] = np.nan
         for i, row in event_dates.iterrows():
@@ -119,3 +205,42 @@ class Data:
         events.rename(columns={col: 'soil_moisture'}, inplace=True)
 
         return events
+    
+    def filter_events(self):
+        # raise NotImplementedError
+        pass
+
+    def create_events(self, events_df):
+        events = [
+            Event(
+                **row.to_dict(),
+                theta_w = self.min_sm,
+                theta_star = self._get_theta_star(),
+                z = self.z,
+                event_data = self.get_event_data(row.start_date, row.end_date)
+            ) 
+            for i, row in events_df[['start_date','end_date','soil_moisture']].iterrows()
+        ]
+        return events
+
+    def get_event_data(self, start, end, cols=['precip', 'PET']):
+        new_cols = [col for col in cols if col not in self.df.columns]
+        if new_cols:
+            self.add_data_cols(new_cols)
+        
+        return self.df.loc[start:end]
+
+
+    def _get_theta_star(self):
+        if self.cfg.get('theta_star').lower() in ['theta_fc', 'fc', 'field capacity']:
+            theta_star = self.theta_fc
+        elif self.cfg.get('theta_star').lower() in ['max_sm', 'maximum', 'max']:
+            theta_star = self.max_sm
+        else:
+            log.info(
+                f"Unknown theta_star value: {self.cfg.get('theta_star')}."
+                "Setting to 95th percentile value."
+            )
+            theta_star = self.max_sm
+        return theta_star
+   
