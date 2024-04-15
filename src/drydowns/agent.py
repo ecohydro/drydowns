@@ -1,7 +1,7 @@
 from .smapdata import SMAPData
 # from .model import DrydownModel
 from .handler import DrydownModelHandler
-from .separator import EventSeparator
+# from .separator import EventSeparator
 from .SMAPgrid import SMAPgrid
 import warnings
 from datetime import datetime
