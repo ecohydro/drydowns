@@ -1,6 +1,8 @@
 from .smapdata import SMAPData
+
 # from .model import DrydownModel
 from .handler import DrydownModelHandler
+
 # from .separator import EventSeparator
 from .SMAPgrid import SMAPgrid
 import warnings
@@ -13,6 +15,26 @@ from .mylogger import getLogger
 
 # Create a logger
 log = getLogger(__name__)
+
+"""
+
+Name:           agent.py
+Compatibility:  Python 3.7.0
+Description:    Description of what program does
+
+URL:            https://
+
+Requires:       list of libraries required
+
+Dev ToDo:       None
+
+AUTHOR:         Ryoko Araki (main); Bryn Morgan (refactor)
+ORGANIZATION:   University of California, Santa Barbara
+Contact:        raraki@ucsb.edu
+Copyright:      (c) Ryoko Araki & Bryn Morgan 2024
+
+
+"""
 
 
 def create_output_dir(parent_dir):
@@ -31,14 +53,13 @@ class Agent:
         self.logger = logger
         # self.verbose = cfg["MODEL"]["verbose"].lower() in ["true", "yes", "1"]
         self.verbose = cfg.get("verbose").lower() in ["true", "yes", "1"]
-        
+
         self._smapgrid = SMAPgrid(cfg=self.cfg)
         self.data_ids = self._smapgrid.get_EASE_index_subset()
-        
+
         # self._output_dir = create_output_dir(parent_dir=cfg["PATHS"]["output_dir"])
         # self._output_dir = create_output_dir(parent_dir=cfg.get("output_dir"))
         self._output_dir = cfg.get("output_dir")
-
 
     def initialize(self):
         None
@@ -47,8 +68,8 @@ class Agent:
         """Run the analysis for one pixel
 
         Args:
-            did (list.shape[1,2]): Data ID; 
-            a pair of EASE index, representing [0,0] the EASE row index (y, or 
+            did (list.shape[1,2]): Data ID;
+            a pair of EASE index, representing [0,0] the EASE row index (y, or
             latitude) and [0,1] EASE column index (x, or longitude)
         """
 
@@ -67,9 +88,7 @@ class Agent:
             # If there is no soil moisture data available for the pixel, skip the analysis
             # if data.df["soil_moisture_daily"].isna().all():
             if data.df["SWC"].isna().all():
-                warnings.warn(
-                    f"No soil moisture data at the EASE pixel {did}"
-                )
+                warnings.warn(f"No soil moisture data at the EASE pixel {did}")
                 return None
 
             # _______________________________________________________________________________________________
@@ -145,20 +164,15 @@ class Agent:
             df = results
 
         # date = datetime.now().strftime("%Y-%m-%d")
-        date = datetime.now().strftime('%d%b').lower()
-        out_bn = self.cfg.get(
-            'output_fid',
-            'smap_results'
-        )
+        date = datetime.now().strftime("%d%b").lower()
+        out_bn = self.cfg.get("output_fid", "smap_results")
         fid = f"{out_bn}_{date}"
 
         self.save(df, fid=fid)
 
-
-    def save(self, df, fid='smap_results'):
+    def save(self, df, fid="smap_results"):
         """Save the results to a csv file"""
         filename = f"{fid}.csv"
         log.info(f"Saving {filename} to {self._output_dir}")
         df.to_csv(os.path.join(self._output_dir, filename), index=False)
         log.info(f"Saved {filename} to {self._output_dir}")
-

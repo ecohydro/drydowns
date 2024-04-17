@@ -12,6 +12,26 @@ from .utils import is_true
 # Create a logger
 log = getLogger(__name__)
 
+"""
+
+Name:           __main__.py
+Compatibility:  Python 3.7.0
+Description:    Description of what program does
+
+URL:            https://
+
+Requires:       list of libraries required
+
+Dev ToDo:       None
+
+AUTHOR:         Ryoko Araki (initial dev); Bryn Morgan (refactor)
+ORGANIZATION:   University of California, Santa Barbara
+Contact:        raraki@ucsb.edu
+Copyright:      (c) Ryoko Araki & Bryn Morgan 2024
+
+
+"""
+
 
 def main():
     """Main execution script ot run the drydown analysis"""
@@ -23,14 +43,14 @@ def main():
     # cfg = ConfigParser()
     # cfg.read("config.ini")
     config = Config().config
-    cfg = config[config.get('RUN','type')]
+    cfg = config[config.get("RUN", "type")]
 
     # cfg_model = cfg["MODEL"]
 
     # Initiate agent
     # if cfg['DATA']['data_type'] != 'SMAP':
     # TODO: Get object type from config
-    if cfg.name != 'SMAP':
+    if cfg.name != "SMAP":
         agent = TowerAgent(cfg=cfg)
     else:
         agent = Agent(cfg=cfg)
@@ -51,7 +71,7 @@ def main():
     #     log.info(f"q model")
     # if is_true(cfg["MODEL"]["sigmoid_model"]):
     #     log.info(f"Sigmoid model")
-    for mod_name in ['exponential_model', 'q_model', 'sigmoid_model']:
+    for mod_name in ["exponential_model", "q_model", "sigmoid_model"]:
         if cfg.getboolean(mod_name):
             log.info(f"{mod_name}")
     # [m for m in ['exponential_model', 'q_model', 'sigmoid_model'] if cfg_model.getboolean(m)]
@@ -59,7 +79,7 @@ def main():
     # Run the model
     if run_mode == "serial":
         results = agent.run(agent.data_ids[500])
-    
+
     elif run_mode == "parallel":
         # nprocess = int(cfg["MULTIPROCESSING"]["nprocess"])
         # nprocess = cfg.getint("MULTIPROCESSING", "nprocess")

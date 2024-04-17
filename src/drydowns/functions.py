@@ -1,8 +1,26 @@
-
-
 import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
+
+"""
+
+Name:           functions.py
+Compatibility:  Python 3.7.0
+Description:    Description of what program does
+
+URL:            https://
+
+Requires:       list of libraries required
+
+Dev ToDo:       None
+
+AUTHOR:         Ryoko Araki & Bryn Morgan
+ORGANIZATION:   University of California, Santa Barbara
+Contact:        raraki@ucsb.edu
+Copyright:      (c) Ryoko Araki & Bryn Morgan 2024
+
+
+"""
 
 
 def exponential_model(t, delta_theta, theta_w, tau):

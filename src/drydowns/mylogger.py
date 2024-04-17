@@ -1,3 +1,23 @@
+"""
+
+Name:           smapdata.py
+Compatibility:  Python 3.7.0
+Description:    Description of what program does
+
+URL:            https://
+
+Requires:       list of libraries required
+
+Dev ToDo:       None
+
+AUTHOR:         Ryoko Araki (initial dev); Bryn Morgan (refactor)
+ORGANIZATION:   University of California, Santa Barbara
+Contact:        raraki@ucsb.edu
+Copyright:      (c) Ryoko Araki & Bryn Morgan 2024
+
+
+"""
+
 import logging
 
 

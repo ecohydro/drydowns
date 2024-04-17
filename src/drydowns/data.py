@@ -12,6 +12,26 @@ from .event import Event
 from .mylogger import getLogger
 from .soil import Soil, soils
 
+"""
+
+Name:           data.py
+Compatibility:  Python 3.7.0
+Description:    Description of what program does
+
+URL:            https://
+
+Requires:       list of libraries required
+
+Dev ToDo:       None
+
+AUTHOR:         Ryoko Araki (initial dev); Bryn Morgan (refactor)
+ORGANIZATION:   University of California, Santa Barbara
+Contact:        raraki@ucsb.edu
+Copyright:      (c) Ryoko Araki & Bryn Morgan 2024
+
+
+"""
+
 # Create a logger
 log = getLogger(__name__)
 
@@ -46,19 +66,17 @@ class Data:
 
         # df
         self.df = self.get_data(**kwargs)
-        
+
         # min, max, range
         self.min_sm = self.df.SWC.min(skipna=True)
-        self.max_sm = self.df.SWC.quantile(
-            self.cfg.getfloat('max_sm_frac', 1.0)
-        )
+        self.max_sm = self.df.SWC.quantile(self.cfg.getfloat("max_sm_frac", 1.0))
         self.range_sm = self.max_sm - self.min_sm
 
         # EventSeparator
         self._params = self.get_params()
 
         current_thread = threading.current_thread()
-        current_thread.name = ( f"{self.id[0]}, {self.id[1]}" )
+        current_thread.name = f"{self.id[0]}, {self.id[1]}"
         self.thread_name = current_thread.name
         # # Not working at the moment ...
         # custom_handler = ThreadNameHandler()
@@ -70,17 +88,15 @@ class Data:
 
     @property
     def _soil(self):
-        if not hasattr(self, '__soil'):
+        if not hasattr(self, "__soil"):
             self.__soil = self._init_soil()
         return self.__soil
-    
+
     def _init_soil(self):
         if self.soil_texture.lower() in soils.keys():
             return Soil(texture=self.soil_texture)
         else:
-            log.info(
-                f"Texture '{self.soil_texture}' not found in soil database. "
-            )
+            log.info(f"Texture '{self.soil_texture}' not found in soil database. ")
             return None
 
     # def _set_soil_properties(self):
@@ -96,10 +112,10 @@ class Data:
     #         self._soil = None
     #         self.theta_fc = self.max_sm
     #         self.n = np.nan
-    
+
     @property
     def theta_fc(self):
-        if not hasattr(self, '_theta_fc'):
+        if not hasattr(self, "_theta_fc"):
             try:
                 self._theta_fc = self._soil.theta_fc
             except:
@@ -109,7 +125,7 @@ class Data:
                 )
                 self._theta_fc = self.max_sm
         return self._theta_fc
-    
+
     @theta_fc.setter
     def theta_fc(self, value):
         # if not hasattr(self, '_theta_fc'):
@@ -122,7 +138,7 @@ class Data:
 
     @property
     def n(self):
-        if not hasattr(self, '_n'):
+        if not hasattr(self, "_n"):
             try:
                 self._n = self._soil.n
             except:
@@ -142,22 +158,19 @@ class Data:
         # else:
         self._n = value
 
-
     def get_data(self, **kwargs):
         return None
         # raise NotImplementedError
-    
-    def calc_diff(self):
-        self.df['SWC_diff'] = self.df['SWC'].diff() #/ df['TIMESTAMP'].diff().dt.days
 
+    def calc_diff(self):
+        self.df["SWC_diff"] = self.df["SWC"].diff()  # / df['TIMESTAMP'].diff().dt.days
 
     def normalize(self):
-        self.df['norm_sm'] = (self.df['SWC'] - self.min_sm) / self.range_sm
+        self.df["norm_sm"] = (self.df["SWC"] - self.min_sm) / self.range_sm
 
-
-#-------------------------------------------------------------------------------
-# EventSeparator
-#-------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------
+    # EventSeparator
+    # -------------------------------------------------------------------------------
 
     def get_params(self):
         """
@@ -166,7 +179,7 @@ class Data:
         # _noise_thresh = (self.range_sm) * self.cfg.getfloat(
         #     "EVENT_SEPARATION", "frac_range_thresh"
         # )
-        
+
         # params = {
         #     'precip_thresh': self.cfg.getfloat("EVENT_SEPARATION", "precip_thresh"),
         #     # 'target_rmsd': self.cfg.getfloat("EVENT_SEPARATION", "target_rmsd"),
@@ -181,15 +194,16 @@ class Data:
         # }
         _noise_thresh = (self.range_sm) * self.cfg.getfloat("frac_range_thresh")
         params = {
-            'precip_thresh': self.cfg.getfloat("precip_thresh"),
-            'noise_thresh' : np.minimum(
+            "precip_thresh": self.cfg.getfloat("precip_thresh"),
+            "noise_thresh": np.minimum(
                 _noise_thresh, self.cfg.getfloat("target_rmsd") * 2
             ),
-            'target_rmsd' : self.cfg.getfloat("target_rmsd"),
-            'duration' : self.cfg.getint("min_duration"),
+            "target_rmsd": self.cfg.getfloat("target_rmsd"),
+            "duration": self.cfg.getint("min_duration"),
+            "max_nodata_days": self.cfg.getint("max_nodata_days"),
         }
         return params
-    
+
     def separate_events(self):
         raise NotImplementedError
 
@@ -202,24 +216,23 @@ class Data:
     def find_ends(self):
         raise NotImplementedError
 
-
     def label_events(self, event_dates):
-        self.df['Event'] = np.nan
+        self.df["Event"] = np.nan
         for i, row in event_dates.iterrows():
-            self.df.loc[row['start_date']:row['end_date'], 'Event'] = int(i)
+            self.df.loc[row["start_date"] : row["end_date"], "Event"] = int(i)
 
-    def extract_events(self, event_dates, col='SWC'):
+    def extract_events(self, event_dates, col="SWC"):
         # Label events
-        if 'Event' not in self.df.columns:
+        if "Event" not in self.df.columns:
             self.label_events(event_dates)
         # Get data
         events = event_dates.join(
-            self.df[self.df.Event.notnull()].groupby('Event')[col].apply(list)
+            self.df[self.df.Event.notnull()].groupby("Event")[col].apply(list)
         ).reset_index(drop=True)
-        events.rename(columns={col: 'soil_moisture'}, inplace=True)
+        events.rename(columns={col: "soil_moisture"}, inplace=True)
 
         return events
-    
+
     def filter_events(self):
         # raise NotImplementedError
         pass
@@ -228,27 +241,28 @@ class Data:
         events = [
             Event(
                 **row.to_dict(),
-                theta_w = self.min_sm,
-                theta_star = self._get_theta_star(),
-                z = self.z,
-                event_data = self.get_event_data(row.start_date, row.end_date)
-            ) 
-            for i, row in events_df[['start_date','end_date','soil_moisture']].iterrows()
+                theta_w=self.min_sm,
+                theta_star=self._get_theta_star(),
+                z=self.z,
+                event_data=self.get_event_data(row.start_date, row.end_date),
+            )
+            for i, row in events_df[
+                ["start_date", "end_date", "soil_moisture"]
+            ].iterrows()
         ]
         return events
 
-    def get_event_data(self, start, end, cols=['precip', 'PET']):
+    def get_event_data(self, start, end, cols=["precip", "PET"]):
         new_cols = [col for col in cols if col not in self.df.columns]
         if new_cols:
             self.add_data_cols(new_cols)
-        
+
         return self.df.loc[start:end]
 
-
     def _get_theta_star(self):
-        if self.cfg.get('theta_star').lower() in ['theta_fc', 'fc', 'field capacity']:
+        if self.cfg.get("theta_star").lower() in ["theta_fc", "fc", "field capacity"]:
             theta_star = self.theta_fc
-        elif self.cfg.get('theta_star').lower() in ['max_sm', 'maximum', 'max']:
+        elif self.cfg.get("theta_star").lower() in ["max_sm", "maximum", "max"]:
             theta_star = self.max_sm
         else:
             log.info(
@@ -257,4 +271,3 @@ class Data:
             )
             theta_star = self.max_sm
         return theta_star
-   

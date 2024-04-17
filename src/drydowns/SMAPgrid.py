@@ -13,6 +13,26 @@ from .mylogger import getLogger
 # Create a logger
 log = getLogger(__name__)
 
+"""
+
+Name:           SMAPgrid.py
+Compatibility:  Python 3.7.0
+Description:    Description of what program does
+
+URL:            https://
+
+Requires:       list of libraries required
+
+Dev ToDo:       None
+
+AUTHOR:         Ryoko Araki (initial dev); Bryn Morgan (refactor)
+ORGANIZATION:   University of California, Santa Barbara
+Contact:        raraki@ucsb.edu
+Copyright:      (c) Ryoko Araki & Bryn Morgan 2024
+
+
+"""
+
 
 class SMAPgrid:
     """A template of the 36km resolution EASEgrid that can be use to map SMAPL3 data for the desired spatial extent"""
@@ -55,7 +75,7 @@ class SMAPgrid:
 
     def get_coordinates(self):
         """Get the information on the coordinate-index pair"""
-        file_path = os.path.join(self.cfg.get('data_dir'), "coord_info.csv")
+        file_path = os.path.join(self.cfg.get("data_dir"), "coord_info.csv")
         coord_info = pd.read_csv(file_path)
         return coord_info
 
@@ -83,9 +103,7 @@ class SMAPgrid:
 
     def mask_by_openwater(self, _subset):
         """Mask the coordinate if they are on the openwater"""
-        file_path = os.path.join(
-            self.cfg.get('data_dir'), "coord_open_water.csv"
-        )
+        file_path = os.path.join(self.cfg.get("data_dir"), "coord_open_water.csv")
         coord_open_water = pd.read_csv(file_path)
         subset = (
             pd.merge(

@@ -4,7 +4,28 @@ import matplotlib.pyplot as plt
 import os
 
 from .mylogger import getLogger
+
 # from .event import Event
+
+"""
+
+Name:           event.py
+Compatibility:  Python 3.7.0
+Description:    Description of what program does
+
+URL:            https://
+
+Requires:       list of libraries required
+
+Dev ToDo:       None
+
+AUTHOR:         Ryoko Araki (initial dev); Bryn Morgan (refactor)
+ORGANIZATION:   University of California, Santa Barbara
+Contact:        raraki@ucsb.edu
+Copyright:      (c) Ryoko Araki & Bryn Morgan 2024
+
+
+"""
 
 # Create a logger
 log = getLogger(__name__)
@@ -12,10 +33,14 @@ log = getLogger(__name__)
 
 class Event:
     def __init__(
-        self, #event_dict
-        start_date, end_date, soil_moisture, #norm_sm, min_sm, max_sm
-        theta_w, theta_star, z,
-        event_data=None
+        self,  # event_dict
+        start_date,
+        end_date,
+        soil_moisture,  # norm_sm, min_sm, max_sm
+        theta_w,
+        theta_star,
+        z,
+        event_data=None,
     ):
         self.start_date = start_date
         self.end_date = end_date
@@ -23,9 +48,9 @@ class Event:
 
         self.event_data = event_data
 
-        self.pet = self.calc_pet() #np.nan
+        self.pet = self.calc_pet()  # np.nan
         self.z = z
-        # Model params        
+        # Model params
         self.theta_star = theta_star
         self.theta_w = theta_w
 
@@ -51,12 +76,12 @@ class Event:
 
     def describe(self):
         return {
-            'z_m' : self.z,
-            'event_start': self.start_date,
-            'event_end': self.end_date,
-            'duration': (self.end_date - self.start_date).days,
-            'time': self.t,
-            'theta': self.theta,
+            "z_m": self.z,
+            "event_start": self.start_date,
+            "event_end": self.end_date,
+            "duration": (self.end_date - self.start_date).days,
+            "time": self.t,
+            "theta": self.theta,
             # 'event_min': self.event_min,
             # 'event_max': self.event_max,
             # 'event_range': self.event_range,
@@ -67,30 +92,30 @@ class Event:
         norm_sm = (self.soil_moisture - self.theta_w) / (self.theta_star - self.theta_w)
         return norm_sm
 
-    def calc_precip(self, p_col='precip'):
+    def calc_precip(self, p_col="precip"):
         precip = self.event_data[p_col].sum()
         return precip
-    
-    def calc_pet(self, et_col='PET'):
+
+    def calc_pet(self, et_col="PET"):
         # TODO: Check for ET col + set default if DNE
         if self.event_data.empty or et_col not in self.event_data.columns:
             # pet = np.nan
             pet = 5.0
         else:
-            pet = self.event_data[et_col].max() 
-        # NOTE: Should be initial value (well, really should be calculated), 
+            pet = self.event_data[et_col].max()
+        # NOTE: Should be initial value (well, really should be calculated),
         # but using this for now bc PET > AET, so if max value isn't initial, this
         # ensures highest AET value.
         return pet
-    
-    def get_et(self, et_col='PET'):
+
+    def get_et(self, et_col="PET"):
         et = self.event_data[et_col].to_numpy()
         return et
 
     @property
     def exponential(self):
         return self._exponential
-    
+
     @exponential.setter
     def exponential(self, value):
         self._exponential = value
@@ -98,15 +123,15 @@ class Event:
     @property
     def q(self):
         return self._q
-    
+
     @q.setter
     def q(self, value):
         self._q = value
-    
+
     @property
     def sigmoid(self):
         return self._sigmoid
-    
+
     @sigmoid.setter
     def sigmoid(self, value):
         self._sigmoid = value
@@ -114,11 +139,15 @@ class Event:
     # def add_results(self, model):
     def add_results(self, mod_type, results):
         setattr(self, mod_type, results)
-    
 
     def add_attributes(
-        self, model_type="", popt=[], r_squared=np.nan, y_opt=[], 
-        force_PET=False, fit_theta_star=False
+        self,
+        model_type="",
+        popt=[],
+        r_squared=np.nan,
+        y_opt=[],
+        force_PET=False,
+        fit_theta_star=False,
     ):
         if model_type == "exponential":
             self.exponential = {
@@ -131,16 +160,22 @@ class Event:
                 # "k" : (self.theta_star - popt[1]) / popt[2],
                 # "ET_max" : (self.z * 1000) * ((self.theta_star - popt[1]) / popt[2])
             }
-            self.exponential.update({
-                    "theta_0": self.exponential['delta_theta'] + self.exponential['theta_w'],
-                    "k": (self.theta_star - self.exponential['theta_w']) / self.exponential['tau'],
-                    "ET_max": (self.z * 1000) * (self.theta_star - self.exponential['theta_w']) / self.exponential['tau'],
-            })
+            self.exponential.update(
+                {
+                    "theta_0": self.exponential["delta_theta"]
+                    + self.exponential["theta_w"],
+                    "k": (self.theta_star - self.exponential["theta_w"])
+                    / self.exponential["tau"],
+                    "ET_max": (self.z * 1000)
+                    * (self.theta_star - self.exponential["theta_w"])
+                    / self.exponential["tau"],
+                }
+            )
 
         if model_type == "q":
             if fit_theta_star:
                 self.q = {
-                    "delta_theta" : popt[0],
+                    "delta_theta": popt[0],
                     # "theta_0" : popt[0] + self.theta_w,
                     "k": popt[1],
                     "q": popt[2],
@@ -154,11 +189,11 @@ class Event:
             else:
                 if not force_PET:
                     self.q = {
-                        "delta_theta" : popt[0],
+                        "delta_theta": popt[0],
                         # "theta_0" : popt[0] + self.theta_w,
                         # Multiplying by (theta_star - theta_w) denormalizes k
-                        "k": popt[1] * (self.theta_star - self.theta_w), #popt[0],
-                        "q": popt[2], #popt[1],
+                        "k": popt[1] * (self.theta_star - self.theta_w),  # popt[0],
+                        "q": popt[2],  # popt[1],
                         # "delta_theta": popt[2],
                         # "theta_0" : popt[2] + self.theta_w,
                         "r_squared": r_squared,
@@ -173,13 +208,9 @@ class Event:
                         "r_squared": r_squared,
                         "theta_opt": y_opt.tolist(),
                     }
-            self.q.update({
-                "theta_0": self.q['delta_theta'] + self.theta_w
-            })
-            if 'k' in self.q:
-                self.q.update({
-                    "ET_max": (self.z * 1000) * self.q['k']
-                })
+            self.q.update({"theta_0": self.q["delta_theta"] + self.theta_w})
+            if "k" in self.q:
+                self.q.update({"ET_max": (self.z * 1000) * self.q["k"]})
 
         if model_type == "sigmoid":
             self.sigmoid = {

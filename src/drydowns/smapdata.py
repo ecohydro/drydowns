@@ -15,26 +15,48 @@ from .data import Data
 from .event import Event
 from .mylogger import getLogger
 
+
+"""
+
+Name:           smapdata.py
+Compatibility:  Python 3.7.0
+Description:    Description of what program does
+
+URL:            https://
+
+Requires:       list of libraries required
+
+Dev ToDo:       None
+
+AUTHOR:         Ryoko Araki (initial dev); Bryn Morgan (refactor)
+ORGANIZATION:   University of California, Santa Barbara
+Contact:        raraki@ucsb.edu
+Copyright:      (c) Ryoko Araki & Bryn Morgan 2024
+
+
+"""
+
 # Create a logger
 log = getLogger(__name__)
 
 
 anc_dict = {
-    'precip' : 'SPL4SMGP',
-    'PET' : 'PET',
+    "precip": "SPL4SMGP",
+    "PET": "PET",
 }
 
 
 col_map = {
-    'precipitation_total_surface_flux': 'precip',
-    'pet': 'PET',
-    'Soil_Moisture_Retrieval_Data_AM_soil_moisture': 'SWC_AM',
-    'Soil_Moisture_Retrieval_Data_PM_soil_moisture_pm': 'SWC_PM',
-    'Soil_Moisture_Retrieval_Data_AM_retrieval_qual_flag': 'SWC_AM_QC',
-    'Soil_Moisture_Retrieval_Data_PM_retrieval_qual_flag_pm': 'SWC_PM_QC',
-    'Soil_Moisture_Retrieval_Data_AM_surface_flag': 'SWC_AM_surf_QC',
-    'Soil_Moisture_Retrieval_Data_PM_surface_flag_pm': 'SWC_PM_surf_QC',
+    "precipitation_total_surface_flux": "precip",
+    "pet": "PET",
+    "Soil_Moisture_Retrieval_Data_AM_soil_moisture": "SWC_AM",
+    "Soil_Moisture_Retrieval_Data_PM_soil_moisture_pm": "SWC_PM",
+    "Soil_Moisture_Retrieval_Data_AM_retrieval_qual_flag": "SWC_AM_QC",
+    "Soil_Moisture_Retrieval_Data_PM_retrieval_qual_flag_pm": "SWC_PM_QC",
+    "Soil_Moisture_Retrieval_Data_AM_surface_flag": "SWC_AM_surf_QC",
+    "Soil_Moisture_Retrieval_Data_PM_surface_flag_pm": "SWC_PM_surf_QC",
 }
+
 
 def get_filename(varname, EASE_row_index, EASE_column_index):
     """Get the filename of the datarod"""
@@ -51,7 +73,7 @@ def get_filename(varname, EASE_row_index, EASE_column_index):
 class SMAPData(Data):
     """Class that handles datarods (Precipitation, SM, PET data) for an EASE pixel"""
 
-    # anc_info = 
+    # anc_info =
     # soil_info = pd.read_csv()
 
     def __init__(self, cfg, EASEindex) -> None:
@@ -80,8 +102,8 @@ class SMAPData(Data):
         date_format = "%Y-%m-%d"
         # self.start_date = datetime.strptime(cfg["EXTENT"]["start_date"], date_format)
         # self.end_date = datetime.strptime(cfg["EXTENT"]["end_date"], date_format)
-        self._start_date = datetime.strptime(self.cfg.get('start_date'), date_format)
-        self._end_date = datetime.strptime(self.cfg.get('end_date'), date_format)
+        self._start_date = datetime.strptime(self.cfg.get("start_date"), date_format)
+        self._end_date = datetime.strptime(self.cfg.get("end_date"), date_format)
 
         # TODO: Update to get soil texture + field capacity
         # self.soil_texture = None
@@ -93,8 +115,8 @@ class SMAPData(Data):
         # self.df = self.calc_dSdt(_df)
         # self.df = self.get_data()
 
-        self.soil_texture = self.info.get('soil_texture')
-    
+        self.soil_texture = self.info.get("soil_texture")
+
     # def _get_data(self):
     #     _df = self.get_concat_datasets()
     #     return self.calc_dSdt(_df)
@@ -114,9 +136,9 @@ class SMAPData(Data):
     #     df = pd.merge(_df, p, how="outer", left_index=True, right_index=True)
 
     #     return df
-    
+
     # def add_data_cols(self, cols):
-        # self.df = pd.merge(self.df, cols, how="outer", left_index=True, right_index=True)
+    # self.df = pd.merge(self.df, cols, how="outer", left_index=True, right_index=True)
 
     def get_data(self, varname="SPL3SMP"):
         """Get a datarod of soil moisture data for a pixel"""
@@ -147,7 +169,7 @@ class SMAPData(Data):
         df = df.resample("D").asfreq()
 
         # Merge the AM and PM soil moisture data into one daily timeseries of data
-        df['SWC'] = df[
+        df["SWC"] = df[
             [
                 "Soil_Moisture_Retrieval_Data_AM_soil_moisture",
                 "Soil_Moisture_Retrieval_Data_PM_soil_moisture_pm",
@@ -174,66 +196,58 @@ class SMAPData(Data):
 
         return df
 
-    def read_datarod(self, varname, dt_col='time'):
+    def read_datarod(self, varname, dt_col="time"):
         """Read the datarod for a variable of interest"""
 
         fn = get_filename(
             varname,
-            EASE_row_index=self.id[0], #self.EASE_row_index,
-            EASE_column_index=self.id[1], #self.EASE_column_index,
+            EASE_row_index=self.id[0],  # self.EASE_row_index,
+            EASE_column_index=self.id[1],  # self.EASE_column_index,
         )
-        df = pd.read_csv(
-            os.path.join(self.cfg.get('data_dir'), varname, fn)
-        )
+        df = pd.read_csv(os.path.join(self.cfg.get("data_dir"), varname, fn))
         # Set datetime index + crop
         df[dt_col] = pd.to_datetime(df[dt_col])
         df.set_index(dt_col, inplace=True, drop=True)
 
-        start_date = datetime.strptime(self.cfg.get('start_date'), "%Y-%m-%d")
-        end_date = datetime.strptime(self.cfg.get('end_date'), "%Y-%m-%d")
+        start_date = datetime.strptime(self.cfg.get("start_date"), "%Y-%m-%d")
+        end_date = datetime.strptime(self.cfg.get("end_date"), "%Y-%m-%d")
 
-        return df[start_date : end_date]
+        return df[start_date:end_date]
 
-    def get_pet(self, col='PET'):
+    def get_pet(self, col="PET"):
         # df = self.read_datarod(varname=varname)
         # # Drop unnecessary columns
         # df = df.drop(columns=['x', 'y'])
         # # Resample to regular time intervals
         # return df.resample('D').asfreq()
         if col not in self.df.columns:
-            self._add_data_col(
-                'PET', col_map={'pet': 'PET'}
-            )
+            self._add_data_col("PET", col_map={"pet": "PET"})
         return self.df[col]
-    
+
     # def get_precip(self, varname='SPL4SMGP'):
-    def get_precip(self, col='precip'):
+    def get_precip(self, col="precip"):
         # df = self.read_datarod(varname=varname)
         # # Drop unnecessary columns
         # df = df.drop(columns=['x', 'y'])
         if col not in self.df.columns:
             self._add_data_col(
-                col=col, col_map={'precipitation_total_surface_flux': 'precip'}
+                col=col, col_map={"precipitation_total_surface_flux": "precip"}
             )
             # Convert precipitation from kg/m2/s to mm/day -> 1 kg/m2/s = 86400 mm/day
             self.df.precip = self.df.precip * 86400
         return self.df[col]
 
-    def _get_meta(self, file='anc_info.csv'):
-        # TODO: Somehow get this out of the class instance. Needs config, but 
+    def _get_meta(self, file="anc_info.csv"):
+        # TODO: Somehow get this out of the class instance. Needs config, but
         # really shouldn't be read in every time.
-        anc_info = pd.read_csv(os.path.join(self.cfg.get('data_dir'), file))
+        anc_info = pd.read_csv(os.path.join(self.cfg.get("data_dir"), file))
 
         info = anc_info[
             (anc_info.EASE_row_index == self.id[0])
             & (anc_info.EASE_column_index == self.id[1])
-        ].to_dict('records')[0]
+        ].to_dict("records")[0]
 
         return info
-
-
-
-
 
     def add_data_cols(self, cols, col_map=col_map):
         for col in cols:
@@ -245,20 +259,17 @@ class SMAPData(Data):
         # Read data
         df = self.read_datarod(varname=var)
         # Drop unnecessary columns
-        df = df.drop(columns=['x', 'y'])
+        df = df.drop(columns=["x", "y"])
         # Resample to regular time intervals
-        df = df.resample('D').asfreq()
+        df = df.resample("D").asfreq()
         # Rename columns
         if col_map is not None:
             df.rename(columns=col_map, inplace=True)
         # Merge the data
-        self.df = self.df.join(df, how='outer')
+        self.df = self.df.join(df, how="outer")
         # self.df = self.df.merge(df, how='outer', left_index=True, right_index=True)
 
-
-#-------------------------------------------------------------------------------
-
-
+    # -------------------------------------------------------------------------------
 
     # def calc_dsdt(self, df):
     #     """Calculate d(Soil Moisture)/dt"""
@@ -268,7 +279,7 @@ class SMAPData(Data):
     #     sm = df['SWC'].ffill()
 
     #     # Calculate dS
-    #     # df['ds'] 
+    #     # df['ds']
     #     ds = (
     #         sm
     #         .bfill(limit=5)
@@ -300,23 +311,23 @@ class SMAPData(Data):
 
     #     return df
 
+    # if not (np.isnan(self.min_sm) or np.isnan(self.max_sm)):
+    #     df["normalized_sm"] = (df.SWC - self.min_sm) / self.range_sm
 
-        # if not (np.isnan(self.min_sm) or np.isnan(self.max_sm)):
-        #     df["normalized_sm"] = (df.SWC - self.min_sm) / self.range_sm
+    # return df
 
-        # return df
-    
-
-#-------------------------------------------------------------------------------
-# From EventSeparator
-#-------------------------------------------------------------------------------
-    def separate_events(self, ):
+    # -------------------------------------------------------------------------------
+    # From EventSeparator
+    # -------------------------------------------------------------------------------
+    def separate_events(
+        self,
+    ):
         # Add precip column
         self.get_precip()
         # Mask values
-        self.mask_values(self.df, 'SWC', self.max_sm)
+        self.mask_values(self.df, "SWC", self.max_sm)
         # Calculate dS/dt
-        self.calc_dsdt(self.df, 'SWC_unmasked')
+        self.calc_dsdt(self.df, "SWC_unmasked")
         # Find events
         events = self.find_events()
         if events.empty:
@@ -325,92 +336,96 @@ class SMAPData(Data):
             return None
         self.events_df = self.extract_events(events)
         # Filter events
-        self.filter_events(self._params['duration'])
+        self.filter_events(self._params["duration"])
         # Create events
         self.events = self.create_events(self.events_df)
         return self.events
-
 
     def mask_values(self, df, col, max_sm):
         """
         Mask out the values in a column when they are larger than the max_sm value
         """
-        df["SWC_unmasked"] = df['SWC'].copy()
+        df["SWC_unmasked"] = df["SWC"].copy()
         df.loc[df[col] > max_sm, col] = np.nan
         # return df
-        
 
-    def calc_dsdt(self, df, col='SWC_unmasked'):
+    def calc_dsdt(self, df, col="SWC_unmasked"):
         """Calculate d(Soil Moisture)/dt"""
 
-        # Allow detecting soil moisture increment even if there is no SM data in 
+        # Allow detecting soil moisture increment even if there is no SM data in
         # between before/after rainfall event
         sm = df[col].ffill()
 
         # Calculate ds
-        df["ds"] = (sm.bfill(limit=5).diff().where(
-            sm.notnull().shift(periods=+1)
-        ))
-
-        # Drop the ds where (precipitation is present) & (soil moisture record does not exist)
-        df["ds"] = df["ds"].where((df["ds"] > -1) & (df["ds"] < 1))
+        df["dS"] = (
+            sm.bfill(limit=self._params["max_nodata_days"])
+            .infer_objects(copy=False)
+            .diff()
+            .where(sm.notnull())
+            .replace(0, np.nan)
+        )
 
         # Calculate dt
-        non_nulls = sm.isnull().cumsum()
-        nan_length = non_nulls.where(sm.notnull()).bfill() + 1 - non_nulls + 1
-        df["dt"] = nan_length.where(sm.isnull()).fillna(1)
+        nan_counts = (
+            df["ds"]
+            .isnull()
+            .astype(int)
+            .groupby(df["ds"].notnull().cumsum())
+            .cumsum()
+            .shift(1)
+        )
+        df["dt"] = nan_counts.fillna(0).infer_objects(copy=False).astype(int) + 1
 
-        # Calculate ds/dt
+        # Calculate dS/dt
         df["ds_dt"] = df["ds"] / df["dt"]
-        df["ds_dt"] = df["ds_dt"].shift(periods=-1)
-
-        df.loc[df[col].shift(-1).isna(), "ds_dt"] = np.nan
-
-        df["ds_dt"] = df["ds_dt"].ffill(limit=5)
+        df.loc[df[col].isna(), "ds_dt"] = np.nan
+        df["ds_dt"] = (
+            df["ds_dt"]
+            .ffill(limit=self._params["max_nodata_days"])
+            .infer_objects(copy=False)
+        )
 
         return df
 
-
-
-    def find_events(self, diff_col='ds_dt', col='SWC_unmasked'):
+    def find_events(self, diff_col="ds_dt", col="SWC_unmasked"):
         # Find start dates of events
         start_dates = self.find_starts(diff_col=diff_col, col=col)
         # Find end dates of events
         end_dates = self.find_ends(start_dates, diff_col=diff_col)
         # Get event dates
-        event_dates = pd.DataFrame({'start_date': start_dates, 'end_date': end_dates})
+        event_dates = pd.DataFrame({"start_date": start_dates, "end_date": end_dates})
         return event_dates
 
-
-    def find_starts(self, diff_col='ds_dt', col='SWC_unmasked', threshold=None):
+    def find_starts(self, diff_col="ds_dt", col="SWC_unmasked", threshold=None):
         start_dates = self._find_starts(diff_col=diff_col, threshold=threshold)
         adjusted = self._look_back(start_dates, col=col)
         adjusted = self._look_ahead(adjusted, col=col)
 
         return adjusted
 
-    def _find_starts(self, diff_col='ds_dt', threshold=None):
+    def _find_starts(self, diff_col="ds_dt", threshold=None):
         if not threshold:
-            threshold = self._params['target_rmsd'] * 2
+            threshold = self._params["target_rmsd"] * 2
 
-        neg = self.df[diff_col] < 0
+        neg = (self.df[diff_col] < 0) | (self.df["dS"])
         pos = self.df[diff_col] > threshold
+        start_dates = self.df.index[
+            neg.shift(-1).fillna(False).infer_objects(copy=False).astype(bool)
+            & pos.fillna(False).infer_objects(copy=False).astype(bool)
+        ]
 
-        start_dates = self.df.index[neg & np.concatenate(([False], pos[:-1]))]
-        # self.df['start_date'] = neg & np.concatenate(([False], pos[:-1]))
         return start_dates
-    
 
-    def _look_back(self, start_dates, col='SWC_unmasked'):
+    def _look_back(self, start_dates, col="SWC_unmasked"):
         adjusted = []
         # Loop for event start dates
         for i, start_date in enumerate(start_dates):
             # Look back up to 6 timesteps to seek for sm value which is not nan
-            for j in range(0, 6):  
+            for j in range(0, self._params["max_nodata_days"] + 1):
                 current_date = start_date - pd.Timedelta(days=j)
 
                 # If rainfall exceeds threshold, stop there
-                if self.df.loc[current_date].precip > self._params['precip_thresh']:
+                if self.df.loc[current_date].precip > self._params["precip_thresh"]:
                     # If SM value IS NOT nap.nan, update the event start date to this timestep
                     if not np.isnan(self.df.loc[current_date, col]):
                         update_date = current_date
@@ -419,85 +434,120 @@ class SMAPData(Data):
                         update_date = start_date
                     break
 
-                # If ds > 0, stop there
-                if self.df.loc[current_date]['ds'] > 0:
-                    update_date = start_date
-                    break
-
-                # If reached to the NON-nan SM value, update start date value to this timestep
-                if ((i - j) >= 0) or (not np.isnan(self.df.loc[current_date, col])):
+                    # If dS > 0 and SM value is not nan, use that
+                if (
+                    self.df.loc[current_date]["ds_dt"] > self._params["noise_thresh"]
+                ) & ~np.isnan(self.df.loc[current_date, col]):
                     update_date = current_date
                     break
+
+                if (np.isnan(self.df.loc[current_date].dSdt)) or (
+                    self.df.loc[current_date].dSdt < -1 * self._params["noise_thresh"]
+                ):
+                    break
+
             # start_dates[i] = update_date
             adjusted.append(update_date)
+
         return adjusted
-    
-    def _look_ahead(self, start_dates, col='SWC_unmasked'):
+
+    def _look_ahead(self, start_dates, col="SWC_unmasked"):
 
         nan_dates = self.df.loc[start_dates].index[self.df.loc[start_dates, col].isna()]
 
         adjusted = start_dates.copy()
-        for i, start_date in enumerate(nan_dates):
-            update_date = start_date
-            # Look ahead up to 6 timesteps to seek for sm value which is not nan, 
-            # or start of the precip event
-            for j in range(0, 6):  
-                current_date = start_date + pd.Timedelta(days=j)
-                # If Non-nan SM value is detected, update start date value to this timstep
-                if current_date > self._end_date:
-                    update_date = current_date
-                    break
 
-                if not pd.isna(self.df.loc[current_date, col]):
+        # Adjust when SM data exceeds the threshold
+        for i, start_date in enumerate(nan_dates):
+            current_date = start_date
+            if (self.df.loc[start_date, col] > self.max_sm) | (
+                np.isnan(self.df.loc[start_date, col])
+            ):
+                current_date += pd.Timedelta(days=1)
+                update_date = current_date
+
+                if (self.df.loc[start_date, col] > self.max_sm) | (
+                    np.isnan(self.df.loc[start_date, col])
+                ):
+                    current_date += pd.Timedelta(days=1)
                     update_date = current_date
-                    break
+
+                    if (self.df.loc[start_date, col] > self.max_sm) | (
+                        np.isnan(self.df.loc[start_date, col])
+                    ):
+                        current_date += pd.Timedelta(days=1)
+                        update_date = current_date
+
             ind = start_dates.get_loc[start_date]
             adjusted[ind] = update_date
+
+        for _, start_date in enumerate(adjusted):
+            current_date = start_date + pd.Timedelta(days=1)
+
+            if self.df.loc[current_date].precip > self._parameters["precip_thresh"]:
+                current_date += pd.Timedelta(days=1)
+                update_date = current_date
+
+                if self.df.loc[current_date].precip > self._params["precip_thresh"]:
+                    current_date += pd.Timedelta(days=1)
+                    update_date = current_date
+
+            ind = start_dates.get_loc[start_date]
+            adjusted[ind] = update_date
+
         return adjusted
 
-
-
-    def find_ends(self, start_dates, diff_col='ds_dt', col='SWC_unmasked'):
+    def find_ends(self, start_dates, diff_col="ds_dt", col="SWC_unmasked"):
         end_dates = [
-            self.find_event_end(
-                i, start_dates, diff_col=diff_col) for i in range(len(start_dates)
-            )
+            self.find_event_end(i, start_dates, diff_col=diff_col)
+            for i in range(len(start_dates))
         ]
         return pd.DatetimeIndex(end_dates)
 
-
-    def find_event_end(self, i, start_dates, diff_col='ds_dt', col='SWC_unmasked'):
+    def find_event_end(self, i, start_dates, diff_col="ds", col="SWC_unmasked"):
         start_date = start_dates[i]
         end_date = start_dates
-        for j in range(1, len(self.df)):
+        record_last_date = self.df.index.values[-1]
+
+        for j in range(1, remaining_records.days):
             current_date = start_date + pd.Timedelta(days=j)
 
-            if current_date > self._end_date:
-                break
-
             if np.isnan(self.df.loc[current_date, col]):
-                continue
-            
-            check_diff = self.df.loc[current_date, diff_col] >= self._params['noise_thresh']
-            check_precip = self.df.loc[current_date, 'precip'] > self._params['precip_thresh']
-            check_event_start = current_date in start_dates
+                count_nan_days += 1
+            else:
+                count_nan_days = 0
 
-            if check_diff or check_precip or check_event_start:
+            if self.df.loc[current_date].precip >= self._params["precip_thresh"]:
+                end_date = current_date - pd.Timedelta(days=1)
+                update_arg = "precipitation exceeds threshold"
+                should_break = True
+
+            if count_nan_days > self.max_nodata_days:
                 end_date = current_date
+                update_arg = "too many consective nans"
+                should_break = True
+
+            if (self.df.loc[current_date].diff_col >= self._params["noise_thresh"]) & (
+                ~np.isnan(self.df.loc[current_date, col])
+            ):
+                # Any positive increment smaller than 5% of the observed range of soil moisture at the site is excluded (if there is not precipitation) if it would otherwise truncate a drydown.
+                end_date = current_date - pd.Timedelta(days=1)
+                update_arg = "dS increment exceed the noise threshold"
+                should_break = True
+
+            if should_break:
                 break
             else:
                 continue
-        return end_date
-    
 
+        return end_date
 
     def filter_events(self, min_dur=5):
         self.events_df = self.events_df[
-            self.events_df['soil_moisture'].apply(lambda x: pd.notna(x).sum())
+            self.events_df["soil_moisture"].apply(lambda x: pd.notna(x).sum())
             >= min_dur
         ].copy()
         self.events_df.reset_index(drop=True, inplace=True)
-
 
     # def create_events(self, events_df):
     #     events = [
@@ -507,7 +557,7 @@ class SMAPData(Data):
     #             theta_star = self.max_sm, # TODO: Get this from config, mask if > fc
     #             z = self.z,
     #             event_data = self.get_event_data(row.start_date, row.end_date)
-    #         ) 
+    #         )
     #         for i, row in events_df[['start_date','end_date','soil_moisture']].iterrows()
     #     ]
     #     return events
@@ -518,7 +568,6 @@ class SMAPData(Data):
     #         self.add_data_cols(new_cols)
     #     return self.df.loc[start:end]
 
-
     # def _get_theta_star(self):
     #     if self.cfg.get('theta_star').lower() in ['theta_fc', 'fc', 'field capacity']:
     #         theta_star = self.theta_fc
@@ -526,35 +575,25 @@ class SMAPData(Data):
     #         theta_star = self.max_sm
     #     else:
     #         log.info(
-    #             f"Unknown theta_star value: {self.cfg.get('theta_star')}. 
+    #             f"Unknown theta_star value: {self.cfg.get('theta_star')}.
     #             Setting to 95th percentile value"
     #         )
     #         theta_star = self.max_sm
     #     return theta_star
-
-
 
     def plot_events(self):
         fig, (ax11, ax12) = plt.subplots(2, 1, figsize=(20, 5))
 
         self.df.SWC_unmasked.plot(ax=ax11, alpha=0.5)
         ax11.scatter(
-            self.df.SWC_unmasked[
-                self.df['start_date']
-            ].index,
-            self.df.SWC_unmasked[
-                self.df['start_date']
-            ].values,
+            self.df.SWC_unmasked[self.df["start_date"]].index,
+            self.df.SWC_unmasked[self.df["start_date"]].values,
             color="orange",
             alpha=0.5,
         )
         ax11.scatter(
-            self.df.SWC_unmasked[
-                self.df['end_date']
-            ].index,
-            self.df.SWC_unmasked[
-                self.df['end_date']
-            ].values,
+            self.df.SWC_unmasked[self.df["end_date"]].index,
+            self.df.SWC_unmasked[self.df["end_date"]].values,
             color="orange",
             marker="x",
             alpha=0.5,
