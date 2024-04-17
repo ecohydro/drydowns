@@ -312,10 +312,11 @@ class DrydownModel:
         return self._p0
 
     def _get_bounds(self, params : list):
-        bounds = [
-            (p[0] for p in params),
-            (p[1] for p in params)
-        ]
+        log.info(f"Getting bounds for event {self.event} model")
+        bounds = (
+            [p[0] for p in params],
+            [p[1] for p in params]
+        )
         return bounds
 
     def _get_p0(self, params : list):
@@ -343,6 +344,7 @@ class DrydownModel:
             0,          # min_et_max
             100.,       # max_et_max
             event.pet   # ini_et_max
+            #event.theta_star - event.theta_w
         ])
     
     def k(self, event=None, et_max=None):
@@ -351,7 +353,7 @@ class DrydownModel:
         return et_max / (self.data.z*1000)
 
     def delta_theta(self, event, theta_0=None):
-        if not theta_0:
+        if theta_0 is None:
             theta_0 = self.theta_0(event)
         return theta_0 - event.theta_w
 
@@ -435,8 +437,8 @@ class NonlinearModel(DrydownModel):
 
     popt_dict = {
         0 : 'delta_theta',
-        1 : 'q',
-        2 : 'k',
+        1 : 'k', #'q',
+        2 : 'q', #'k',
         3 : 'theta_star',
     }
     
@@ -450,14 +452,7 @@ class NonlinearModel(DrydownModel):
 
         if not self.specs['fit_theta_star']:
             self._norm = True
-        # # Set the bounds
-        # self.bounds = (
-        #     [0, 0, 0], # [a, b, c]
-        #     [np.inf, np.inf, np.inf]
-        # )
 
-        # # Set the initial guess
-        # self.p0 = [1, 1, 1]
     
     def __repr__(self):
         return f"NonlinearModel"
@@ -501,7 +496,7 @@ class NonlinearModel(DrydownModel):
         """
         # theta_0 = self.theta_0(event)
         # et_max = self.et_max(event)
-        
+        log.info(f"Setting params for event {event.start_date}")
         delta_theta = self.delta_theta(event)
         k = self.k(event)
 
@@ -511,25 +506,34 @@ class NonlinearModel(DrydownModel):
         theta_star = self.theta_star(event)
 
         # Get list of parameters
-        params = [delta_theta, q, k]    # parameters to be fitted
+        params = [delta_theta, k, q]    # parameters to be fitted
         args = [theta_star, theta_w]    # arguments to be passed (constant params)
 
         if self.specs['fit_theta_star']:
             theta_star = self.theta_star(event)
             params.append(theta_star)
             args = [theta_w]
-            # mod = lambda t, delta_theta, k, q, theta_star: self.model(
-            #     t, delta_theta, k, q, theta_star, theta_w
-            # )
-        elif norm:
+            mod = lambda t, delta_theta, k, q, theta_star: q_model( #self.model(
+                t, delta_theta, k, q, theta_star, self.data.min_sm #event.theta_w
+            )
+        elif self._norm:
             params = self.normalize_params([delta_theta, k], event) + [q]
+            # params = [params[i] for i in [0, 2, 1]]     # put back in order: delta_theta, q, k
             args = [self.normalize_theta(theta, event) for theta in args] # or just [1.0, 0.0]
+
+            mod = lambda t, delta_theta, k, q: q_model( #self.model(
+                t, delta_theta, k, q, 1.0, 0.0
+            )
 
             if self.specs['force_PET']:
                 params = params[:-1]
                 args = [event.pet] + args
 
-        self.model = lambda t, *params: self.model(t, *params, *args)
+                mod = lambda t, delta_theta, q: q_model( #self.model(
+                    t, delta_theta, q, event.pet, 1.0, 0.0
+                )
+
+        self.model = mod # lambda t, *params: self.model(t, *params, *args)
 
         self._params = params
         self._args = args

@@ -27,7 +27,7 @@ def exponential_model(t, delta_theta, theta_w, tau):
 
 
 # def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
-def q_model(t, delta_theta, q, k, theta_star=1.0, theta_w=0.0):
+def q_model(t, delta_theta, k, q, theta_star=1.0, theta_w=0.0):
     """
     Calculate the drydown curve for soil moisture over time using non-linear plant stress model.
 

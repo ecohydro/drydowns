@@ -63,6 +63,10 @@ class DrydownModelHandler:
                 # self._fit_event(event, k)
                 obj = self.models[k]
                 model = obj(self.cfg, self.data, event)
+                model.params # This is a temporary fix to ensure params are reset.
+                # TODO: Figure out why this is necessary. May need to remove params
+                # as a property + set separately. Might be bc set_params calls self.event?
+                # (still shouldn't matter, but it appears to)
                 model.fit_event(event)
     
     def get_results(self):
