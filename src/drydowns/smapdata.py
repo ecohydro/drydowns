@@ -51,8 +51,14 @@ def get_filename(varname, EASE_row_index, EASE_column_index):
 class SMAPData(Data):
     """Class that handles datarods (Precipitation, SM, PET data) for an EASE pixel"""
 
+    # anc_info = 
+    # soil_info = pd.read_csv()
+
     def __init__(self, cfg, EASEindex) -> None:
         self.id = EASEindex
+
+        # self.info = self._get_meta()
+
         super().__init__(cfg)
         # _______________________________________________________________________________
         # Attributes
@@ -86,6 +92,8 @@ class SMAPData(Data):
         # _df = self.get_concat_datasets()
         # self.df = self.calc_dSdt(_df)
         # self.df = self.get_data()
+
+        self.soil_texture = self.info.get('soil_texture')
     
     # def _get_data(self):
     #     _df = self.get_concat_datasets()
@@ -210,6 +218,21 @@ class SMAPData(Data):
             # Convert precipitation from kg/m2/s to mm/day -> 1 kg/m2/s = 86400 mm/day
             self.df.precip = self.df.precip * 86400
         return self.df[col]
+
+    def _get_meta(self, file='anc_info.csv'):
+        # TODO: Somehow get this out of the class instance. Needs config, but 
+        # really shouldn't be read in every time.
+        anc_info = pd.read_csv(os.path.join(self.cfg.get('data_dir'), file))
+
+        info = anc_info[
+            (anc_info.EASE_row_index == self.id[0])
+            & (anc_info.EASE_column_index == self.id[1])
+        ].to_dict('records')[0]
+
+        return info
+
+
+
 
 
     def add_data_cols(self, cols, col_map=col_map):

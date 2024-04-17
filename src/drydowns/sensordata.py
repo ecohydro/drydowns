@@ -48,7 +48,7 @@ class SensorData(Data):
         # id
         self.id = (station.id, sensor_id)
         # info
-        self.info = self._get_sensor_meta(sensor_id)
+        self.info = self._get_meta(sensor_id)
 
         super().__init__(cfg, sensor_id=sensor_id)
         # cfg
@@ -58,7 +58,7 @@ class SensorData(Data):
         # self.id = (station.id, sensor_id)
 
         # # info
-        # self.info = self._get_sensor_meta(sensor_id)
+        # self.info = self._get_meta(sensor_id)
 
         # z
         # self.z = 0.05 #np.nan
@@ -105,7 +105,7 @@ class SensorData(Data):
         # current_thread.name = ( f"{self.id[0]}, {self.id[1]}" )
         # self.thread_name = current_thread.name
     
-    def _get_sensor_meta(self, sensor_id):
+    def _get_meta(self, sensor_id):
         # raise NotImplementedError
         return None
 
@@ -291,7 +291,7 @@ class TowerSensorData(SensorData):
         # id
         # self.id = (self._tower.id, sensor_grp)
         # info
-        # self.info = self._get_sensor_meta(sensor_grp)
+        # self.info = self._get_meta(sensor_grp)
 
         # z (depth of sensor) [m]
         self.z = float(self.info['HEIGHT']) * -1.
@@ -307,7 +307,7 @@ class TowerSensorData(SensorData):
         # data
         # self.df = self.get_data()
 
-    def _get_sensor_meta(self, sensor_id):
+    def _get_meta(self, sensor_id):
         meta = self._tower.grp_info.get(sensor_id).copy()
         meta.update(self._tower.soil_info)
         return meta
@@ -384,7 +384,7 @@ class ISMNSensorData(SensorData):
         # self.id = (self._station.name, sensor_name)
 
         # info
-        # self.info = self._get_sensor_meta(sensor_name)
+        # self.info = self._get_meta(sensor_name)
 
         # z (depth of sensor) [m]
         self.z = float(self.info.get('depth_to'))
@@ -413,7 +413,7 @@ class ISMNSensorData(SensorData):
 
         # self.max_sm = self.theta_fc
 
-    def _get_sensor_meta(self, sensor_id):
+    def _get_meta(self, sensor_id):
         
         sensor_meta = self._station.var_info[
             (self._station.var_info.sensor == sensor_id)

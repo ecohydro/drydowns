@@ -41,6 +41,9 @@ class Data:
         # z (depth of soil column) [m]
         self.z = 0.05
 
+        # info
+        self.info = self._get_meta(**kwargs)
+
         # df
         self.df = self.get_data(**kwargs)
         
@@ -60,6 +63,10 @@ class Data:
         # # Not working at the moment ...
         # custom_handler = ThreadNameHandler()
         # log = modifyLogger(name=__name__, custom_handler=custom_handler)
+
+    def _get_meta(self):
+        # raise NotImplementedError
+        return None
 
     @property
     def _soil(self):
@@ -96,6 +103,10 @@ class Data:
             try:
                 self._theta_fc = self._soil.theta_fc
             except:
+                log.info(
+                    f"Cannot set field capacity from soil object. Setting field"
+                    " capacity to maximum soil moisture."
+                )
                 self._theta_fc = self.max_sm
         return self._theta_fc
     
@@ -115,6 +126,9 @@ class Data:
             try:
                 self._n = self._soil.n
             except:
+                log.info(
+                    f"Cannot set porosity from soil object. Setting porosity to nan."
+                )
                 self._n = np.nan
         return self._n
 
