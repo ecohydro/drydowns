@@ -31,7 +31,12 @@ col_dict = {
     'PET' : 'ET_F_MDS',
 }
 
-col_map = dict((v,k) for k,v in col_dict.items())
+# col_map = dict((v,k) for k,v in col_dict.items())
+col_map = {
+    'P_F': 'precip',
+    'ET_F_MDS': 'PET',
+    'P_1_1' : 'precip', # TODO: get other precip cols + take avg (for ISMN data)
+}
 
 # class ThreadNameHandler(logging.StreamHandler):
 #     def emit(self, record):
@@ -181,7 +186,7 @@ class SensorData(Data):
 
         # return self.events
 
-    def mask_values(self, df, col, max_sm):
+    def mask_values(self, df, col, max_sm,):
         df[col+'_masked'] = df[col].mask(df[col] > max_sm).bfill()
     
     def calc_dsdt(self, df, col):
@@ -436,13 +441,22 @@ class ISMNSensorData(SensorData):
         # ].copy()
         df = self._station.daily.loc[
             (self._station.daily.index >= start) & (self._station.daily.index < end),
-            [sensor_col]
+            [sensor_col, sensor_col+'_masked', sensor_col+'_QC']
         ].copy()
         # df = self._tower.data[['TIMESTAMP']+[sensor_col]].copy()
         # df.set_index('TIMESTAMP', inplace=True, drop=False)
         df.index.name = 'DATE'
         # Rename to standard column name
-        df.rename(columns={sensor_col: 'SWC'}, inplace=True)
+        df.rename(
+            # columns={sensor_col+suff : 'SWC' + suff for suff in ['', '_masked', '_QC']},
+            columns={
+                sensor_col: 'SWC_raw', 
+                sensor_col + '_masked' : 'SWC', # temporarily just using the masked values. # TODO: Update this somehow.
+                sensor_col + '_QC' : 'SWC_QC'
+            },
+            # {sensor_col: 'SWC', sensor_col + '_QC' : 'SWC_QC'}, 
+            inplace=True
+        )
 
         # Resample to daily
         df = df.resample('D').asfreq()
