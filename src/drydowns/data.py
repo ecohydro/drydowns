@@ -187,6 +187,7 @@ class Data:
             ),
             'target_rmsd' : self.cfg.getfloat("target_rmsd"),
             'duration' : self.cfg.getint("min_duration"),
+            'min_diff' : self.cfg.getfloat("min_diff"),
         }
         return params
     

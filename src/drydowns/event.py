@@ -73,7 +73,7 @@ class Event:
     
     def calc_pet(self, et_col='PET'):
         # TODO: Check for ET col + set default if DNE
-        if self.event_data.empty or et_col not in self.event_data.columns:
+        if self.event_data.empty or et_col not in self.event_data.columns or self.event_data[et_col].isnull().all():
             # pet = np.nan
             pet = 5.0
         else:

@@ -36,6 +36,7 @@ col_map = {
     'P_F': 'precip',
     'ET_F_MDS': 'PET',
     'P_1_1' : 'precip', # TODO: get other precip cols + take avg (for ISMN data)
+    'pet' : 'PET'
 }
 
 # class ThreadNameHandler(logging.StreamHandler):
@@ -199,7 +200,7 @@ class SensorData(Data):
         )
         # Find end dates of drydown events
         end_dates = self.find_ends(
-            start_dates, diff_col, self._params['noise_thresh']
+            start_dates, diff_col, min_diff=self._params['min_diff']
         )
         # Get event dates
         event_dates = pd.DataFrame({'start_date': start_dates, 'end_date': end_dates})
@@ -223,13 +224,20 @@ class SensorData(Data):
         start_dates = self.df.groupby(valid).TIMESTAMP.min().reset_index(drop=True)
         return start_dates
 
-    def find_ends(self, start_dates, diff_col, threshold=0.):
-        end_dates = start_dates.apply(self.find_event_end, args=(diff_col, threshold,))
+    def find_ends(self, start_dates, diff_col, min_diff=0.5):#threshold=0.):
+        end_dates = start_dates.apply(self.find_event_end, args=(diff_col, min_diff,))
         return end_dates
 
-    def find_event_end(self, start_date, diff_col, threshold=0.0):
+    def find_event_end(self, start_date, diff_col, min_diff=0.5):#threshold=None):
+        # Get dtheta/dt threshold (min diff allowed during drydown)
+        # (Added to avoid long tails)
+        threshold = self._calc_ds_dt_threshold(min_diff)
         end = (self.df[start_date:][diff_col].shift(-1) > threshold).idxmax()
         return end
+    
+    def _calc_ds_dt_threshold(self, min_diff=0.5):
+        # Calculate the threshold for ds/dt
+        return -1 * min_diff / (self.z * 1000)
 
 
     # def label_events(self, event_dates):
@@ -288,6 +296,10 @@ class SensorData(Data):
 
 
 class TowerSensorData(SensorData):
+    _col_dict = {
+        'precip' : 'P_F',
+        'PET' : 'ET_F_MDS',
+    }
 
     def __init__(self, cfg, tower, sensor_grp):
         # tower
@@ -355,7 +367,7 @@ class TowerSensorData(SensorData):
         return self.df[et_col]
 
     def add_data_cols(self, cols):
-        col_names = [col_dict.get(col) for col in cols]
+        col_names = [self._col_dict.get(col) for col in cols]
         # self.df = pd.concat([self.df, cols], axis=1)
         self.df = self.df.join(self._tower.data.set_index('TIMESTAMP')[col_names])
         self.df.rename(columns=col_map, inplace=True)
@@ -379,6 +391,11 @@ class TowerSensorData(SensorData):
 
 
 class ISMNSensorData(SensorData):
+    _col_dict = {
+        'precip' : 'P',
+        'PET' : 'PET',
+    }
+
     
     def __init__(self, cfg, station, sensor_name):
         # station
@@ -469,9 +486,27 @@ class ISMNSensorData(SensorData):
         self.info.update({'unit': 'm3 m-3'})
 
         return df
+    
+    # def get_precip(self, p_col='precip',):
+    #     if p_col not in self.df.columns:
+    #         self.add_data_cols([p_col])
+    #     return self.df[p_col]
+    
+    # def get_et(self, et_col='PET',):
+    #     if et_col not in self.df.columns:
+    #         self.add_data_cols([et_col])
+    #     return self.df[et_col]
+
+    # def get_anc(self, )
 
 
     def add_data_cols(self, cols):
+        # Check for ancillary data
+        col_names = [self._col_dict.get(col) for col in cols]
+        anc = self._station.get_anc_data(col_names)
+        self.df = self.df.join(anc)
+        # Check for cols in original dataframe
+        cols = list(set(cols) - set(anc.columns))
         cols = [col for col in cols if col in self._station.daily.columns]
         # self.df = pd.concat([self.df, cols], axis=1)
         self.df = self.df.join(self._station.daily[cols])
