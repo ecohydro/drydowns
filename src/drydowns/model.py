@@ -342,8 +342,10 @@ class DrydownModel:
     def et_max(self, event):
         return np.array([
             0,          # min_et_max
-            100.,       # max_et_max
-            event.pet   # ini_et_max
+            # 100.,       # max_et_max
+            event.pet,  # max_et_max
+            # event.pet   # ini_et_max
+            (event.pet) / 2    # ini_et_max (???)
             #event.theta_star - event.theta_w
         ])
     
