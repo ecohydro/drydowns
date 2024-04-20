@@ -11,6 +11,7 @@ from datetime import datetime
 from .event import Event
 from .mylogger import getLogger
 from .soil import Soil, soils
+from .utils_figs import plot_drydown
 
 # Create a logger
 log = getLogger(__name__)
@@ -259,3 +260,45 @@ class Data:
             theta_star = self.max_sm
         return theta_star
    
+
+    def plot_drydowns(self, kwargs={}):
+        df = pd.concat([
+            self.get_plot_data(event, buffer=0) for event in self.events
+        ]).drop_duplicates()
+        hue = 'Event'
+        axs = plot_drydown(df=df, hue=hue, **kwargs)
+        return axs
+
+
+    def plot_drydown(self, event=None, buffer=5, show_bounds=True, kwargs={}):
+        df = self.get_plot_data(event, buffer=buffer)
+        hue = None
+
+        axs = plot_drydown(df=df, hue=hue, **kwargs)
+
+        axs = plot_drydown(axs=axs, df=self.get_plot_data(event, buffer=0), **kwargs)
+        # ylim0 = axs[0].get_ylim()
+        # ylim1 = axs[1].get_ylim()
+        # axs[0].vlines(
+        #     [0,len(df)], *ylim0, 
+        #     color='k', linestyle='--', linewidth=0.8
+        # )
+        # axs[1].vlines(
+        #     [df.theta.loc[event.start_date], df.theta.loc[event.end_date]], 
+        #     *ylim1, color='k', linestyle='--', linewidth=0.8
+        # )
+        # axs[0].set_ylim(ylim0)
+        # axs[1].set_ylim(ylim1)
+
+        return axs
+
+
+    def get_plot_data(self, event, buffer=5):
+        data = self.df.loc[
+            event.start_date - pd.Timedelta(days=buffer):event.end_date + pd.Timedelta(days=buffer)
+        ]
+        data['theta'] = data['SWC'].values
+        data['dtheta'] = -data.theta.diff()
+        data['dtheta_mm'] = data.dtheta * event.z * 1000
+        data['t'] = (data.index - event.start_date).days
+        return data

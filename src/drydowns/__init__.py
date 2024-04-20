@@ -17,5 +17,6 @@ from .event import Event
 from .model import DrydownModel
 from .handler import DrydownModelHandler
 
+from . import utils_figs as figs
 
 from . import soil
