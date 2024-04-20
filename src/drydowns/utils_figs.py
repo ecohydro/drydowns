@@ -75,7 +75,7 @@ def plot(
     ):
     # if hue:
     sns.scatterplot(
-        x=x, y=y, hue=hue, data=df, ax=ax, #label=label,
+        x=x, y=y, hue=hue, data=df, ax=ax, label=label,
         **kwargs
     )
     # else:
