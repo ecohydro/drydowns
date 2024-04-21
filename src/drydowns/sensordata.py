@@ -196,7 +196,7 @@ class SensorData(Data):
     def find_events(self, diff_col='ds_dt',): #min_dur, start_diff, end_diff):
         # Find start dates of events
         start_dates = self.find_starts(
-            diff_col, min_dur=self._params['duration'], threshold=self._params['noise_thresh']
+            diff_col, min_dur=self._params['duration'], min_diff=0.5#self._params['min_diff'] #threshold=self._params['noise_thresh']
         )
         # Find end dates of drydown events
         end_dates = self.find_ends(
@@ -207,8 +207,9 @@ class SensorData(Data):
         return event_dates
 
 
-    def find_starts(self, diff_col='ds_dt', min_dur=4, threshold=0.):
+    def find_starts(self, diff_col='ds_dt', min_dur=4, min_diff=0.5):#threshold=0.):
         # Mask for differences below threshold
+        threshold = self._calc_ds_dt_threshold(min_diff)
         mask_diff = self.df[diff_col].shift(-1) < -threshold
         # Indexer for rolling window (forward-looking)
         indexer = pd.api.indexers.FixedForwardWindowIndexer(window_size=min_dur)
@@ -232,12 +233,12 @@ class SensorData(Data):
         # Get dtheta/dt threshold (min diff allowed during drydown)
         # (Added to avoid long tails)
         threshold = self._calc_ds_dt_threshold(min_diff)
-        end = (self.df[start_date:][diff_col].shift(-1) > threshold).idxmax()
+        end = (self.df[start_date:][diff_col].shift(-1) > -threshold).idxmax()
         return end
     
     def _calc_ds_dt_threshold(self, min_diff=0.5):
         # Calculate the threshold for ds/dt
-        return -1 * min_diff / (self.z * 1000)
+        return 1 * min_diff / (self.z * 1000)
 
 
     # def label_events(self, event_dates):
@@ -290,8 +291,8 @@ class SensorData(Data):
     #     ]
     #     return events
 
-    def plot_event(self):
-        raise NotImplementedError
+    # def plot_event(self):
+    #     raise NotImplementedError
     
 
 
@@ -367,7 +368,7 @@ class TowerSensorData(SensorData):
         return self.df[et_col]
 
     def add_data_cols(self, cols):
-        col_names = [self._col_dict.get(col) for col in cols]
+        col_names = [self._col_dict.get(col) for col in cols if col in self._tower.data.columns]
         # self.df = pd.concat([self.df, cols], axis=1)
         self.df = self.df.join(self._tower.data.set_index('TIMESTAMP')[col_names])
         self.df.rename(columns=col_map, inplace=True)
@@ -394,6 +395,7 @@ class ISMNSensorData(SensorData):
     _col_dict = {
         'precip' : 'P',
         'PET' : 'PET',
+        'LAI' : 'LAI'
     }
 
     

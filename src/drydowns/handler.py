@@ -118,6 +118,11 @@ class DrydownModelHandler:
         except:
             pass
         
+        try:
+            results.update(event.ancillary)
+        except:
+            pass
+
         for mod,abbrev in zip(self.models.keys(), ['exp', 'q', 'sig']):
             if self.cfg.getboolean(mod + '_model') & hasattr(event, mod):
                 mod_results = getattr(event, mod)

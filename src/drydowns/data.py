@@ -239,7 +239,7 @@ class Data:
         ]
         return events
 
-    def get_event_data(self, start, end, cols=['precip', 'PET']):
+    def get_event_data(self, start, end, cols=['precip', 'PET', 'LAI']):
         new_cols = [col for col in cols if col not in self.df.columns]
         if new_cols:
             self.add_data_cols(new_cols)

@@ -242,6 +242,8 @@ class SMAPData(Data):
     def _add_data_col(self, col, col_map=col_map):
         if col in anc_dict.keys():
             var = anc_dict[col]
+        else:
+            return
         # Read data
         df = self.read_datarod(varname=var)
         # Drop unnecessary columns
@@ -534,7 +536,7 @@ class SMAPData(Data):
 
 
 
-    def plot_events(self):
+    def plot_events(self, save=False):
         fig, (ax11, ax12) = plt.subplots(2, 1, figsize=(20, 5))
 
         self.df.SWC_unmasked.plot(ax=ax11, alpha=0.5)
@@ -560,16 +562,17 @@ class SMAPData(Data):
             alpha=0.5,
         )
         self.df.precip.plot(ax=ax12, alpha=0.5)
-
+        
         # Save results
-        filename = f"{self.id[0]:03d}_{self.id[1]:03d}_eventseparation.png"
-        output_dir2 = os.path.join(self.output_dir, "plots")
-        if not os.path.exists(output_dir2):
-            # Use a lock to ensure only one thread creates the directory
-            with threading.Lock():
-                # Check again if the directory was created while waiting
-                if not os.path.exists(output_dir2):
-                    os.makedirs(output_dir2)
+        if save:
+            filename = f"{self.id[0]:03d}_{self.id[1]:03d}_eventseparation.png"
+            output_dir2 = os.path.join(self.output_dir, "plots")
+            if not os.path.exists(output_dir2):
+                # Use a lock to ensure only one thread creates the directory
+                with threading.Lock():
+                    # Check again if the directory was created while waiting
+                    if not os.path.exists(output_dir2):
+                        os.makedirs(output_dir2)
 
-        fig.savefig(os.path.join(output_dir2, filename))
-        plt.close()
+            fig.savefig(os.path.join(output_dir2, filename))
+            plt.close()

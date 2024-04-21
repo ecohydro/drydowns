@@ -48,6 +48,8 @@ class Event:
         self.t = t[~np.isnan(self.soil_moisture)]
         self.theta = self.soil_moisture[~np.isnan(self.soil_moisture)]
         self.theta_norm = norm_sm[~np.isnan(self.soil_moisture)]
+        
+        # self._ancillary = None
 
     def describe(self):
         return {
@@ -189,3 +191,37 @@ class Event:
                 "r_squared": r_squared,
                 "theta_opt": y_opt.tolist(),
             }
+    
+    @property
+    def ancillary(self):
+        if not hasattr(self, '_ancillary') or self._ancillary is None:
+            # self._ancillary = self.get_anc_data()
+            self.get_anc_data()
+        return self._ancillary
+    
+    # @ancillary.setter
+    # def ancillary(self, value):
+    #     if self._ancillary is None:
+    #         self._ancillary = self.get_anc_data()
+            
+
+    def get_anc_data(self):
+
+        cols = [
+            'precip_total60d', 'precip_total_month',
+            'pet_total60d', 'pet_total_month',
+            'LAI'
+        ]
+
+        anc = {
+            col : self.event_data.iloc[0][col] for col in cols if col in self.event_data.columns
+        }
+        try: 
+            anc.update({
+                'AI_month' : anc['precip_total_month'] / anc['pet_total_month'],
+                'AI_60d' : anc['precip_total60d'] / anc['pet_total60d'],
+            })
+        except KeyError:
+            pass
+
+        setattr(self, '_ancillary', anc)
