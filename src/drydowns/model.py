@@ -574,7 +574,7 @@ class NonlinearModel(DrydownModel):
             # Denormalize 
             # TODO: Figure out how to do this not here.
             if self._norm:
-                results['k'] * (event.theta_star - event.theta_w)
+                results['k'] = results['k'] * (event.theta_star - event.theta_w)
             results.update({
                 'ET_max' : (self.data.z * 1000) * results['k']
             })
