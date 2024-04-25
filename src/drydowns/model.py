@@ -18,117 +18,9 @@ from .mylogger import getLogger
 log = getLogger(__name__)
 
 
-# class DrydownModelHandler:
-
-#     models = {
-#         'exponential' : ExponentialModel,
-#         'q' : NonlinearModel,
-#         'sigmoid' : SigmoidModel
-#     }
-
-#     def __init__(self, cfg, data, events):
-            
-#         self.cfg = cfg
-#         self.data = data
-#         self.events = events
-
-#         self.specs = self.get_specs()
-
-
-#         if self.cfg["run_mode"] == "parallel":
-#             current_thread = threading.current_thread()
-#             current_thread.name = (f"{self.data.id[0]}, {self.data.id[1]}")
-#             self.thread_name = current_thread.name
-#         else:
-#             self.thread_name = "main thread"
-
-#     def get_specs(self):
-#         specs = {
-#             'force_PET' : self.cfg.getboolean('force_PET'),
-#             'fit_theta_star' : self.cfg.getboolean('fit_theta_star'),
-#             # 'run_mode' : self.cfg.get('run_mode'),
-#         }
-#         return specs
-
-#     # def get_models(self):
-#     #     mod_dict = {
-#     #         k : self.cfg.getboolean(k + '_model') for k in ['exponential', 'q', 'sigmoid']
-#     #     }
-#     #     self.cfg.getboolean('exponential_model')
-
-#     def fit_events(self):
-#         for event in self.events:
-#             self.fit_event(event)
-
-#     def fit_event(self, event):
-#         for k in self.models.keys():
-#             if self.cfg.getboolean(k + '_model'):
-#                 # self._fit_event(event, k)
-#                 obj = self.models[k]
-#                 model = obj(self.cfg, self.data, event)
-#                 model.fit_event(event)
-    
-#     def get_results(self):
-#         # results = [
-#         #     self.get_event_results(event) for event in self.events if self.get_event_results(event)
-#         # ]
-#         results = []
-#         for event in self.events:
-#             try:
-#                 results.append(self._get_event_results(event))
-#             except Exception as e:
-#                 log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
-#                 continue
-#         df = pd.DataFrame(results)
-#         # if not results:
-#         #     df = pd.DataFrame()
-#         return df
-
-#     # def get_event_results(self, event):
-#     #     try:
-#     #         results = self._get_event_results(event)
-#     #     except Exception as e:
-#     #         log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
-#     #         results = None
-#     #     return results
-
-#     def _get_event_results(self, event):
-#         if isinstance(self.data, SensorData):
-#             col_ids = ('SITE_ID', 'Sensor_ID')
-#         elif isinstance(self.data, SMAPData):
-#             col_ids = ("EASE_row_index", "EASE_column_index")
-
-#         results = {
-#             col_ids[0] : self.data.id[0],
-#             col_ids[1] : self.data.id[1],
-#             **event.describe(),
-#             'min_sm' : self.data.min_sm,
-#             'max_sm' : self.data.max_sm,
-#             'theta_fc' : self.data.theta_fc,
-#             'porosity' : self.data.n,
-#             'pet' : event.pet,
-#         }
-#         try:
-#             results.update({
-#                 'et' : event.get_et(),
-#                 'total_et' : np.sum(event.get_et()),
-#                 'precip' : event.calc_precip(),
-#             })
-#         except:
-#             pass
-        
-#         for mod,abbrev in zip(self.models.keys(), ['exp', 'q', 'sig']):
-#             if self.cfg.getboolean(mod + '_model') & hasattr(event, mod):
-#                 mod_results = getattr(event, mod)
-#                 results.update({f"{abbrev}_{k}" : v for k, v in mod_results.items()})
-        
-#         return results
-
-
-
 class DrydownModel:
 
-    popt_dict = {}
+    args = []
 
     def __init__(self, cfg, data, event):
 
@@ -142,21 +34,18 @@ class DrydownModel:
 
         self.type = None
 
-        if self.cfg["run_mode"] == "parallel":
-            current_thread = threading.current_thread()
-            current_thread.name = (f"{self.data.id[0]}, {self.data.id[1]}")
-            self.thread_name = current_thread.name
-        else:
-            self.thread_name = "main thread"
-
     def get_specs(self):
+        _specs = self._get_specs()
+        return {k : _specs.get(k, True) for k in self.args}
+
+    def _get_specs(self):
         specs = {
-            'fit_et' : self.cfg.getboolean('fit_et'),
-            'fit_theta_star' : self.cfg.getboolean('fit_theta_star'),
-            'fit_theta_0' : self.cfg.getboolean('fit_theta_0'),
-            # 'run_mode' : self.cfg.get('run_mode'),
+            'delta_theta' : self.cfg.getboolean('fit_theta_0'),
+            'k' : self.cfg.getboolean('fit_et'),
+            'theta_star' : self.cfg.getboolean('fit_theta_star'),
         }
         return specs
+
 
     def fit_event(self, event):
         """
@@ -184,30 +73,7 @@ class DrydownModel:
             log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
             results = None
         return results
-
-        # return self.results
-        
-    # @property
-    # def results(self):
-    #     if not hasattr(self, '_results'):
-    #         self._results = self.get_results(
-    #             self, self.event, self.popt, self.r_squared, self.theta_opt
-    #         )
-    #     return self._results
-
-    def get_results(self, event, popt, r_squared, y_opt):
-        return self._get_results(event, popt, r_squared, y_opt)
-
-    def _get_results(self, event, popt, r_squared, y_opt):
-        results = {v : popt[k] for k, v in self.popt_dict.items() if k < len(popt)}
-        results['r_squared'] = r_squared
-        results['theta_opt'] = y_opt.tolist()
-        if not 'delta_theta' in results:
-            results.update({
-                'delta_theta' : self.delta_theta(event),
-            })
-        return results
-
+    
     def fit(self, event):
         """
         Fit the nonlinear model to the data.
@@ -225,21 +91,9 @@ class DrydownModel:
             The optimal parameters, the r-squared value, and the optimal fit.
 
         """
-        # if force_PET:
-        #     mod = lambda t, delta_theta, q: self.model(t, delta_theta, event.pet, q, 1.0, 0.0)
-        # if not force_PET:
-        #     mod = lambda t, delta_theta, k, q: self.model(t, delta_theta, k, q, 1.0, 0.0)
-        # if fit_theta_star:
-        #     mod = lambda t, delta_theta, k, q, theta_star: self.model(t, delta_theta, k, q, theta_star, 0.0)
-        
-        # mod = lambda t, *params : self.model(t, *params, *args)
-
-        # self.popt, self.r_squared, self.theta_opt = self._fit_model(
-        #     event, self.model, self.bounds, self.p0, self._norm
-        # )
-        # return self.popt, self.r_squared, self.theta_opt
         return self._fit_model(event, self.model, self.bounds, self.p0, self._norm)
 
+    # COME BACK TO THIS
     def _fit_model(self, event, model, bounds, p0, norm=False):
         """
         Base function for fitting models
@@ -264,44 +118,80 @@ class DrydownModel:
 
         """
         try:
-            if norm:
-                # It's easier to fit q model with normalized soil moisture timeseries
-                y_fit = event.theta_norm
-            else:
-                y_fit = event.theta
-
+            # y
+            y_fit = event.theta_norm if norm else event.theta
             # Fit the model
             popt, _ = curve_fit(
                 f=model, xdata=event.t, ydata=y_fit, p0=p0, bounds=bounds
             )
-
-            # Get the optimal fit
+            # Get optimal fit
             y_opt = model(event.t, *popt)
-
             # Denormalize
             if norm:
-                # theta
-                y_opt = y_opt * (event.theta_star - event.theta_w) + event.theta_w
-                # delta_theta
-                popt[0] = popt[0] * (event.theta_star - event.theta_w)
-
-            # Calculate the residuals
-            residuals = event.theta - y_opt #event.y - y_opt
+                y_opt = self._denormalize_theta(y_opt, event)
+            # Calculate residuals
+            residuals = event.theta - y_opt
             ss_res = np.sum(residuals**2)
-            # r_squared = 1 - ss_res / np.sum((event.y - np.nanmean(event.y)) ** 2)
             r_squared = 1 - ss_res / np.sum((event.theta - np.nanmean(event.theta)) ** 2)
-
-
+            
             return popt, r_squared, y_opt
-
+        
         except Exception as e:
             log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
 
+
+    def get_results(self, event, popt, r_squared, y_opt):
+        return self._get_results(event, popt, r_squared, y_opt)
+
+    def _get_results(self, event, popt, r_squared, y_opt):
+        # Get results
+        results = {p : popt[i] for i,p in enumerate(self.args) if self.specs[p]}
+        if not 'delta_theta' in results:
+            results.update({
+                'delta_theta' : self.params['delta_theta'],
+            })
+        # Denormalize if necessary
+        if self._norm:
+            self.denormalize_params(results, event)
+        results['r_squared'] = r_squared
+        results['theta_opt'] = y_opt.tolist()
+        return results
+
+    def normalize_params(self, params, event):
+        for name, p in params.items():
+            if name in ['delta_theta', 'k']:
+                params[name] = self._normalize_param(p, event)
+            elif name in ['theta_0', 'theta_star', 'theta_w']:
+                params[name] = self._normalize_theta(p, event)
+        # return params
+
+    def _normalize_param(self, a, event):
+        return a / (event.theta_star - event.theta_w)
+
+    def _normalize_theta(self, theta, event):
+        return (theta - event.theta_w) / (event.theta_star - event.theta_w)
+
+    def denormalize_params(self, params, event):
+        for name, p in params.items():
+            if name in ['delta_theta', 'k']:
+                params[name] = self._denormalize_param(p, event)
+            elif name in ['theta_0', 'theta_star', 'theta_w']:
+                params[name] = self._denormalize_theta(p, event)
+        # return params
+    def _denormalize_param(self, a, event):
+        return a * (event.theta_star - event.theta_w)
+    
+    def _denormalize_theta(self, theta, event):
+        return theta * (event.theta_star - event.theta_w) + event.theta_w
+
     @property
-    def bounds(self):
-        if not hasattr(self, '_bounds'):
-            self._bounds = self._get_bounds(self.params)
-        return self._bounds
+    def model(self):
+        if not hasattr(self, '_model'):
+            self._model = self._get_model()
+        return self._model
+    
+    def _get_model(self):
+        raise NotImplementedError
 
     @property
     def params(self):
@@ -309,6 +199,12 @@ class DrydownModel:
             # self._params = self.get_params(self.event)
             self.set_params(self.event)
         return self._params
+    
+    @property
+    def bounds(self):
+        if not hasattr(self, '_bounds'):
+            self._bounds = self._get_bounds(self.params)
+        return self._bounds
 
     @property
     def p0(self):
@@ -316,19 +212,23 @@ class DrydownModel:
             self._p0 = self._get_p0(self.params)
         return self._p0
 
-    def _get_bounds(self, params : list):
+    def set_params(self):
+        raise NotImplementedError
+
+    def _get_bounds(self, params : dict):
         log.info(f"Getting bounds for event {self.event} model")
         bounds = (
-            [p[0] for p in params],
-            [p[1] for p in params]
+            [params[k][0] for k in self.args if self.specs[k]],
+            [params[k][1] for k in self.args if self.specs[k]]
         )
         return bounds
 
-    def _get_p0(self, params : list):
-        return [p[2] for p in params]
+    def _get_p0(self, params : dict):
+        return [params[k][2] for k in self.args if self.specs[k]]
+    
 
     def theta_0(self, event):
-        if self.specs['fit_theta_0']:
+        if self.specs['delta_theta']:
             return np.array([
                 event.theta_w,  # min_theta_0
                 # event.theta_star, # max_theta_0
@@ -342,17 +242,7 @@ class DrydownModel:
             ])
         else:
             return np.minimum(event.event_max, self.data.theta_fc)
-        # return np.array([
-        #     event.theta_w,  # min_theta_0
-        #     # event.theta_star, # max_theta_0
-        #     np.minimum(     # max_theta_0
-        #         event.theta_star, self.data.theta_fc
-        #     ),              # max_theta_0
-        #     # event.event_range + event.theta_w # ini_theta_0
-        #     np.minimum(
-        #         event.theta_star, self.data.theta_fc
-        #     )
-        # ])
+
 
     def theta_w(self, event):
         return np.array([
@@ -362,7 +252,7 @@ class DrydownModel:
         ])
 
     def et_max(self, event):
-        if not self.specs['fit_et']:
+        if not self.specs['k']:
             return event.PET
         else:
             return np.array([
@@ -387,34 +277,19 @@ class DrydownModel:
 
 
 
-
 class ExponentialModel(DrydownModel):
 
-    def __init__(self, cfg, data, event):
+    args = ['delta_theta', 'theta_w', 'tau']
 
+    def __init__(self, cfg, data, event):
         super().__init__(cfg, data, event)
 
         self.type = 'exponential'
         # Set the model
-        self.model = exponential_model
+        # self.model = exponential_model
 
         self._norm = False
 
-        self.popt_dict = self._get_popt_dict()
-    
-    def _get_popt_dict(self):
-        popt_dict = {
-            0 : 'delta_theta',
-            1 : 'theta_w',
-            2 : 'tau',
-        }
-        if not self.specs['fit_theta_0']:
-            popt_dict = {
-                0 : 'theta_w',
-                1 : 'tau',
-            }
-        return popt_dict
-    
     def set_params(self, event, norm=False):
         """
         Get the parameters of the exponential model.
@@ -440,17 +315,22 @@ class ExponentialModel(DrydownModel):
 
         tau = self.tau()
 
-        params = [delta_theta, theta_w, tau]
-
-        if not self.specs['fit_theta_0']:
-            params = [theta_w, tau]
-            self.model = lambda t, theta_w, tau: exponential_model(
-                t, delta_theta, theta_w, tau
-            )
+        params = {
+            'delta_theta' : delta_theta,
+            'theta_0' : theta_0,
+            'theta_w' : theta_w,
+            'tau' : tau
+        }
 
         self._params = params
-        # return params
-        
+
+    def _get_model(self):
+        if not self.specs['delta_theta']:
+            return lambda t, theta_w, tau: exponential_model(
+                t, self.params['delta_theta'], theta_w, tau
+            )
+        else:
+            return exponential_model
 
     def tau(self):
         return np.array([
@@ -459,7 +339,6 @@ class ExponentialModel(DrydownModel):
             1.0 # ini_tau
         ])
     
-    # Exponential
     def get_results(self, event, popt, r_squared, y_opt):
         results = self._get_results(event, popt, r_squared, y_opt)
         results.update({
@@ -475,59 +354,18 @@ class ExponentialModel(DrydownModel):
 
 class NonlinearModel(DrydownModel):
 
-    
+    args = ['delta_theta', 'k', 'q', 'theta_star']
+
     def __init__(self, cfg, data, event):
-
         super().__init__(cfg, data, event)
+        self.type = 'nonlinear'
 
-        self.type = 'q'
-        # Set the model
-        self.model = q_model
+        # self.model = q_model
 
-        if not self.specs['fit_theta_star']:
-            self._norm = True
-
-        self.popt_dict = self._get_popt_dict()
-    
-    def _get_popt_dict(self):
-        popt_dict = {
-            0 : 'delta_theta',
-            1 : 'k', #'q',
-            2 : 'q', #'k',
-            3 : 'theta_star',
-        }
-        if not self.specs['fit_theta_0']:
-            popt_dict = {
-                0 : 'k', #'q',
-                1 : 'q', #'k',
-                2 : 'theta_star',
-            }
-        return popt_dict
-    
-    def __repr__(self):
-        return f"NonlinearModel"
+        self._norm = not self.specs['theta_star']   # if fitting theta_star, don't normalize
 
 
-    # @property
-    # def params(self):
-    #     if not hasattr(self, '_params'):
-    #         # self._params = self.get_params(self.event)
-    #         self.set_params(self.event)
-    #     return self._params
-
-    # @property
-    # def args(self):
-    #     if not hasattr(self, '_args'):
-    #         self.set_params(self.event)
-    #     return self._args
-
-    @property
-    def args(self):
-        if not hasattr(self, '_args'):
-            self.set_params(self.event)
-        return self._args
-    
-    def set_params(self, event, norm=True):
+    def set_params(self, event):
         """
         Get the parameters of the nonlinear model.
 
@@ -535,8 +373,6 @@ class NonlinearModel(DrydownModel):
         ----------
         event : Event
             The event to get the parameters for.
-        norm : bool, optional
-            Whether to normalize the data before fitting. The default is False.
 
         Returns
         -------
@@ -544,73 +380,90 @@ class NonlinearModel(DrydownModel):
             The optimal parameters, the r-squared value, and the optimal fit.
 
         """
-        # theta_0 = self.theta_0(event)
-        # et_max = self.et_max(event)
-        log.info(f"Setting params for event {event.start_date}")
         delta_theta = self.delta_theta(event)
+
         k = self.k(event)
 
         q = self.q()
 
-        theta_w = event.theta_w #self.theta_w(event)
         theta_star = self.theta_star(event)
 
-        # Get list of parameters
-        params = [delta_theta, k, q]    # parameters to be fitted
-        args = [theta_star, theta_w]    # arguments to be passed (constant params)
+        theta_w = event.theta_w
 
-        if self.specs['fit_theta_star']:
-            theta_star = self.theta_star(event)
-            if self.specs['fit_theta_0']:
-                params.append(theta_star)
-                args = [theta_w]
-                mod = lambda t, delta_theta, k, q, theta_star: q_model( #self.model(
-                    t, delta_theta, k, q, theta_star, self.data.min_sm #event.theta_w
-                )
-            else:
-                params = [k, q, theta_star]
-                args = [delta_theta, theta_w]
-                mod = lambda t, k, q, theta_star: q_model( #self.model(
-                    t, delta_theta, k, q, theta_star, self.data.min_sm #event.theta_w
-                )
+        params = {
+            'delta_theta' : delta_theta,
+            'k' : k,
+            'q' : q,
+            'theta_star' : theta_star,
+            'theta_w' : theta_w,
+        }
 
-
-        elif self._norm:
-            params = self.normalize_params([delta_theta, k], event) + [q]
-            # params = [params[i] for i in [0, 2, 1]]     # put back in order: delta_theta, q, k
-            args = [self.normalize_theta(theta, event) for theta in args] # or just [1.0, 0.0]
-
-            mod = lambda t, delta_theta, k, q: q_model( #self.model(
-                t, delta_theta, k, q, 1.0, 0.0
-            )
-
-            if not self.specs['fit_et']:
-                params = params[:-1]
-                args = [event.pet] + args
-
-                mod = lambda t, delta_theta, q: q_model( #self.model(
-                    t, delta_theta, event.pet, q, 1.0, 0.0
-                )
-                self.popt_dict = {
-                    0 : 'delta_theta',
-                    1 : 'q',
-                }
-
-        self.model = mod # lambda t, *params: self.model(t, *params, *args)
+        if self._norm:
+            self.normalize_params(params, event)
 
         self._params = params
-        self._args = args
-        # return params, args
 
-    def normalize_params(self, params, event):
-        # p_norm = p / (event.theta_star - event.theta_w)
-        return [self._normalize_param(p, event) for p in params]
+    def _get_model(self):
+        if self.specs['theta_star']: 
+            # THIS IS THE DEFAULT OLD VERSION (STAR)
+            if self.specs['k'] and self.specs['delta_theta']:
+                return lambda t, delta_theta, k, q, theta_star: q_model(
+                    t, delta_theta, k, q, 
+                    theta_star, self.params['theta_w']
+                )
+            elif self.specs['k'] and not self.specs['delta_theta']:
+                return lambda t, k, q, theta_star: q_model(
+                    t, self.params['delta_theta'], k, q, 
+                    theta_star, self.params['theta_w']
+                )
+            elif not self.specs['k'] and self.specs['delta_theta']:
+                return lambda t, delta_theta, q, theta_star: q_model(
+                    t, delta_theta, self.params['k'], q, 
+                    theta_star, self.params['theta_w']
+                )
+            elif not self.specs['k'] and not self.specs['delta_theta']:
+                return lambda t, q, theta_star: q_model(
+                    t, self.params['delta_theta'], self.params['k'], q, 
+                    theta_star, self.params['theta_w']
+                )
+        else:
+            # THIS IS THE DEFAULT OLD VERSION (ET)
+            if self.specs['k'] and self.specs['delta_theta']:
+                return lambda t, delta_theta, k, q: q_model(
+                    t, delta_theta, k, q, 
+                    self.params['theta_star'], self.params['theta_w']
+                )
+            elif self.specs['k'] and not self.specs['delta_theta']:
+                return lambda t, k, q: q_model(
+                    t, self.params['delta_theta'], k, q, 
+                    self.params['theta_star'], self.params['theta_w']
+                )
+            elif not self.specs['k'] and self.specs['delta_theta']:
+                return lambda t, delta_theta, q: q_model(
+                    t, delta_theta, self.params['k'], q, 
+                    self.params['theta_star'], self.params['theta_w']
+                )
+            elif not self.specs['k'] and not self.specs['delta_theta']:
+                return lambda t, q: q_model(
+                    t, self.params['delta_theta'], self.params['k'], q, 
+                    self.params['theta_star'], self.params['theta_w']
+                )
+            
+    def get_results(self, event, popt, r_squared, y_opt):
+        results = self._get_results(event, popt, r_squared, y_opt)
 
-    def _normalize_param(self, a, event):
-        return a / (event.theta_star - event.theta_w)
-
-    def normalize_theta(self, theta, event):
-        return (theta - event.theta_w) / (event.theta_star - event.theta_w)
+        results.update({
+            'theta_0' : results['delta_theta'] + event.theta_w,
+        })
+        if 'k' in results:
+            # Denormalize 
+            # This shouldn't be necessary anymore, but need to verify...
+            # if self._norm:
+            #     results['k'] = results['k'] * (event.theta_star - event.theta_w)
+            results.update({
+                'ET_max' : (self.data.z * 1000) * results['k']
+            })
+        return results
 
     def q(self):
         return np.array([
@@ -620,36 +473,16 @@ class NonlinearModel(DrydownModel):
         ])
 
     def theta_star(self, event):
-        return np.array([
-            0.0, # min_theta_star
-            self.data.theta_fc, # max_theta_star
-            event.theta_star # ini_theta_star
-        ])
+        if not self.specs['theta_star']:
+            return event.theta_star
+        else:
+            return np.array([
+                0.0, # min_theta_star
+                self.data.theta_fc, # max_theta_star
+                event.theta_star # ini_theta_star
+            ])
 
-    def get_results(self, event, popt, r_squared, y_opt):
-        results = self._get_results(event, popt, r_squared, y_opt)
-        # # TODO: Make this cleaner; this is just to add if this isn't fit.
-        # if not 'delta_theta' in results:
-        #     results.update({
-        #         'delta_theta' : self.delta_theta(event),
-        #     })
-        results.update({
-            'theta_0' : results['delta_theta'] + event.theta_w,
-        })
-        if 'k' in results:
-            # Denormalize 
-            # TODO: Figure out how to do this not here.
-            if self._norm:
-                results['k'] = results['k'] * (event.theta_star - event.theta_w)
-            results.update({
-                'ET_max' : (self.data.z * 1000) * results['k']
-            })
-        return results
 
-# Types of runs:
-# 1. Fit theta_star w/o normalization
-# 2. Fit ET w/ normalization
-# 3. Force ETmax w/ normalization
 
 class SigmoidModel(DrydownModel):
     
