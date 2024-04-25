@@ -329,7 +329,10 @@ class DrydownModel:
             np.minimum(     # max_theta_0
                 event.theta_star, self.data.theta_fc
             ),              # max_theta_0
-            event.event_range + event.theta_w # ini_theta_0
+            # event.event_range + event.theta_w # ini_theta_0
+            np.minimum(
+                event.theta_star, self.data.theta_fc
+            )
         ])
 
     def theta_w(self, event):
