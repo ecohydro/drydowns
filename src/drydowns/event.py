@@ -15,7 +15,8 @@ class Event:
         self, #event_dict
         start_date, end_date, soil_moisture, #norm_sm, min_sm, max_sm
         theta_w, theta_star, z,
-        event_data=None
+        event_data=None,
+        depth=np.nan,
     ):
         self.start_date = start_date
         self.end_date = end_date
@@ -25,6 +26,7 @@ class Event:
 
         self.pet = self.calc_pet() #np.nan
         self.z = z
+        self._depth = depth
         # Model params        
         self.theta_star = theta_star
         self.theta_w = theta_w
@@ -53,6 +55,7 @@ class Event:
 
     def describe(self):
         return {
+            'dz' : self._depth,
             'z_m' : self.z,
             'event_start': self.start_date,
             'event_end': self.end_date,
@@ -72,6 +75,13 @@ class Event:
     def calc_precip(self, p_col='precip'):
         precip = self.event_data[p_col].sum()
         return precip
+    
+    def calc_gpp(self, gpp_col='GPP'):
+        if gpp_col in self.event_data.columns:
+            gpp = self.event_data[gpp_col].sum()
+        else:
+            gpp = np.nan
+        return gpp
     
     def calc_pet(self, et_col='PET'):
         # TODO: Check for ET col + set default if DNE
@@ -210,7 +220,7 @@ class Event:
         cols = [
             'precip_total60d', 'precip_total_month',
             'pet_total60d', 'pet_total_month',
-            'LAI'
+            'LAI', 
         ]
 
         anc = {

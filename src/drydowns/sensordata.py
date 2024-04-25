@@ -211,11 +211,17 @@ class SensorData(Data):
         # Mask for differences below threshold
         threshold = self._calc_ds_dt_threshold(min_diff)
         mask_diff = self.df[diff_col].shift(-1) < -threshold
+        # Find starts
+        start_dates = self._find_starts(mask_diff, min_dur)
+        return start_dates
+
+    
+    def _find_starts(self, mask, min_dur=4):
         # Indexer for rolling window (forward-looking)
         indexer = pd.api.indexers.FixedForwardWindowIndexer(window_size=min_dur)
         # Calculate number of upcoming days where differences are below threshold + 
         # mask for duration >= min_dur
-        mask_dur = mask_diff.rolling(window=indexer, min_periods=min_dur).sum() >= min_dur
+        mask_dur = mask.rolling(window=indexer, min_periods=min_dur).sum() >= min_dur
 
         events = (~mask_dur).cumsum()
         valid = events[mask_dur]
@@ -236,9 +242,9 @@ class SensorData(Data):
         end = (self.df[start_date:][diff_col].shift(-1) > -threshold).idxmax()
         return end
     
-    def _calc_ds_dt_threshold(self, min_diff=0.5):
+    def _calc_ds_dt_threshold(self, et=0.5):
         # Calculate the threshold for ds/dt
-        return 1 * min_diff / (self.z * 1000)
+        return 1 * et / (self.z * 1000)
 
 
     # def label_events(self, event_dates):
@@ -313,6 +319,7 @@ class TowerSensorData(SensorData):
 
         # z (depth of sensor) [m]
         self.z = float(self.info['HEIGHT']) * -1.
+        self._depth = float(self.info['HEIGHT']) * -1.
 
         self.df = self.get_data(sensor_grp)
 
@@ -395,7 +402,8 @@ class ISMNSensorData(SensorData):
     _col_dict = {
         'precip' : 'P',
         'PET' : 'PET',
-        'LAI' : 'LAI'
+        'LAI' : 'LAI',
+        'GPP' : 'GPP',
     }
 
     
@@ -411,7 +419,11 @@ class ISMNSensorData(SensorData):
         # self.info = self._get_meta(sensor_name)
 
         # z (depth of sensor) [m]
-        self.z = float(self.info.get('depth_to'))
+        self._depth = self._get_depth()
+        self.z = self._get_dz(
+            use_depth=self.cfg.getboolean('use_depth', False),
+            dz = self.cfg.get('dz', 0.05)
+        )
 
         # soil info
         # self.soil_texture = self.info.get('soil_texture')
@@ -444,6 +456,24 @@ class ISMNSensorData(SensorData):
         ].squeeze().to_dict()
         
         return sensor_meta
+
+    def _get_dz(self, default=0.05, use_depth=False, dz='depth_to'):
+        if use_depth:
+            return self.info['depth_to']
+        dz = self.info['depth_to'] - self.info['depth_from']
+        if dz == 0:
+            if dz == 'depth_to':
+                dz = self._depth
+            elif dz == 'z_diff':
+                dz = self.info['z_diff']
+            # dz = default if default > self._depth else self._depth
+            else:
+                dz = np.minimum(default, self._depth)
+        return dz
+
+    def _get_depth(self):
+        return np.mean([self.info['depth_from'], self.info['depth_to']])
+
 
     # def get_data(self, sensor_col):
     def get_data(self, sensor_id):

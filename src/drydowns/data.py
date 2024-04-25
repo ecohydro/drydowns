@@ -41,6 +41,7 @@ class Data:
 
         # z (depth of soil column) [m]
         self.z = 0.05
+        self._depth = np.nan
 
         # info
         self.info = self._get_meta(**kwargs)
@@ -233,13 +234,14 @@ class Data:
                 theta_w = self.min_sm,
                 theta_star = self._get_theta_star(),
                 z = self.z,
+                depth = self._depth,
                 event_data = self.get_event_data(row.start_date, row.end_date)
             ) 
             for i, row in events_df[['start_date','end_date','soil_moisture']].iterrows()
         ]
         return events
 
-    def get_event_data(self, start, end, cols=['precip', 'PET', 'LAI']):
+    def get_event_data(self, start, end, cols=['precip', 'PET', 'LAI', 'GPP']):
         new_cols = [col for col in cols if col not in self.df.columns]
         if new_cols:
             self.add_data_cols(new_cols)
