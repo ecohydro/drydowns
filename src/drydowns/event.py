@@ -128,79 +128,79 @@ class Event:
         setattr(self, mod_type, results)
     
 
-    def add_attributes(
-        self, model_type="", popt=[], r_squared=np.nan, y_opt=[], 
-        force_PET=False, fit_theta_star=False
-    ):
-        if model_type == "exponential":
-            self.exponential = {
-                "delta_theta": popt[0],
-                # "theta_0": popt[0] + popt[1],
-                "theta_w": popt[1],
-                "tau": popt[2],
-                "r_squared": r_squared,
-                "theta_opt": y_opt.tolist(),
-                # "k" : (self.theta_star - popt[1]) / popt[2],
-                # "ET_max" : (self.z * 1000) * ((self.theta_star - popt[1]) / popt[2])
-            }
-            self.exponential.update({
-                    "theta_0": self.exponential['delta_theta'] + self.exponential['theta_w'],
-                    "k": (self.theta_star - self.exponential['theta_w']) / self.exponential['tau'],
-                    "ET_max": (self.z * 1000) * (self.theta_star - self.exponential['theta_w']) / self.exponential['tau'],
-            })
+    # def add_attributes(
+    #     self, model_type="", popt=[], r_squared=np.nan, y_opt=[], 
+    #     force_PET=False, fit_theta_star=False
+    # ):
+    #     if model_type == "exponential":
+    #         self.exponential = {
+    #             "delta_theta": popt[0],
+    #             # "theta_0": popt[0] + popt[1],
+    #             "theta_w": popt[1],
+    #             "tau": popt[2],
+    #             "r_squared": r_squared,
+    #             "theta_opt": y_opt.tolist(),
+    #             # "k" : (self.theta_star - popt[1]) / popt[2],
+    #             # "ET_max" : (self.z * 1000) * ((self.theta_star - popt[1]) / popt[2])
+    #         }
+    #         self.exponential.update({
+    #                 "theta_0": self.exponential['delta_theta'] + self.exponential['theta_w'],
+    #                 "k": (self.theta_star - self.exponential['theta_w']) / self.exponential['tau'],
+    #                 "ET_max": (self.z * 1000) * (self.theta_star - self.exponential['theta_w']) / self.exponential['tau'],
+    #         })
 
-        if model_type == "q":
-            if fit_theta_star:
-                self.q = {
-                    "delta_theta" : popt[0],
-                    # "theta_0" : popt[0] + self.theta_w,
-                    "k": popt[1],
-                    "q": popt[2],
-                    "theta_star": popt[3],
-                    # "delta_theta": popt[2],
-                    # "theta_0" : popt[2] + self.theta_w,
-                    "r_squared": r_squared,
-                    "theta_opt": y_opt.tolist(),
-                    # "ET_max" : (self.z * 1000) * popt[1]
-                }
-            else:
-                if not force_PET:
-                    self.q = {
-                        "delta_theta" : popt[0],
-                        # "theta_0" : popt[0] + self.theta_w,
-                        # Multiplying by (theta_star - theta_w) denormalizes k
-                        "k": popt[1] * (self.theta_star - self.theta_w), #popt[0],
-                        "q": popt[2], #popt[1],
-                        # "delta_theta": popt[2],
-                        # "theta_0" : popt[2] + self.theta_w,
-                        "r_squared": r_squared,
-                        "theta_opt": y_opt.tolist(),
-                        # "ET_max" : (self.z * 1000) * popt[1]
-                    }
-                else:
-                    self.q = {
-                        "delta_theta": popt[0],
-                        # "theta_0" : popt[0] + self.theta_w,
-                        "q": popt[1],
-                        "r_squared": r_squared,
-                        "theta_opt": y_opt.tolist(),
-                    }
-            self.q.update({
-                "theta_0": self.q['delta_theta'] + self.theta_w
-            })
-            if 'k' in self.q:
-                self.q.update({
-                    "ET_max": (self.z * 1000) * self.q['k']
-                })
+    #     if model_type == "q":
+    #         if fit_theta_star:
+    #             self.q = {
+    #                 "delta_theta" : popt[0],
+    #                 # "theta_0" : popt[0] + self.theta_w,
+    #                 "k": popt[1],
+    #                 "q": popt[2],
+    #                 "theta_star": popt[3],
+    #                 # "delta_theta": popt[2],
+    #                 # "theta_0" : popt[2] + self.theta_w,
+    #                 "r_squared": r_squared,
+    #                 "theta_opt": y_opt.tolist(),
+    #                 # "ET_max" : (self.z * 1000) * popt[1]
+    #             }
+    #         else:
+    #             if not force_PET:
+    #                 self.q = {
+    #                     "delta_theta" : popt[0],
+    #                     # "theta_0" : popt[0] + self.theta_w,
+    #                     # Multiplying by (theta_star - theta_w) denormalizes k
+    #                     "k": popt[1] * (self.theta_star - self.theta_w), #popt[0],
+    #                     "q": popt[2], #popt[1],
+    #                     # "delta_theta": popt[2],
+    #                     # "theta_0" : popt[2] + self.theta_w,
+    #                     "r_squared": r_squared,
+    #                     "theta_opt": y_opt.tolist(),
+    #                     # "ET_max" : (self.z * 1000) * popt[1]
+    #                 }
+    #             else:
+    #                 self.q = {
+    #                     "delta_theta": popt[0],
+    #                     # "theta_0" : popt[0] + self.theta_w,
+    #                     "q": popt[1],
+    #                     "r_squared": r_squared,
+    #                     "theta_opt": y_opt.tolist(),
+    #                 }
+    #         self.q.update({
+    #             "theta_0": self.q['delta_theta'] + self.theta_w
+    #         })
+    #         if 'k' in self.q:
+    #             self.q.update({
+    #                 "ET_max": (self.z * 1000) * self.q['k']
+    #             })
 
-        if model_type == "sigmoid":
-            self.sigmoid = {
-                "theta_50": popt[0],
-                "k": popt[1],
-                "a": popt[2],
-                "r_squared": r_squared,
-                "theta_opt": y_opt.tolist(),
-            }
+    #     if model_type == "sigmoid":
+    #         self.sigmoid = {
+    #             "theta_50": popt[0],
+    #             "k": popt[1],
+    #             "a": popt[2],
+    #             "r_squared": r_squared,
+    #             "theta_opt": y_opt.tolist(),
+    #         }
     
     @property
     def ancillary(self):
