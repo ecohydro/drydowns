@@ -55,8 +55,8 @@ class Event:
 
     def describe(self):
         return {
-            'dz' : self._depth,
-            'z_m' : self.z,
+            'z_m' : self._depth,
+            'dz' : self.z,
             'event_start': self.start_date,
             'event_end': self.end_date,
             'duration': (self.end_date - self.start_date).days,
