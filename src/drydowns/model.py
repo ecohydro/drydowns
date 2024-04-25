@@ -152,7 +152,9 @@ class DrydownModel:
 
     def _get_results(self, event, popt, r_squared, y_opt):
         # Get results
-        results = {p : popt[i] for i,p in enumerate(self.args) if self.specs[p]}
+        keys = [p for p in self.args if self.specs[p]]
+        results = {p : popt[i] for i, p in enumerate(keys)}
+        # results = {p : popt[i] for i,p in enumerate(self.args) if self.specs[p]}
         if not 'delta_theta' in results:
             results.update({
                 'delta_theta' : self.params['delta_theta'],
