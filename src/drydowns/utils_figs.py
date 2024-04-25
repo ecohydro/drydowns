@@ -75,7 +75,7 @@ def plot(
     ):
     # if hue:
     sns.scatterplot(
-        x=x, y=y, hue=hue, data=df, ax=ax, label=label,
+        x=x, y=y, hue=hue, data=df, ax=ax, #label=label,
         **kwargs
     )
     # else:
@@ -111,7 +111,7 @@ def plot_theta(
         legend=True, kwargs={'s' : 12, 'linewidth' : 0, 'alpha' : 0.8},
     ):
     plot(
-        ax=ax, df=df, x='t', y='theta', hue=hue, label='Observed', 
+        ax=ax, df=df, x='t', y='theta', hue=hue, #label='Observed', 
         xlim=xlim, ylim=ylim, legend=legend,kwargs=kwargs
     )
 
@@ -130,7 +130,7 @@ def plot_dtheta(
     if units == 'mm':
         y += '_mm'
     plot(
-        ax=ax, df=df, x='theta', y=y, hue=hue, label='Observed', 
+        ax=ax, df=df, x='theta', y=y, hue=hue, #label='Observed', 
         xlim=xlim, ylim=ylim, legend=legend, kwargs=kwargs
     )
     return ax
