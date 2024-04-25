@@ -34,6 +34,13 @@ class DrydownModel:
 
         self.type = None
 
+        if self.cfg["run_mode"] == "parallel":
+            current_thread = threading.current_thread()
+            current_thread.name = (f"{self.data.id[0]}, {self.data.id[1]}")
+            self.thread_name = current_thread.name
+        else:
+            self.thread_name = "main thread"
+
     def get_specs(self):
         _specs = self._get_specs()
         return {k : _specs.get(k, True) for k in self.args}
