@@ -365,7 +365,8 @@ class NonlinearModel(DrydownModel):
 
     def __init__(self, cfg, data, event):
         super().__init__(cfg, data, event)
-        self.type = 'nonlinear'
+        
+        self.type = 'q'
 
         # self.model = q_model
 
