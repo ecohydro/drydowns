@@ -11,7 +11,7 @@ from scipy.optimize import minimize
 # from .towerevent import SensorEvent
 
 
-from .functions import objective_function, exponential_model, q_model, loss_sigmoid
+from .functions import objective_function, exponential_model, q_model, loss_sigmoid, q_model_piecewise
 from .mylogger import getLogger
 
 # Create a logger
@@ -417,12 +417,12 @@ class NonlinearModel(DrydownModel):
         if self.specs['theta_star']: 
             # THIS IS THE DEFAULT OLD VERSION (STAR)
             if self.specs['k'] and self.specs['delta_theta']:
-                return lambda t, delta_theta, k, q, theta_star: q_model(
+                return lambda t, delta_theta, k, q, theta_star: q_model_piecewise( #q_model(
                     t, delta_theta, k, q, 
                     theta_star, self.params['theta_w']
                 )
             elif self.specs['k'] and not self.specs['delta_theta']:
-                return lambda t, k, q, theta_star: q_model(
+                return lambda t, k, q, theta_star: q_model_piecewise( #q_model(
                     t, self.params['delta_theta'], k, q, 
                     theta_star, self.params['theta_w']
                 )

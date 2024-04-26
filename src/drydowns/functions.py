@@ -50,6 +50,22 @@ def q_model(t, delta_theta, k, q, theta_star=1.0, theta_w=0.0):
     return (-k * a * t + b) ** (1 / (1 - q)) + theta_w
 
 
+
+def q_model_piecewise(t, delta_theta, k, q, theta_star=0.8, theta_w=0.0):
+
+    theta_0 = delta_theta + theta_w
+
+    t_star = (theta_0 - theta_star)/k # Time it takes from theta_0 to theta_star 
+
+    b = (theta_0 - theta_w) ** (1 - q)
+
+    a = (1 - q) / ((theta_star - theta_w) ** q)
+
+    return np.where(t_star > t, -k * t+theta_0, (-k * a * t + b) ** (1 / (1 - q)) + theta_w)
+
+
+
+
 def loss_sigmoid(t, theta, theta_50, k, a):
     """
     Calculate the loss function (dtheta/dt vs theta relationship) using sigmoid model
