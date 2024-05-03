@@ -221,7 +221,15 @@ class Data:
         ).reset_index(drop=True)
         events.rename(columns={col: 'soil_moisture'}, inplace=True)
 
+        # self.get_end_dsdt(events, diff_col='ds_dt')
+
         return events
+
+    # def get_end_dsdt(self, events_df, diff_col='ds_dt'):
+    #      end_dsdt = self.df.loc[events_df.end_date, diff_col].reset_index()
+    #     #  events_df['end_dsdt'] = end_dsdt[diff_col]
+    #      events_df['end_dsdt_mm'] = end_dsdt[diff_col] * 1000 * self.z
+    
     
     def filter_events(self):
         # raise NotImplementedError

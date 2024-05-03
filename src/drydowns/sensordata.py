@@ -174,7 +174,7 @@ class SensorData(Data):
             return None
             # return None
         self.events_df = self.extract_events(events)
-        
+        # self.get_end_dsdt()
         # events[['min_sm', 'max_sm']] = self.df.groupby('Event')['SWC'].agg(['min', 'max'])
         # events['range_sm'] = events.max_sm - events.min_sm
 
@@ -192,6 +192,7 @@ class SensorData(Data):
     
     def calc_dsdt(self, df, col):
         df['ds_dt'] = df[col].diff()
+        df['ds_dt1'] = df[col].diff().shift(-1)
 
     def find_events(self, diff_col='ds_dt',): #min_dur, start_diff, end_diff):
         # Find start dates of events
@@ -245,6 +246,12 @@ class SensorData(Data):
     def _calc_ds_dt_threshold(self, et=0.5):
         # Calculate the threshold for ds/dt
         return 1 * et / (self.z * 1000)
+
+    # def get_end_dsdt(self, diff_col='ds_dt'):
+    #      end_dsdt = self.df.loc[self.events_df.end_date, diff_col].reset_index()
+    #      self.events_df['end_dsdt'] = end_dsdt[diff_col]
+    #      self.events_df['end_dsdt_mm'] = end_dsdt[diff_col] * 1000 * self.z
+
 
 
     # def label_events(self, event_dates):

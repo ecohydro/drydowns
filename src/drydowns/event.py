@@ -36,6 +36,8 @@ class Event:
         self.event_min = np.nanmin(self.soil_moisture)
         self.event_max = np.nanmax(self.soil_moisture)
         self.event_range = self.event_max - self.event_min
+
+        self._end_dsdt = self.event_data['ds_dt1'].iloc[-1] * 1000 * self.z
         # # Read the data
         # self.start_date = event_dict["start"]
         # self.end_date = event_dict["end"]
@@ -62,6 +64,7 @@ class Event:
             'duration': (self.end_date - self.start_date).days,
             'time': self.t,
             'theta': self.theta,
+            'end_dsdt_mm' : self._end_dsdt,
             # 'event_min': self.event_min,
             # 'event_max': self.event_max,
             # 'event_range': self.event_range,

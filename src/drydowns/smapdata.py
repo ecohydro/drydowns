@@ -369,6 +369,7 @@ class SMAPData(Data):
         df.loc[df[col].shift(-1).isna(), "ds_dt"] = np.nan
 
         df["ds_dt"] = df["ds_dt"].ffill(limit=5)
+        df['ds_dt1'] = df[col].diff().shift(-1)     # TODO: Need to look at this since dsdt is already shifted
 
         return df
 
