@@ -67,6 +67,7 @@ class DrydownModelHandler:
                 # TODO: Figure out why this is necessary. May need to remove params
                 # as a property + set separately. Might be bc set_params calls self.event?
                 # (still shouldn't matter, but it appears to)
+                # (It's bc the model gets reset. This might be fixed now.)
                 model.fit_event(event)
     
     def get_results(self):

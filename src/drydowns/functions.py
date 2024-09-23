@@ -5,7 +5,8 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
 
 
-def exponential_model(t, delta_theta, theta_w, tau):
+# def exponential_model(t, delta_theta, theta_w, tau):
+def exponential_model(t, theta_0, theta_w, tau):
     """
     Calculate the drydown curve for soil moisture over time using non-linear plant stress model.
 
@@ -23,11 +24,13 @@ def exponential_model(t, delta_theta, theta_w, tau):
         Global characterization of surface soil moisture drydowns.
         Geophys. Res. Lett. 44(8): 3682–3690. doi: 10.1002/2017GL072819.
     """
+    delta_theta = theta_0 - theta_w
     return delta_theta * np.exp(-t / tau) + theta_w
 
 
 # def q_model(t, k, q, delta_theta, theta_star=1.0, theta_w=0.0):
-def q_model(t, delta_theta, k, q, theta_star=1.0, theta_w=0.0):
+# def q_model(t, delta_theta, k, q, theta_star=1.0, theta_w=0.0):
+def q_model(t, theta_0, k, q, theta_star=1.0, theta_w=0.0):
     """
     Calculate the drydown curve for soil moisture over time using non-linear plant stress model.
 
@@ -42,6 +45,7 @@ def q_model(t, delta_theta, k, q, theta_star=1.0, theta_w=0.0):
     Returns:
         float: Rate of change in soil moisture (dtheta/dt) for the given timestep, in m3/m3/day.
     """
+    delta_theta = theta_0 - theta_w
 
     b = delta_theta ** (1 - q)
 
@@ -51,9 +55,10 @@ def q_model(t, delta_theta, k, q, theta_star=1.0, theta_w=0.0):
 
 
 
-def q_model_piecewise(t, delta_theta, k, q, theta_star=0.8, theta_w=0.0):
+# def q_model_piecewise(t, delta_theta, k, q, theta_star=0.8, theta_w=0.0):
+def q_model_piecewise(t, theta_0, k, q, theta_star=0.8, theta_w=0.0):
 
-    theta_0 = delta_theta + theta_w
+    # theta_0 = delta_theta + theta_w
 
     t_star = (theta_0 - theta_star)/k # Time it takes from theta_0 to theta_star 
 
