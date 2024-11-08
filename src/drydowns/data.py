@@ -189,7 +189,7 @@ class Data:
             ),
             'target_rmsd' : self.cfg.getfloat("target_rmsd"),
             'duration' : self.cfg.getint("min_duration"),
-            'min_diff' : self.cfg.getfloat("min_diff"),
+            'min_diff' : self.cfg.getfloat("min_diff", 0.5),
         }
         return params
     
@@ -249,12 +249,15 @@ class Data:
         ]
         return events
 
-    def get_event_data(self, start, end, cols=['precip', 'PET', 'LAI', 'GPP']):
+    def get_event_data(self, start, end, cols=['precip', 'PET', 'LAI', 'GPP'], buffer=0):
         new_cols = [col for col in cols if col not in self.df.columns]
         if new_cols:
             self.add_data_cols(new_cols)
         
-        return self.df.loc[start:end]
+        buffer = pd.to_timedelta(buffer, 'D')
+
+        # return self.df.loc[start:end]
+        return self.df.loc[start-buffer:end+buffer]
 
 
     def _get_theta_star(self):
