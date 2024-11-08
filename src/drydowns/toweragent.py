@@ -238,7 +238,11 @@ class TowerAgent:
 
         # date = datetime.now().strftime("%Y-%m-%d")
         date = datetime.now().strftime('%d%b').lower()
-        fid = f"flx_results_{date}"
+        out_bn = self.cfg.get(
+            'output_fid',
+            'flx_results'
+        )
+        fid = f"{out_bn}_{date}"
 
         self.save(df, fid=fid)
 
