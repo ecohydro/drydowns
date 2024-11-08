@@ -12,9 +12,10 @@ import logging
 
 import fluxtower
 
-from .towerdata import SoilSensorData
-from .model import DrydownModel
-from .towerseparator import TowerEventSeparator
+from .sensordata import TowerSensorData
+from .handler import DrydownModelHandler
+# from .model import DrydownModel
+# from .towerseparator import TowerEventSeparator
 
 from .mylogger import getLogger
 
@@ -173,7 +174,7 @@ class TowerAgent:
             
             # 1. Initialize sensor data object
             log.info(f"Initializing sensor {grp}")
-            data = SoilSensorData(self.cfg, tower, grp)
+            data = TowerSensorData(self.cfg, tower=tower, sensor_grp=grp)
 
             # 2. Separate events
             log.info(f"Separating events for sensor {grp}")
@@ -190,10 +191,14 @@ class TowerAgent:
 
             # 3. Fit drydown models
             log.info(f"Fitting drydown models for sensor {grp}")
-            model = DrydownModel(self.cfg, data, data.events)
-            model.fit_models(output_dir=self._output_dir)
-            # 4. Return results
-            results = model.return_result_df()
+            # model = DrydownModel(self.cfg, data, data.events)
+            # model.fit_models(output_dir=self._output_dir)
+            # # 4. Return results
+            # results = model.return_result_df()
+            handler = DrydownModelHandler(self.cfg, data, data.events)
+            handler.fit_events()
+            results = handler.get_results()
+
 
             log.info(
                 f"Drydown model analysis completed for {grp}: {len(results)}/{len(data.events)} events fitted"
@@ -233,7 +238,11 @@ class TowerAgent:
 
         # date = datetime.now().strftime("%Y-%m-%d")
         date = datetime.now().strftime('%d%b').lower()
-        fid = f"flx_results_{date}"
+        out_bn = self.cfg.get(
+            'output_fid',
+            'flx_results'
+        )
+        fid = f"{out_bn}_{date}"
 
         self.save(df, fid=fid)
 

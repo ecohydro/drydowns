@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 from .event import Event
-from .towerevent import TowerEvent
+# from .event import TowerEvent
 from .separator import EventSeparator
 
 import warnings

@@ -51,8 +51,7 @@ class DrydownModel:
 
     def _get_specs(self):
         specs = {
-            # 'delta_theta' : self.cfg.getboolean('fit_theta_0'),
-            'theta_0' : self.cfg.getboolean('fit_theta_0'),
+            'delta_theta' : self.cfg.getboolean('fit_theta_0'),
             'k' : self.cfg.getboolean('fit_et'),
             'theta_star' : self.cfg.getboolean('fit_theta_star'),
             'theta_w' : self.cfg.getboolean('fit_theta_w') if self.mtype != 'exponential' else True,
@@ -161,20 +160,11 @@ class DrydownModel:
         keys = [p for p in self.args if self.specs[p]]
         results = {p : popt[i] for i, p in enumerate(keys)}
         # results = {p : popt[i] for i,p in enumerate(self.args) if self.specs[p]}
-        # if not 'delta_theta' in results:
-        #     results.update({
-        #         'delta_theta' : self.params['delta_theta'],
-        #     })
-        for k in ['theta_0', 'theta_w']:
-            if not k in results:
-                results.update({
-                    k : self.params[k],
-                })
-        # if not 'theta_0' in results:
-        #     results.update({
-        #         'theta_0' : self.params['theta_0'],
-        #     })
-        # # Denormalize if necessary
+        if not 'delta_theta' in results:
+            results.update({
+                'delta_theta' : self.params['delta_theta'],
+            })
+        # Denormalize if necessary
         if self._norm:
             self.denormalize_params(results, event)
         results['r_squared'] = r_squared
@@ -252,8 +242,7 @@ class DrydownModel:
     
 
     def theta_0(self, event):
-        # if self.specs['delta_theta']:
-        if self.specs['theta_0']:
+        if self.specs['delta_theta']:
             return np.array([
                 event.theta_w,  # min_theta_0
                 # event.theta_star, # max_theta_0
@@ -309,8 +298,7 @@ class DrydownModel:
 
 class ExponentialModel(DrydownModel):
 
-    # args = ['delta_theta', 'theta_w', 'tau']
-    args = ['theta_0', 'theta_w', 'tau']
+    args = ['delta_theta', 'theta_w', 'tau']
     mtype = 'exponential'
 
     def __init__(self, cfg, data, event):
@@ -358,13 +346,9 @@ class ExponentialModel(DrydownModel):
         self._params = params
 
     def _get_model(self):
-        # if not self.specs['delta_theta']:
-        #     return lambda t, theta_w, tau: exponential_model(
-        #         t, self.params['delta_theta'], theta_w, tau
-        #     )
-        if not self.specs['theta_0']:
+        if not self.specs['delta_theta']:
             return lambda t, theta_w, tau: exponential_model(
-                t, self.params['theta_0'], theta_w, tau
+                t, self.params['delta_theta'], theta_w, tau
             )
         else:
             return exponential_model
@@ -379,8 +363,7 @@ class ExponentialModel(DrydownModel):
     def get_results(self, event, popt, r_squared, y_opt):
         results = self._get_results(event, popt, r_squared, y_opt)
         results.update({
-            # 'theta_0' : results['delta_theta'] + results['theta_w'],
-            'delta_theta' : results['theta_0'] - results['theta_w'],
+            'theta_0' : results['delta_theta'] + results['theta_w'],
             'k' : (event.theta_star - results['theta_w']) / results['tau'],
             # 'ET_max' : (self.data.z * 1000) * (self.event.theta_star - results['theta_w']) / results['tau']
         })
@@ -392,8 +375,7 @@ class ExponentialModel(DrydownModel):
 
 class NonlinearModel(DrydownModel):
 
-    # args = ['delta_theta', 'k', 'q', 'theta_star', 'theta_w']
-    args = ['theta_0', 'k', 'q', 'theta_star', 'theta_w']
+    args = ['delta_theta', 'k', 'q', 'theta_star', 'theta_w']
     mtype = 'q'
 
     def __init__(self, cfg, data, event):
@@ -421,8 +403,6 @@ class NonlinearModel(DrydownModel):
             The optimal parameters, the r-squared value, and the optimal fit.
 
         """
-        theta_0 = self.theta_0(event)
-
         delta_theta = self.delta_theta(event)
 
         k = self.k(event)
@@ -435,7 +415,6 @@ class NonlinearModel(DrydownModel):
         theta_w = self.theta_w(event)
 
         params = {
-            'theta_0' : theta_0,
             'delta_theta' : delta_theta,
             'k' : k,
             'q' : q,
@@ -451,68 +430,68 @@ class NonlinearModel(DrydownModel):
     def _get_model(self):
         if self.specs['theta_star']: 
             # THIS IS THE DEFAULT OLD VERSION (STAR)
-            if self.specs['k'] and self.specs['theta_0']:
+            if self.specs['k'] and self.specs['delta_theta']:
                 if self.specs['theta_w']:
-                    return lambda t, theta_0, k, q, theta_star, theta_w: q_model( #q_model_piecewise(
-                        t, theta_0, k, q, theta_star, theta_w
+                    return lambda t, delta_theta, k, q, theta_star, theta_w: q_model( #q_model_piecewise( #q_model(
+                        t, delta_theta, k, q, theta_star, theta_w
                     )
                 else:
-                    return lambda t, theta_0, k, q, theta_star: q_model( #q_model_piecewise(
-                        t, theta_0, k, q, 
+                    return lambda t, delta_theta, k, q, theta_star: q_model( #q_model_piecewise( #q_model(
+                        t, delta_theta, k, q, 
                         theta_star, self.params['theta_w']
                     )
-            elif self.specs['k'] and not self.specs['theta_0']:
+            elif self.specs['k'] and not self.specs['delta_theta']:
                 if self.specs['theta_w']:
-                    return lambda t, k, q, theta_star, theta_w: q_model( #q_model_piecewise(
-                        t, self.params['theta_0'], k, q, 
+                    return lambda t, k, q, theta_star, theta_w: q_model( #q_model(
+                        t, self.params['delta_theta'], k, q, 
                         theta_star, theta_w
                     )
                 else:
-                    return lambda t, k, q, theta_star: q_model( #q_model_piecewise(
-                        t, self.params['theta_0'], k, q, 
+                    return lambda t, k, q, theta_star: q_model( #q_model_piecewise( #q_model(
+                        t, self.params['delta_theta'], k, q, 
                         theta_star, self.params['theta_w']
                     )
-            elif not self.specs['k'] and self.specs['theta_0']:
-                return lambda t, theta_0, q, theta_star: q_model(
-                    t, theta_0, self.params['k'], q, 
+            elif not self.specs['k'] and self.specs['delta_theta']:
+                return lambda t, delta_theta, q, theta_star: q_model(
+                    t, delta_theta, self.params['k'], q, 
                     theta_star, self.params['theta_w']
                 )
-            elif not self.specs['k'] and not self.specs['theta_0']:
+            elif not self.specs['k'] and not self.specs['delta_theta']:
                 return lambda t, q, theta_star: q_model(
-                    t, self.params['theta_0'], self.params['k'], q, 
+                    t, self.params['delta_theta'], self.params['k'], q, 
                     theta_star, self.params['theta_w']
                 )
         else:
             # THIS IS THE DEFAULT OLD VERSION (ET)
-            if self.specs['k'] and self.specs['theta_0']:
+            if self.specs['k'] and self.specs['delta_theta']:
                 if self.specs['theta_w']:
-                    return lambda t, theta_0, k, q, theta_star, theta_w: q_model( #q_model(
-                        t, theta_0, k, q, theta_star, theta_w
+                    return lambda t, delta_theta, k, q, theta_star, theta_w: q_model( #q_model(
+                        t, delta_theta, k, q, theta_star, theta_w
                     )
                 else:
-                    return lambda t, theta_0, k, q: q_model(
-                        t, theta_0, k, q, 
+                    return lambda t, delta_theta, k, q: q_model(
+                        t, delta_theta, k, q, 
                         self.params['theta_star'], self.params['theta_w']
                     )
-            elif self.specs['k'] and not self.specs['theta_0']:
+            elif self.specs['k'] and not self.specs['delta_theta']:
                 if self.specs['theta_w']:
                     return lambda t, k, q, theta_star, theta_w: q_model(
-                        t, self.params['theta_0'], k, q, 
+                        t, self.params['delta_theta'], k, q, 
                         theta_star, theta_w
                     )
                 else:
                     return lambda t, k, q: q_model(
-                        t, self.params['theta_0'], k, q, 
+                        t, self.params['delta_theta'], k, q, 
                         self.params['theta_star'], self.params['theta_w']
                     )
-            elif not self.specs['k'] and self.specs['theta_0']:
-                return lambda t, theta_0, q: q_model(
-                    t, theta_0, self.params['k'], q, 
+            elif not self.specs['k'] and self.specs['delta_theta']:
+                return lambda t, delta_theta, q: q_model(
+                    t, delta_theta, self.params['k'], q, 
                     self.params['theta_star'], self.params['theta_w']
                 )
-            elif not self.specs['k'] and not self.specs['theta_0']:
+            elif not self.specs['k'] and not self.specs['delta_theta']:
                 return lambda t, q: q_model(
-                    t, self.params['theta_0'], self.params['k'], q, 
+                    t, self.params['delta_theta'], self.params['k'], q, 
                     self.params['theta_star'], self.params['theta_w']
                 )
             
@@ -520,8 +499,7 @@ class NonlinearModel(DrydownModel):
         results = self._get_results(event, popt, r_squared, y_opt)
 
         results.update({
-            # 'theta_0' : results['delta_theta'] + event.theta_w,
-            'delta_theta' : results['theta_0'] - results['theta_w'],
+            'theta_0' : results['delta_theta'] + event.theta_w,
         })
         if 'k' in results:
             # Denormalize 

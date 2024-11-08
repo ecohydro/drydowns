@@ -12,9 +12,8 @@ import logging
 
 import fluxtower
 
-from .data import Data
-from .towerdata import SoilSensorData
-from .towerevent import TowerEvent
+from .smapdata import SMAPData
+from .event import Event
 from .soil import Soil, soils
 
 from .mylogger import getLogger
@@ -23,35 +22,103 @@ from .mylogger import getLogger
 log = getLogger(__name__)
 
 
-class ISMNSoilData(SoilSensorData):
+# class TowerData(Data):
+#     """Class that handles datarods (Precipitation, SM, PET data) for a flux tower"""
 
-    def __init__(self, cfg, sensor, station):
-        # super().__init__(cfg, sensor)
+#     def __init__(self, cfg, tower=None, tower_id=None, timestep='DD') -> None:
+#         # _______________________________________________________________________________
+#         # Attributes
+
+#         # Read inputs
+#         self.cfg = cfg
+
+#         # data_dir
+#         self.data_dir = cfg["PATHS"]["data_dir"]
+        
+#         # tower
+#         if tower:
+#             self._tower = tower
+#         else:
+#             self._tower = fluxtower.FluxNetTower(self.get_filename(tower_id, timestep))
+        
+#         # start_date and end_date
+#         self.start_date = self._tower.data.index.min().to_pydatetime()
+#         self.end_date = self._tower.data.index.max().to_pydatetime()
+
+#         # col_dict
+#         self._cols, self._col_dict = self.get_cols()        
+
+#         # data
+#         self.soil_data = self.get_data()
+
+
+    
+#     def get_filename(self, tower_id, timestep='DD'):
+#         """Get the filename of the datarod"""
+#         pattern = re.compile(rf'FLX_{tower_id}_FLUXNET2015_FULLSET_{timestep}_(.*)\.csv$')
+#         for fn in os.listdir(self.data_dir):
+#             if re.match(pattern, fn):
+#                 return fn
+#         return None
+    
+#     def get_cols(self, var_cols=['SWC', 'P', 'TA', 'VPD', 'LE', 'ET', 'e_a']):
+#         col_list = []
+#         col_dict = {}
+#         for var in var_cols:
+#             col_list += self._tower.get_var_cols(variable=var, exclude='ERA')
+#             cols = self._tower.get_var_cols(variable=var, exclude='ERA')
+#             col_dict[var] = {
+#                 'var_cols' : [col for col in cols if 'QC' not in col], 
+#                 'qc_cols' : [col for col in cols if 'QC' in col]
+#             }
+
+#         return col_list, col_dict
+
+#     def get_data(self) -> list:
+#         sm_cols = self._col_dict['SWC']['var_cols']
+#         soil_data = [SoilSensorData(self.cfg, self._tower, col) for col in sm_cols]
+#         return soil_data
+
+
+class ThreadNameHandler(logging.StreamHandler):
+    def emit(self, record):
+        try:
+            # Add thread name to the log message
+            record.threadName = threading.current_thread().name
+            super(ThreadNameHandler, self).emit(record)
+        except Exception:
+            self.handleError(record)
+
+
+class SoilSensorData:
+
+    def __init__(self, cfg, tower, sensor_grp,):
         # cfg
         self.cfg = cfg
 
         # tower
-        self._sensor = sensor
-        self._station = station
+        self._tower = tower
         # id
-        self.id = (sensor.station, sensor.name)
+        self.id = (self._tower.id, sensor_grp)
 
         # info about sensor
-        self.info = sensor.meta
-
-        # soil info
-        self.soil_texture = self.info.get('soil_texture')
-        # self.n = self.soil_info.get('porosity')
+        self.info = self._tower.grp_info.get(sensor_grp).copy()
 
         # z (depth of sensor) [m]
-        # self.z = float(self.info['HEIGHT']) * -1.
-        self.z = float(self.info.get('depth_to'))
+        self.z = float(self.info['HEIGHT']) * -1.
 
         # data
-        self.df = self.get_sensor_data()
+        self.df = self.get_sensor_data(sensor_grp)
+
+        # soil info
+        # self.soil_info = self._tower.soil_info.copy()
+        # self.soil_texture = self.soil_info.get('texture')
+        # self.n = self.soil_info.get('porosity')
+        self.soil_texture = self._tower.soil_info.get('soil_texture')
+        self.n = self._tower.soil_info.get('porosity')
 
         # theta_fc
-        if self.soil_texture.lower() in soils.keys():
+        if self.soil_texture in soils.keys():
             self.theta_fc = Soil(texture=self.soil_texture).theta_fc
         else:
             log.info(
@@ -87,33 +154,25 @@ class ISMNSoilData(SoilSensorData):
         return {k : v for k,v in self.__dict__.items() if isinstance(v,(str,float,int))}
 
     # def get_sensor_data(self, sensor_col):
-    def get_sensor_data(self):
+    def get_sensor_data(self, sensor_grp):
         # Copy soil moisture data
+        sensor_col = self._tower.grp_info.get(sensor_grp).get('VARNAME')
 
-        sensor_col = self._station.sensor_cols[self._sensor.name]
+        start = self._tower.grp_info.get(sensor_grp).get('DATE') # self.info.get('DATE')
+        end = self._get_end_date(sensor_grp, sensor_col)         # 
 
-        start = self.info.get('timerange_from')
-        end = self.info.get('timerange_to')
-
-        # df = self._station.data.loc[
-        #     (self._station.data.index >= start) & (self._station.data.index < end),
-        #     [sensor_col]
-        # ].copy()
-        df = self._station.daily.loc[
-            (self._station.daily.index >= start) & (self._station.daily.index < end),
-            [sensor_col]
+        df = self._tower.data.loc[
+            (self._tower.data.TIMESTAMP >= start) & (self._tower.data.TIMESTAMP < end),
+            ['TIMESTAMP'] + [sensor_col]
         ].copy()
         # df = self._tower.data[['TIMESTAMP']+[sensor_col]].copy()
-        # df.set_index('TIMESTAMP', inplace=True, drop=False)
+        df.set_index('TIMESTAMP', inplace=True, drop=False)
         df.index.name = 'DATE'
         # Rename to standard column name
         df.rename(columns={sensor_col: 'SWC'}, inplace=True)
 
-        # Resample to daily
-        df = df.resample('D').asfreq()
         # Convert units to m3/m3
-        # df['SWC'] = df['SWC']/100
-        df.insert(0,'TIMESTAMP',df.index)
+        df['SWC'] = df['SWC']/100
 
         # Update info dict
         self.info.update({'VARNAME' : sensor_col})
@@ -121,10 +180,18 @@ class ISMNSoilData(SoilSensorData):
 
         return df
 
+    def _get_end_date(self, grp, col):
+        try:
+            ind = self._tower.var_info[col]['GROUP_ID'].index(grp)
+            end_date = self._tower.var_info[col]['DATE'][ind+1]
+        except:
+            end_date = self._tower.data.iloc[-1].TIMESTAMP + pd.Timedelta(days=1)
+        return end_date
+
 
     def add_data_cols(self, cols):
         # self.df = pd.concat([self.df, cols], axis=1)
-        self.df = self.df.join(self._station.daily[cols])
+        self.df = self.df.join(self._tower.data.set_index('TIMESTAMP')[cols])
 
     def calc_diff(self):
         self.df['SWC_diff'] = self.df['SWC'].diff() #/ df['TIMESTAMP'].diff().dt.days
@@ -255,21 +322,21 @@ class ISMNSoilData(SoilSensorData):
         return events
 
     def get_event_data(self, start, end, cols=['P_F', 'ET_F_MDS']):
-        new_cols = [col for col in cols if col not in self.df.columns and col in self._station.daily.columns]
+        new_cols = [col for col in cols if col not in self.df.columns]
         if new_cols:
             self.add_data_cols(new_cols)
         
         return self.df.loc[start:end]
 
-    # def get_precip(self, p_col='P_F',):
-    #     if p_col not in self.df.columns:
-    #         self.add_data_cols([p_col])
-    #     return self.df[p_col]
+    def get_precip(self, p_col='P_F',):
+        if p_col not in self.df.columns:
+            self.add_data_cols([p_col])
+        return self.df[p_col]
     
-    # def get_et(self, et_col='ET_F_MDS',):
-    #     if et_col not in self.df.columns:
-    #         self.add_data_cols([et_col])
-    #     return self.df[et_col]
+    def get_et(self, et_col='ET_F_MDS',):
+        if et_col not in self.df.columns:
+            self.add_data_cols([et_col])
+        return self.df[et_col]
 
     def filter_events(self):
         # raise NotImplementedError
@@ -277,7 +344,7 @@ class ISMNSoilData(SoilSensorData):
 
     def create_events(self, events_df):
         events = [
-            TowerEvent(
+            Event(
                 **row.to_dict(),
                 theta_w = self.min_sm,
                 # theta_star = self.max_sm,
@@ -291,6 +358,4 @@ class ISMNSoilData(SoilSensorData):
 
     def plot_event(self):
         raise NotImplementedError
-
-
 
