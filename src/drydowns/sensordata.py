@@ -36,7 +36,8 @@ col_map = {
     'P_F': 'precip',
     'ET_F_MDS': 'PET',
     'P_1_1' : 'precip', # TODO: get other precip cols + take avg (for ISMN data)
-    'pet' : 'PET'
+    'pet' : 'PET',
+    'GPP_NT_VUT_REF' : 'GPP',
 }
 
 # class ThreadNameHandler(logging.StreamHandler):
@@ -212,8 +213,12 @@ class SensorData(Data):
         # Mask for differences below threshold
         threshold = self._calc_ds_dt_threshold(min_diff)
         mask_diff = self.df[diff_col].shift(-1) < -threshold
+        # Mask for precip below threshold
+        if not 'precip' in self.df.columns:
+            self.add_data_cols(['precip'])
+        mask = mask_diff & ~(self.df['precip'] > self._params['precip_thresh'])
         # Find starts
-        start_dates = self._find_starts(mask_diff, min_dur)
+        start_dates = self._find_starts(mask, min_dur)
         return start_dates
 
     
@@ -313,6 +318,8 @@ class TowerSensorData(SensorData):
     _col_dict = {
         'precip' : 'P_F',
         'PET' : 'ET_F_MDS',
+        'LAI' : 'LAI',
+        'GPP' : 'GPP_NT_VUT_REF',
     }
 
     def __init__(self, cfg, tower, sensor_grp):
@@ -382,10 +389,18 @@ class TowerSensorData(SensorData):
         return self.df[et_col]
 
     def add_data_cols(self, cols):
-        col_names = [self._col_dict.get(col) for col in cols if col in self._tower.data.columns]
-        # self.df = pd.concat([self.df, cols], axis=1)
-        self.df = self.df.join(self._tower.data.set_index('TIMESTAMP')[col_names])
+        col_names = [self._col_dict.get(col) for col in cols] #if col in self._tower.data.columns]
+        
+        # anc = self.get_anc_data(col_names)      # TODO: Update to figure out how to get both precip cols (from tower + anc)
+        # self.df = self.df.join(anc) 
+        # cols = list(set(cols) - set(anc.columns))
+        cols = [col for col in col_names if col in self._tower.data.columns]
+        
+        self.df = self.df.join(self._tower.data.set_index('TIMESTAMP')[cols])
         self.df.rename(columns=col_map, inplace=True)
+
+    def get_anc_data(self, cols):
+        return pd.DataFrame()
 
     # def get_event_data(self, start, end, cols=['precip', 'PET']):
     #     new_cols = [col for col in cols if col not in self.df.columns]

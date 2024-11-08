@@ -115,7 +115,8 @@ class DrydownModelHandler:
                 'et' : event.get_et(),
                 'total_et' : np.sum(event.get_et()),
                 'precip' : event.calc_precip(),
-                'GPP' : event.calc_gpp(),
+                'gpp' : event.get_gpp(),
+                'total_gpp' : event.calc_gpp(),
             })
         except:
             pass

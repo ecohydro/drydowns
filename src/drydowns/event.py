@@ -86,6 +86,13 @@ class Event:
             gpp = np.nan
         return gpp
     
+    def get_gpp(self, gpp_col='GPP'):
+        if gpp_col in self.event_data.columns:
+            gpp = self.event_data[gpp_col].to_numpy()
+        else:
+            gpp = np.nan
+        return gpp
+    
     def calc_pet(self, et_col='PET'):
         # TODO: Check for ET col + set default if DNE
         if self.event_data.empty or et_col not in self.event_data.columns or self.event_data[et_col].isnull().all():
