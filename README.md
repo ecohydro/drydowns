@@ -28,8 +28,8 @@ pip install -e git+ssh://github.com/ecohydro/drydowns.git@v0.0.1
 ```
 
 ## Authors
-[Ryoko Araki](https://github.com/RY4GIT), San Diego State University
-[Bryn Morgan](https://github.com/brynemorgan), UC Santa Barbara
+- [Ryoko Araki](https://github.com/RY4GIT), San Diego State University
+- [Bryn Morgan](https://github.com/brynemorgan), UC Santa Barbara
 
 ## Contact
 Bryn Morgan, [brynmorgan@ucsb.edu](mailto:brynmorgan@ucsb.edu)
